@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import UserList from "../company/CompanyForm";
+import UserList from "./UserList";
 
 const Users = () => {
   /* Get the hand gesture svg and animate it through css */

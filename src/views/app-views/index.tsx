@@ -7,11 +7,11 @@ export const AppViews = ({ match, history }) => {
   /* Check if the token in the redux store is null, if true log out the user */
   const token = useSelector((state) => state["auth"].token);
   const isAuth = useSelector((state) => state["auth"].isAuth);
-  useEffect(() => {
-    if (token === null || isAuth === false) {
-      history.push("/auth/login");
-    }
-  }, [token, isAuth]);
+  // useEffect(() => {
+  //   if (token === null || isAuth === false) {
+  //     history.push("/auth/login");
+  //   }
+  // }, [token, isAuth]);
   return (
     <Suspense fallback={<Loading cover="content" />}>
       <Switch>
@@ -20,7 +20,7 @@ export const AppViews = ({ match, history }) => {
           component={lazy(() => import(`./dashboard`))}
         />
         <Route
-          path={`${match.url}/catalog/company`}
+          path={`${match.url}/catalog/companies`}
           component={lazy(() => import(`./catalog/company`))}
         />
         <Route
@@ -48,11 +48,23 @@ export const AppViews = ({ match, history }) => {
           component={lazy(() => import(`./audit/login-history`))}
         />
         <Route
+          path={`${match.url}/audit/actions`}
+          component={lazy(() => import(`./audit/actions`))}
+        />
+        <Route
           path={`${match.url}/reports`}
           component={lazy(() => import(`./reports`))}
         />
         <Route
-          path={`${match.url}/account-settings`}
+          path={`${match.url}/invoices`}
+          component={lazy(() => import(`./financial/invoices`))}
+        />
+        <Route
+          path={`${match.url}/payments`}
+          component={lazy(() => import(`./financial/payments`))}
+        />
+        <Route
+          path={`${match.url}/settings`}
           component={lazy(() => import(`./account-settings`))}
         />
         <Redirect from={`${match.url}`} to={`${match.url}/dashboard`} />

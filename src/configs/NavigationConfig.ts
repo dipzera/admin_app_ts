@@ -9,11 +9,11 @@ import {
   InfoCircleOutlined,
   SnippetsOutlined,
   BookOutlined,
-  CreditCardOutlined
+  CreditCardOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
 
 const dashBoardNavTree = [
-
   {
     key: "dashboard",
     path: "/app/dashboard",
@@ -30,9 +30,9 @@ const dashBoardNavTree = [
     breadcrumb: true,
     submenu: [
       {
-        key: "company",
-        path: "/app/catalog/company",
-        title: "sidenav.catalog.company",
+        key: "companies",
+        path: "/app/catalog/companies",
+        title: "sidenav.catalog.companies",
         icon: ApartmentOutlined,
         breadcrumb: true,
         submenu: [],
@@ -94,7 +94,7 @@ const dashBoardNavTree = [
     title: "Other",
     icon: ApartmentOutlined,
     breadcrumb: false,
-    submenu:[
+    submenu: [
       {
         key: "reports",
         path: "/app/reports",
@@ -104,17 +104,23 @@ const dashBoardNavTree = [
         submenu: [],
       },
       {
+        key: "invoices",
+        path: "/app/invoices",
+        title: "sidenav.payment.invoices",
+        icon: FormOutlined,
+        breadcrumb: true,
+        submenu: [],
+      },
+      {
         key: "payment",
-        path: "/app/account-settings/billing",
+        path: "/app/payments",
         title: "sidenav.payment",
         icon: CreditCardOutlined,
         breadcrumb: true,
         submenu: [],
       },
-    ]
-  }
-
-
+    ],
+  },
 ];
 
 const navigationConfig = [...dashBoardNavTree];

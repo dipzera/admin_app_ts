@@ -265,7 +265,8 @@ export class UserList extends Component<{ [key: string]: any }> {
       <Card bodyStyle={{ padding: "0px", position: "relative" }}>
         <Table
           loading={this.state.loading}
-          columns={tableColumns}
+          /* TODO: fix this */
+          // columns={tableColumns}
           dataSource={users}
           rowKey="ID"
           style={{ position: "relative" }}

@@ -40,7 +40,7 @@
 	"sidenav.dashboard": "Dashboard",
 
 	"sidenav.catalog": "Catalog",
-	"sidenav.catalog.company": "Company",
+	"sidenav.catalog.companies": "Companies",
 	"sidenav.catalog.group": "Groups",
 	"sidenav.catalog.users": "Users",
 
@@ -58,9 +58,7 @@
 	"sidenav.audit.All": "All",
 	"sidenav.audit.loginHistory": "Login History",
 	"sidenav.audit.actions": "Actions",
-
 	"sidenav.reports": "Reports",
-
 
 
 
@@ -85,7 +83,8 @@
 	"account.sidenav.EditProfile": "Edit Profile",
 	"account.sidenav.ChangePassword": "Change Password",
 	"account.sidenav.Billing": "Billing",
-	"account.sidenav.Notification": "Notification",
+  "account.sidenav.Notification": "Notification",
+  "account.sidenav.Security": "Security",
 
 	"account.EditProfile.FirstName": "First Name",
 	"account.EditProfile.LastName": "Last Name",

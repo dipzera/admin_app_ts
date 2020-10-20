@@ -6,7 +6,7 @@ import {
 } from "../constants/ThemeConstant";
 import { env } from "./EnvironmentConfig";
 
-export const APP_NAME = "Client Portal App";
+export const APP_NAME = "Admin Portal App";
 export const API_BASE_URL = env!.API_ENDPOINT_URL;
 
 interface ThemeConfigProps {

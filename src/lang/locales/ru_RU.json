@@ -45,7 +45,7 @@
   "sidenav.dashboard": "Панель",
 
   "sidenav.catalog": "Каталог",
-  "sidenav.catalog.company": "Компания",
+  "sidenav.catalog.companies": "Компании",
   "sidenav.catalog.group": "Группы",
   "sidenav.catalog.users": "Пользователи",
   "sidenav.settings": "Настройки",
@@ -89,6 +89,7 @@
   "account.sidenav.ChangePassword": "Сменить Пароль",
   "account.sidenav.Billing": "Оплата",
   "account.sidenav.Notification": "Уведомления",
+  "account.sidenav.Security": "Безопасность",
 
   "account.EditProfile.FirstName": "Имя",
 	"account.EditProfile.LastName": "Фамилия",

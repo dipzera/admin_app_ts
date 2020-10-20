@@ -1,7 +1,6 @@
 import React from "react";
 
 const Invoices = () => {
-  return <div>Invoices component works!</div>;
+  return <div>Invoice Works!</div>;
 };
-
 export default Invoices;

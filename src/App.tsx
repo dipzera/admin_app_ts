@@ -9,7 +9,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <Provider store={store}>
-        <Router basename={"/clientportal"}>
+        <Router basename={"/adminportal"}>
           <Switch>
             <Route path="/" component={Views} />
           </Switch>

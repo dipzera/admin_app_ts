@@ -1,8 +1,8 @@
 {
-  "name": "client-portal-app",
+  "name": "admin-portal-app",
   "version": "1.1.0",
   "private": true,
-  "homepage": "/clientportal/",
+  "homepage": "/adminportal/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

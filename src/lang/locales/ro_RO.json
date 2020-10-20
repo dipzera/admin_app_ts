@@ -42,7 +42,7 @@
   "sidenav.dashboard": "Dashboard",
 
   "sidenav.catalog": "Catalog",
-  "sidenav.catalog.company": "Compania",
+  "sidenav.catalog.companies": "Companii",
   "sidenav.catalog.group": "Grupuri",
   "sidenav.catalog.users": "Utilizatori",
   "sidenav.settings": "Setări",
@@ -86,6 +86,9 @@
   "account.sidenav.ChangePassword": "Schimbă Parola",
   "account.sidenav.Billing": "Facturare",
   "account.sidenav.Notification": "Notificări",
+  "account.sidenav.Security": "Securitate",
+
+
   "account.EditProfile.FirstName": "Prenume",
 	"account.EditProfile.LastName": "Nume",
   "account.EditProfile.Email": "Email",

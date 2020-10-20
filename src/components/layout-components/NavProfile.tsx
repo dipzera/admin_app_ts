@@ -25,7 +25,7 @@ const menuItem = [
   {
     title: <IntlMessage id={"header.profile.AccountSettings"} />,
     icon: SettingOutlined,
-    path: "/app/account-settings",
+    path: "/app/settings",
   },
   //   {
   // 	title: "Billing",

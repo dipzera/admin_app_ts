@@ -28,6 +28,7 @@ import DocumentEvents from "react-document-events";
 import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
+import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 
 const rules = {
   JuridicalName: [
@@ -195,14 +196,29 @@ export const RegisterForm = (props) => {
         name="register-form"
         onFinish={onSignUp}
       >
-        <Form.Item
-          name="JuridicalName"
-          label={<IntlMessage id={"auth.JuridicalName"} />}
-          rules={rules.JuridicalName}
-          hasFeedback
-        >
-          <Input prefix={<MailOutlined className={"text-primary"} />} />
-        </Form.Item>
+        <Row gutter={ROW_GUTTER}>
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              name="JuridicalName"
+              label={<IntlMessage id={"auth.JuridicalName"} />}
+              rules={rules.JuridicalName}
+              hasFeedback
+            >
+              <Input prefix={<MailOutlined className={"text-primary"} />} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={24} md={12}>
+            <Form.Item
+              name="IDNO"
+              label={<IntlMessage id={"auth.IDNO"} />}
+              rules={rules.IDNO}
+              hasFeedback
+            >
+              <Input prefix={<MailOutlined className={"text-primary"} />} />
+            </Form.Item>
+          </Col>
+        </Row>
+
         <Form.Item
           name="IDNO"
           label={<IntlMessage id={"auth.IDNO"} />}
@@ -212,44 +228,6 @@ export const RegisterForm = (props) => {
           <Input prefix={<MailOutlined className={"text-primary"} />} />
         </Form.Item>
 
-        <Form.Item>
-          <Radio.Group
-            defaultValue={false}
-            onChange={() => setIsVATPayer(!isVATPayer)}
-          >
-            <Radio.Button value={false}>
-              {<IntlMessage id={"auth.NotVATPayer"} />}
-            </Radio.Button>
-            <Radio.Button value={true}>
-              {<IntlMessage id={"auth.VATPayer"} />}
-            </Radio.Button>
-          </Radio.Group>
-        </Form.Item>
-
-        <motion.div
-          initial={{
-            display: "none",
-            opacity: 0,
-          }}
-          animate={{
-            display: isVATPayer ? "block" : "none",
-            opacity: isVATPayer ? 1 : 0,
-          }}
-        >
-          <Form.Item
-            name="VATCode"
-            label={<IntlMessage id={"auth.VATCode"} />}
-            rules={[
-              {
-                required: isVATPayer,
-                message: <IntlMessage id={"auth.MessageInsertVATCode"} />,
-              },
-            ]}
-            hasFeedback
-          >
-            <Input prefix={<MailOutlined className={"text-primary"} />} />
-          </Form.Item>
-        </motion.div>
         <Form.Item
           name="email"
           label={<IntlMessage id={"auth.Email"} />}
