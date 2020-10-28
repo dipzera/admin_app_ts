@@ -5,7 +5,7 @@ import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
 import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
-export const UserModalAdd = ({
+export const CompanyModalAdd = ({
     onCreate,
     onCancel,
     visible,
@@ -15,10 +15,10 @@ export const UserModalAdd = ({
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const onFinish = (values) => {
+        /*  EDIT ABOVE WHEN REGISTER COMPANY FUNCTION IS READY */
         axios
             .post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
-                /* Get the companyID ?? , token and uilanguage from redux store,
-                   TODO: Add new input fields */
+                /* Get the companyID, token and uilanguage from redux store */
                 ...values,
                 CompanyID,
                 Token,
@@ -35,8 +35,9 @@ export const UserModalAdd = ({
             });
     };
     return (
+        /* The component above doesn't work just yet */
         <Modal
-            title={"Register user"}
+            title={"TO BE BUILDED... ABOVE DOESN't WORK"}
             visible={visible}
             okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
             onCancel={onCancel}

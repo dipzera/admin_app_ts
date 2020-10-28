@@ -61,6 +61,7 @@
   "sidenav.audit.All": "Toate",
   "sidenav.audit.loginHistory": "Istoria autentificărilor",
   "sidenav.audit.actions": "Acțiuni",
+  "sidenav.other": "Other",
 
   "sidenav.reports": "Rapoarte",
 
@@ -82,6 +83,7 @@
   "message.AccountSettings.Done": "Succes!",
   "message.AccountSettings.Error": "A apărut o problemă! Încercați din nou!",
 
+    "account.sidenav.EditCompany": "Editează Compania",
   "account.sidenav.EditProfile": "Editează Profilul",
   "account.sidenav.ChangePassword": "Schimbă Parola",
   "account.sidenav.Billing": "Facturare",

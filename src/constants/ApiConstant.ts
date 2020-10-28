@@ -1,37 +1,33 @@
 export const API_IS_AUTH_SERVICE = "https://dev.edi.md/ISAuthService/json";
-export const API_IS_CLIENT_SERVICE =
-  "https://dev.edi.md/ISClientWebAppService/json";
+export const API_IS_APP_SERVICE =
+    "https://dev.edi.md/ISAdminWebAppService/json";
 // https://api.edi.md/ISAuthService/json PRODUCTION
 // https://dev.edi.md/ISAuthService DEVELOPMENT
 
-export const API_AUTHORIZE_USER =
-  "https://api.edi.md/ISAuthService/json/AuthorizeUser"; // POST Email, password
 export const API_ACTIVATE_USER =
-  "https://api.edi.md/ISAuthService/json/ActivateUser?"; // Token={TOKEN}&Code={CODE}
+    "https://api.edi.md/ISAuthService/json/ActivateUser?"; // Token={TOKEN}&Code={CODE}
 export const API_CHANGE_PASSWORD =
-  "https://api.edi.md/ISAuthService/json/ChangePassword"; // POST Oldpassword, Newpassword, Token
+    "https://api.edi.md/ISAuthService/json/ChangePassword"; // POST Oldpassword, Newpassword, Token
 export const API_REFRESH_TOKEN =
-  "https://api.edi.md/ISAuthService/json/RefreshToken?"; // RToken={RTOKEN}
+    "https://api.edi.md/ISAuthService/json/RefreshToken?"; // RToken={RTOKEN}
 export const API_REGISTER_COMPANY =
-  "https://api.edi.md/ISAuthService/json/RegisterCompany"; // POST Company: {...}, Token: String
+    "https://api.edi.md/ISAuthService/json/RegisterCompany"; // POST Company: {...}, Token: String
 export const API_REGISTER_USER =
-  "https://api.edi.md/ISAuthService/json/RegisterUser"; /* POST 	
+    "https://api.edi.md/ISAuthService/json/RegisterUser"; /* POST 	
 "CompanyID":2147483647,
 "Email":"String content",
-"FirstName":"String content",
-"LastName":"String content",
-"Password":"String content",
+"FirstName":"String content", "LastName":"String content", "Password":"String content",
 "PhoneNumber":"String content",
 "Photo":"String content",
 "UiLanguage":0 */
 export const API_RESET_PASSWORD =
-  "https://api.edi.md/ISAuthService/json/ResetPasword"; // POST Email
+    "https://api.edi.md/ISAuthService/json/ResetPasword"; // POST Email
 export const API_SENT_ACTIVATE_CODE =
-  "https://api.edi.md/ISAuthService/json/SentActivateCode?"; // Token={TOKEN} optional: UserID={USERID}
+    "https://api.edi.md/ISAuthService/json/SentActivateCode?"; // Token={TOKEN} optional: UserID={USERID}
 export const API_UPDATE_COMPANY =
-  "https://api.edi.md/ISAuthService/json/UpdateCompany"; // POST Company: {...}, Token: String
+    "https://api.edi.md/ISAuthService/json/UpdateCompany"; // POST Company: {...}, Token: String
 export const API_UPDATE_USER =
-  "https://api.edi.md/ISAuthService/json/UpdateUser"; /* POST 	
+    "https://api.edi.md/ISAuthService/json/UpdateUser"; /* POST 	
 "CompanyID":2147483647,
 "Email":"String content",
 "FirstName":"String content",

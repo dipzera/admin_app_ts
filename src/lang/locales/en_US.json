@@ -59,7 +59,7 @@
 	"sidenav.audit.loginHistory": "Login History",
 	"sidenav.audit.actions": "Actions",
 	"sidenav.reports": "Reports",
-
+    "sidenav.other": "Other",
 
 
 
@@ -80,7 +80,8 @@
 	"message.AccountSettings.Error": "Something went wrong! Try again!",
 
 
-	"account.sidenav.EditProfile": "Edit Profile",
+    "account.sidenav.EditProfile": "Edit Profile",
+    "account.sidenav.EditCompany": "Edit Company",
 	"account.sidenav.ChangePassword": "Change Password",
 	"account.sidenav.Billing": "Billing",
   "account.sidenav.Notification": "Notification",
@@ -99,7 +100,7 @@
 	"account.EditProfile.ChangeAvatar": "Change Avatar",
 	"account.EditProfile.Remove": "Remove",
 
-
+    
   "account.company.BIC": "BIC",
   "account.company.Bank": "Bank",
   "account.company.CommercialName": "Commercial Name",

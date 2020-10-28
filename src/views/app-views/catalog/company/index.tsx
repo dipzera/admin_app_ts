@@ -1,8 +1,8 @@
 import React from "react";
-import CompanyForm from "./CompanyForm";
+import CompanyList from "./CompanyList";
 
 const Companies = () => {
-  return <div>Company List Component works perfectly fine!</div>;
+    return <CompanyList />;
 };
 
 export default Companies;

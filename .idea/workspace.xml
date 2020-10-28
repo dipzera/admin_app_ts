@@ -3,8 +3,25 @@
   <component name="ChangeListManager">
     <list default="true" id="bcd00017-c4bf-44d3-a15f-685b1ebb0d61" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/configs/NavigationConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/configs/NavigationConfig.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/ApiConstant.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/ApiConstant.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lang/locales/en_US.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lang/locales/en_US.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lang/locales/ro_RO.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lang/locales/ro_RO.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lang/locales/ru_RU.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/lang/locales/ru_RU.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/redux/actions/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/redux/actions/Account.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/redux/reducers/Account.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/redux/reducers/Account.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/app-views/account-settings/EditProfile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/account-settings/EditProfile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/account-settings/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/account-settings/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/company/CompanyForm.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/company/CompanyView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/catalog/company/CompanyView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/company/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/catalog/company/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/users/UserList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/catalog/users/UserList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/users/UserView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/catalog/users/UserView.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/catalog/users/add_user.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/app-views/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/app-views/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/auth-views/authentication/login/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/auth-views/authentication/login/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/auth-views/components/LoginForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/auth-views/components/LoginForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/auth-views/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/auth-views/index.tsx" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,7 +45,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="add_unversioned_files" value="$PROJECT_DIR$/node_modules/rc-field-form/lib/interface.d.ts" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../react-redux-course-vladilen" />
+    <property name="last_opened_file_path" value="$USER_HOME$/asem_coding/practice" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -37,8 +54,8 @@
     <property name="node.js.selected.package.standard" value="$USER_HOME$/AppData/Roaming/npm/node_modules/standard" />
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\natha\AppData\Roaming\npm\node_modules\prettier" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Console Font" />
-    <property name="ts.external.directory.path" value="C:\Users\natha\projects\client_app_ts\node_modules\typescript\lib" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="C:\Users\natha\projects\admin_app_ts\node_modules\typescript\lib" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -99,6 +116,9 @@
       <workItem from="1602569025674" duration="55000" />
       <workItem from="1602575936028" duration="939000" />
       <workItem from="1602576941524" duration="109000" />
+      <workItem from="1603281027322" duration="45000" />
+      <workItem from="1603281133455" duration="891000" />
+      <workItem from="1603458726197" duration="48000" />
     </task>
     <servers />
   </component>

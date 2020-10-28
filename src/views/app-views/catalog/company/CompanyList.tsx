@@ -12,7 +12,7 @@ import {
     LoadingOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import UserView from "./UserView";
+import UserView from "./CompanyView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
@@ -22,28 +22,13 @@ import {
 } from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
-import { signOut } from "../../../../redux/actions/Auth";
-import { UserModalEdit } from "./UserModalEdit";
-import { UserModalAdd } from "./UserModalAdd";
+import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
+import { CompanyModalEdit } from "./CompanyModalEdit";
+import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { useApiRequest } from "../../../../api";
 
-export interface UsersProps {
-    CompanyID: number;
-    Email: string;
-    FirstName: string;
-    LastName: string;
-    ID: number;
-    LastAuthorize: string;
-    LastAuthorizeIP: string;
-    PhoneNumber: string;
-    Photo: string;
-    Status: number;
-    UiLanguage: number;
-}
-
-interface UserListStateProps {
-    users: UsersProps[];
+interface CompanyStateProps {
+    users: CompanyProps[];
     userProfileVisible: boolean;
     selectedUser: any;
     isHidden: string;
@@ -52,18 +37,37 @@ interface UserListStateProps {
     registerUserModalVisible: boolean;
     loading: boolean;
 }
+
+export interface CompanyProps {
+    BIC: string;
+    Bank: string;
+    Email: string;
+    CommercialName: string;
+    CountryID: number;
+    ID: number;
+    IBAN: string;
+    IDNO: string;
+    IsVATPayer: boolean;
+    JuridicalAddress: string;
+    JuridicalName: string;
+    Logo: string;
+    OfficeAddress: string;
+    PostalCode: string;
+    Status: number;
+    VATCode: number;
+    WebSite: string;
+}
+
 interface ReduxStoreProps {
     token: string;
     locale: string;
     CompanyID: number;
-    signOut: any;
-    /* From state */
-    loading: boolean;
+    signOut: () => any;
+    sendActivationCode: (Token: any, UserID: any) => any;
 }
-
-export class UserList extends Component<ReduxStoreProps> {
+export class CompanyList extends Component<ReduxStoreProps> {
     /* MAKE THIS FROM API CALL */
-    state: UserListStateProps = {
+    state: CompanyStateProps = {
         users: [],
         userProfileVisible: false,
         selectedUser: null,
@@ -77,7 +81,7 @@ export class UserList extends Component<ReduxStoreProps> {
     componentDidMount() {
         this.setState({ loading: true });
         axios
-            .get(`${API_IS_APP_SERVICE}/GetUsersInfo`, {
+            .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
                 params: {
                     Token: this.props.token,
                 },
@@ -86,8 +90,8 @@ export class UserList extends Component<ReduxStoreProps> {
                 this.setState({ loading: false });
                 console.log(res.data);
                 if (res.data.ErrorCode === 0) {
-                    this.setState({ users: [...res.data.Users] });
-                } else if (res.data.ErrorCode === 118) {
+                    this.setState({ users: [...res.data.CompanyList] });
+                } else {
                     message.loading(
                         "Time has expired. Redirecting you to login page...",
                         2
@@ -106,7 +110,7 @@ export class UserList extends Component<ReduxStoreProps> {
         message.success({ content: `Deleted user ${userId}`, duration: 2 });
     };
 
-    showUserProfile = (userInfo: UsersProps) => {
+    showUserProfile = (userInfo: CompanyProps) => {
         this.setState({
             userProfileVisible: true,
             selectedUser: userInfo,
@@ -119,7 +123,7 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
 
-    showEditModal = (userInfo: UsersProps) => {
+    showEditModal = (userInfo: CompanyProps) => {
         this.setState({
             editModalVisible: true,
             selectedUser: userInfo,
@@ -144,40 +148,19 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
 
-    showConfirmRegistrationModal = (UserID: number) => {
-        const Token = this.props.token;
-        Modal.confirm({
-            title: "User registration confirmation",
-            content: "Press OK if you want us to send a new activation message",
-            onOk() {
-                axios
-                    .get(`${API_IS_AUTH_SERVICE}/SendActivationCode`, {
-                        params: {
-                            Token,
-                            UserID,
-                        },
-                    })
-                    .then((res) => {
-                        console.log(res.data);
-                    });
-            },
-            onCancel() {},
-        });
-    };
-
     render() {
         const { users, userProfileVisible, selectedUser } = this.state;
 
-        const { token } = this.props;
-        const tableColumns: ColumnsType<UsersProps> = [
+        const tableColumns: ColumnsType<CompanyProps> = [
+            /* FIXME: Fix the CompanyList Array Object pathnames */
             {
-                title: "User",
-                dataIndex: "name",
-                render: (_, record: UsersProps) => (
+                title: "Company",
+                dataIndex: "",
+                render: (_, record: CompanyProps) => (
                     <div className="d-flex">
                         <AvatarStatus
-                            src={record.Photo}
-                            name={`${record.FirstName} ${record.LastName}`}
+                            src={record.Logo}
+                            name={record.JuridicalName}
                             subTitle={record.Email}
                             icon={<UserOutlined />}
                         />
@@ -185,37 +168,31 @@ export class UserList extends Component<ReduxStoreProps> {
                 ),
                 sorter: {
                     compare: (a: any, b: any) => {
-                        a = a.FirstName.toLowerCase();
-                        b = b.FirstName.toLowerCase();
+                        a = a.JuridicalName.toLowerCase();
+                        b = b.JuridicalName.toLowerCase();
                         return a > b ? -1 : b > a ? 1 : 0;
                     },
                 },
             },
             {
-                title: "Role",
-                render: () => "User",
-                /*         dataIndex: "role",
-        sorter: {
-          compare: (a, b) => a.role.length - b.role.length,
-        }, */
-            },
-            {
-                title: "Last online",
-                dataIndex: "LastAuthorize",
-                render: (LastAuthorize) => (
-                    <span>
-                        {LastAuthorize
-                            ? moment
-                                  .unix(LastAuthorize.slice(6, 16))
-                                  .format("DD/MM/YYYY")
-                            : " "}{" "}
-                    </span>
+                title: "IDNO",
+                dataIndex: "",
+                render: (_, record) => (
+                    <Tag className="text-capitalize">{record.IDNO}</Tag>
                 ),
             },
             {
+                title: "Address",
+                dataIndex: "",
+                render: (_, record) => (
+                    <p className="text-capitalize">{record.JuridicalAddress}</p>
+                ),
+            },
+
+            {
                 title: "Status",
                 dataIndex: "Status",
-                render: (Status) => (
+                render: (Status, record) => (
                     <Tag
                         className="text-capitalize"
                         color={
@@ -225,19 +202,19 @@ export class UserList extends Component<ReduxStoreProps> {
                                 ? "red"
                                 : "orange"
                         }
-                        // onClick={() =>
-                        //     Status === 0 &&
-                        //     Modal.confirm({
-                        //         title: "Send a new activation code?",
-                        //         content: "Hello",
-                        //     })
-                        // }
+                        onClick={() =>
+                            Status === 0 &&
+                            this.props.sendActivationCode(
+                                this.props.token,
+                                record.ID
+                            )
+                        }
                     >
                         {Status === 1
                             ? "Active"
                             : Status === 2
                             ? "Disabled"
-                            : "Not Activated"}
+                            : " Re-send activation code"}
                     </Tag>
                 ),
                 sorter: {
@@ -247,15 +224,22 @@ export class UserList extends Component<ReduxStoreProps> {
             {
                 title: () => (
                     <div className="text-right">
-                        <Button onClick={this.showNewUserModal} type="primary">
-                            Register user
+                        <Button
+                            /* Turn off disabled when register company api comes */
+                            disabled
+                            onClick={this.showNewUserModal}
+                            type="primary"
+                        >
+                            Register company
                         </Button>
                     </div>
                 ),
                 dataIndex: "actions",
-                render: (_, elm: UsersProps) => (
+                render: (_, elm: CompanyProps) => (
                     <div className="text-right">
-                        {elm.Status === 0 && (
+                        {/* Uncomment above if you want the user to send
+                        activation code by icon */}
+                        {/* {elm.Status === 0 && (
                             <Tooltip title="Activate">
                                 <Button
                                     icon={<UserAddOutlined />}
@@ -268,7 +252,7 @@ export class UserList extends Component<ReduxStoreProps> {
                                     }
                                 />
                             </Tooltip>
-                        )}
+                        )} */}
                         <Tooltip title="Edit">
                             <Button
                                 type="dashed"
@@ -308,10 +292,9 @@ export class UserList extends Component<ReduxStoreProps> {
                 <Table
                     loading={this.state.loading}
                     columns={tableColumns}
-                    dataSource={this.state.users}
+                    dataSource={users}
                     rowKey="ID"
                     style={{ position: "relative" }}
-                    /* TODO: Copy locale above into Client Portal App as well */
                     locale={{
                         emptyText: !this["state"].loading && (
                             <PlusOutlined
@@ -331,14 +314,14 @@ export class UserList extends Component<ReduxStoreProps> {
                         this.closeUserViewProfile();
                     }}
                 />
-                <UserModalAdd
+                <CompanyModalAdd
                     CompanyID={this.props.CompanyID}
                     onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
                     token={this.props.token}
                 />
-                <UserModalEdit
+                <CompanyModalEdit
                     signOut={signOut}
                     locale={this.props.locale}
                     data={selectedUser}
@@ -348,20 +331,21 @@ export class UserList extends Component<ReduxStoreProps> {
                     }}
                     token={this.props.token}
                 />
-                {/* {this.state.users.length > 0 && !this.state.loading ? (
-                    <Tooltip title="Register user">
+                {/* {this.state.users.length > 0 && !this.state.loading && (
+                    <Tooltip title="Register company">
                         <PlusOutlined
                             onClick={this.showNewUserModal}
+                            className="add_company"
                             style={{
                                 position: "absolute",
-                                fontSize: "36px",
                                 bottom: "15px",
                                 left: "15px",
                                 cursor: "pointer",
+                                fontSize: "36px",
                             }}
                         />
                     </Tooltip>
-                ) : null} */}
+                )} */}
                 {/* Continue coding here... */}
                 {/* Choose between Cascadia Code and MonoLisa fonts for VSCode */}
             </Card>
@@ -369,15 +353,14 @@ export class UserList extends Component<ReduxStoreProps> {
     }
 }
 
-const mapDispatchToProps = {
-    signOut,
-};
-
 const mapStateToProps = ({ auth, theme, account }) => {
-    const { token, loading } = auth;
+    const { token } = auth;
     const { CompanyID } = account;
     const { locale } = theme;
-    return { token, locale, CompanyID, loading };
+    return { token, locale, CompanyID };
 };
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+const mapDispatchToProps = {
+    signOut,
+    sendActivationCode,
+};
+export default connect(mapStateToProps, mapDispatchToProps)(CompanyList);

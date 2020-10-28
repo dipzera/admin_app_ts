@@ -58,7 +58,7 @@
   "sidenav.payment.invoices": "Счета",
 
 
-
+  "sidenav.other": "Другие",
   "sidenav.audit": "Аудит",
   "sidenav.audit.All": "Все",
   "sidenav.audit.loginHistory": "История аутентификации",
@@ -85,6 +85,10 @@
 
 
 
+
+
+
+    "account.sidenav.EditCompany": " Редактирование Кампании",
   "account.sidenav.EditProfile": "Редактирование Профиля",
   "account.sidenav.ChangePassword": "Сменить Пароль",
   "account.sidenav.Billing": "Оплата",
