@@ -24,6 +24,7 @@
   "auth.JuridicalName": "Denumire juridică",
   "auth.VATCode": "Cod TVA",
   "auth.IDNO": "IDNO",
+    "auth.IDNOValidation": "IDNO trebuie sa contina 13 cifre",
   "auth.NotVATPayer": "Neplătitor de TVA",
   "auth.VATPayer": "Plătitor de TVA",
   "auth.ConfirmPassword": "Confirmă parola",

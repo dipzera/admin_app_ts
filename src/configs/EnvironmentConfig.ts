@@ -1,26 +1,34 @@
+export interface APIProps {
+    API_APP_URL: string;
+    API_AUTH_URL: string;
+}
 const dev = {
-  API_ENDPOINT_URL: "https://jsonplaceholder.typicode.com",
+    API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
+    API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
 };
 
 const prod = {
-  API_ENDPOINT_URL: "https://api.prod.com",
+    /* TODO: complete this when prod ready */
+    API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
+    API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
 };
 
 const test = {
-  API_ENDPOINT_URL: "https://api.test.com",
+    API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
+    API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
 };
 
-const getEnv = () => {
-  switch (process.env.NODE_ENV) {
-    case "development":
-      return dev;
-    case "production":
-      return prod;
-    case "test":
-      return test;
-    default:
-      break;
-  }
+const getEnv = (): APIProps | undefined => {
+    switch (process.env.NODE_ENV) {
+        case "development":
+            return dev;
+        case "production":
+            return prod;
+        case "test":
+            return test;
+        default:
+            break;
+    }
 };
 
 export const env = getEnv();

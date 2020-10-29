@@ -141,7 +141,6 @@ export const authorizeUser = (userData) => {
             })
             .then((response) => {
                 dispatch(hideLoading());
-                console.log(response.data);
                 const { ErrorCode, ErrorMessage, Token } = response.data;
                 if (ErrorCode === 0) {
                     dispatch(authenticated(Token));

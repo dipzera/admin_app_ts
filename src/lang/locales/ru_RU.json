@@ -26,6 +26,7 @@
   "auth.VATCode": "Код НДС",
 
   "auth.IDNO": "Идентификационный номер",
+    "auth.IDNOValidation": "IDNO должно содержать 13 цифр",
   "auth.NotVATPayer": "Неплательщик НДС",
   "auth.VATPayer": "Плательщик НДС",
   "auth.ConfirmPassword": "Подтверждение пароля",

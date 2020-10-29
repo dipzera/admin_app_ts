@@ -24,6 +24,7 @@ export const getProfileInfo = (Token) => {
             })
             .then((res) => {
                 const { User, ErrorCode, ErrorMessage } = res.data;
+                console.log(res.data);
                 if (ErrorCode === 0) {
                     dispatch(updateSettings(User));
                     if (User.UiLanguage === 0) {
@@ -33,7 +34,7 @@ export const getProfileInfo = (Token) => {
                     } else {
                         dispatch(onLocaleChange("en"));
                     }
-                } else if (ErrorCode === 118) {
+                } else {
                     message.loading(
                         "Time has expired. Redirecting you to login page...",
                         1.5

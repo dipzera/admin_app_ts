@@ -7,13 +7,33 @@ import AppLocale from "../lang";
 import { IntlProvider } from "react-intl";
 import { ConfigProvider } from "antd";
 import { signOut } from "../redux/actions/Auth";
+import { APP_PREFIX_PATH, AUTH_PREFIX_PATH } from "../configs/AppConfig";
+function RouteInterceptor({ children, isAuthenticated, ...rest }) {
+    return (
+        <Route
+            {...rest}
+            render={({ location }) =>
+                isAuthenticated ? (
+                    children
+                ) : (
+                    <Redirect
+                        to={{
+                            pathname: AUTH_PREFIX_PATH,
+                            state: { from: location },
+                        }}
+                    />
+                )
+            }
+        />
+    );
+}
 
 export const Views = (props) => {
-    const { locale, signOut, location, match, history } = props;
+    const { locale, signOut, location, token } = props;
     const currentAppLocale = AppLocale[locale];
     useEffect(() => {
         localStorage.getItem("state") || signOut();
-    });
+    }, [localStorage.getItem("state")]);
     return (
         <IntlProvider
             locale={currentAppLocale.locale}
@@ -22,14 +42,17 @@ export const Views = (props) => {
             <ConfigProvider locale={currentAppLocale.antd}>
                 <Switch>
                     <Route exact path="/">
-                        <Redirect to={locale ? "/app" : "/auth/login"} />
+                        <Redirect to={APP_PREFIX_PATH} />
                     </Route>
-                    <Route path="/auth">
+                    <Route path={AUTH_PREFIX_PATH}>
                         <AuthLayout />
                     </Route>
-                    <Route path="/app">
-                        <AppLayout />
-                    </Route>
+                    <RouteInterceptor
+                        path={APP_PREFIX_PATH}
+                        isAuthenticated={token}
+                    >
+                        <AppLayout location={location} />
+                    </RouteInterceptor>
                 </Switch>
             </ConfigProvider>
         </IntlProvider>

@@ -21,13 +21,7 @@ import Utils from "../../utils";
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
-export const AppLayout = ({
-    navCollapsed,
-    navType,
-    location,
-    history,
-    match,
-}) => {
+export const AppLayout = ({ navCollapsed, navType, location }) => {
     const currentRouteInfo = Utils.getRouteInfo(
         navigationConfig,
         location.pathname
@@ -45,7 +39,7 @@ export const AppLayout = ({
     };
     return (
         <Layout>
-            <HeaderNav isMobile={isMobile} history={history} />
+            <HeaderNav isMobile={isMobile} />
             {isNavTop && !isMobile ? (
                 <TopNav routeInfo={currentRouteInfo} />
             ) : null}
@@ -67,9 +61,7 @@ export const AppLayout = ({
                             title={currentRouteInfo?.title}
                         />
                         <Content>
-                            <Switch>
-                                <AppViews match={match} history={history}/>
-                            </Switch>
+                            <AppViews />
                         </Content>
                     </div>
                     <Footer />
@@ -85,4 +77,4 @@ const mapStateToProps = ({ theme }) => {
     return { navCollapsed, navType, locale };
 };
 
-export default withRouter(connect(mapStateToProps)(React.memo(AppLayout)));
+export default connect(mapStateToProps)(React.memo(AppLayout));

@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
 import axios from "axios";
+import MaskedInput from "antd-mask-input";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import { signOut } from "../../../redux/actions/Auth";
 import {
@@ -26,7 +27,9 @@ import {
     ERROR,
     EXPIRE_TIME,
     LOADING,
+    UPDATING,
     UPLOADED,
+    UPLOADING,
 } from "../../../constants/Messages";
 const publicIp = require("react-public-ip");
 
@@ -45,7 +48,7 @@ function beforeUpload(file) {
 class CompanyForm extends Component<{ [key: string]: any }> {
     avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
 
-    state = {} as { [key: string]: any };
+    state = { Company: {} } as { [key: string]: any };
     formRef = React.createRef() as any;
 
     componentDidMount() {
@@ -59,7 +62,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 const { ErrorCode, ErrorMessage, Company } = res.data;
                 if (ErrorCode === 0) {
                     console.log(Company);
-                    this.setState(Company);
+                    this.setState({ Company: { ...Company } });
                     this.formRef["current"].setFieldsValue(Company);
                 } else if (res.data.ErrorCode === 118) {
                     message.loading(
@@ -84,30 +87,27 @@ class CompanyForm extends Component<{ [key: string]: any }> {
     render() {
         let { updateSettings, removeAvatar, locale, signOut } = this.props;
 
+        const onChangeMask = (e) => {
+            this.setState({ [e.target.name]: e.target.value });
+        };
         const currentAppLocale = AppLocale[locale];
         const onFinish = async (values) => {
             const key = "updatable";
             message.loading({
-                content: (
-                    <IntlProvider
-                        locale={currentAppLocale.locale}
-                        messages={currentAppLocale.messages}
-                    >
-                        <IntlMessage id={"message.AccountSettings.Updating"} />
-                    </IntlProvider>
-                ),
+                content: UPDATING,
                 key,
+                duration: 1,
             });
             setTimeout(async () => {
                 console.log({
-                    Company: { ...this.state, ...values },
+                    Company: { ...this.state.Company, ...values },
                     Token: this.props.token,
                     info: await publicIp.v4(),
                 });
                 axios
                     .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
                         Company: {
-                            ...this.state,
+                            ...this.state.Company,
                             ...values,
                         },
                         Token: this.props.token,
@@ -136,7 +136,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
         const onUploadAavater = (info) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
-                message.loading(LOADING, 1.5);
+                message.loading({ content: UPLOADING, key });
                 return;
             }
             if (info.file.status === "done") {
@@ -144,7 +144,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     axios
                         .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
                             Company: {
-                                ...this.state,
+                                ...this.state.Company,
                                 Logo: imageUrl,
                             },
                             Token: this.props.token,
@@ -153,7 +153,12 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                         .then((res) => {
                             console.log(res.data);
                             if (res.data.ErrorCode === 0) {
-                                this.setState({ Logo: imageUrl });
+                                this.setState({
+                                    Company: {
+                                        ...this.state.Company,
+                                        Logo: imageUrl,
+                                    },
+                                });
                             } else if (res.data.ErrorCode === 118) {
                                 message.loading(EXPIRE_TIME, 1.5);
                                 setTimeout(() => {
@@ -162,9 +167,9 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                             }
                         });
                 });
-                message.success(UPLOADED, 2);
+                message.success({ content: UPLOADED, key });
             } else {
-                message.error(ERROR, 2);
+                message.error({ content: ERROR, key });
             }
         };
 
@@ -172,7 +177,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             axios
                 .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
                     Company: {
-                        ...this.state,
+                        ...this.state.Company,
                         Logo: "",
                     },
                     Token: this.props.token,
@@ -181,7 +186,9 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 .then((res) => {
                     console.log(res.data);
                     if (res.data.ErrorCode === 0) {
-                        this.setState({ Logo: "" });
+                        this.setState({
+                            Company: { ...this.state.Company, Logo: "" },
+                        });
                     } else if (res.data.ErrorCode === 118) {
                         message.loading(EXPIRE_TIME, 1.5);
                         setTimeout(() => {
@@ -200,7 +207,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 >
                     <Avatar
                         size={90}
-                        src={this.state.Logo}
+                        src={this.state.Company.Logo}
                         icon={<UserOutlined />}
                     />
                     <div className="ml-md-3 mt-md-0 mt-3">
@@ -226,7 +233,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                         ref={this.formRef}
                         name="basicInformation"
                         layout="vertical"
-                        initialValues={this.state}
+                        initialValues={this.state.Company}
                         onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
                     >
@@ -247,9 +254,18 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                                     message:
                                                         "Please input your BIC!",
                                                 },
+                                                {
+                                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                                    message:
+                                                        "Invalid BIC format",
+                                                },
                                             ]}
                                         >
-                                            <Input />
+                                            <MaskedInput
+                                                mask="AAAA-AA-11111"
+                                                name="BIC"
+                                                onChange={onChangeMask}
+                                            />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>
@@ -327,8 +343,13 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                                 },
                                                 {
                                                     pattern: /^(\d{13})?$/,
-                                                    message:
-                                                        "Invalid IDNO format!",
+                                                    message: (
+                                                        <IntlMessage
+                                                            id={
+                                                                "auth.IDNOValidation"
+                                                            }
+                                                        />
+                                                    ),
                                                 },
                                             ]}
                                         >
@@ -356,7 +377,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                             <Input />
                                         </Form.Item>
                                     </Col>
-                                    <Col xs={24} sm={24} md={24}>
+                                    <Col xs={24} sm={24} md={12}>
                                         <Form.Item
                                             label={
                                                 <IntlMessage
@@ -375,6 +396,35 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                             ]}
                                         >
                                             <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24} sm={24} md={12}>
+                                        <Form.Item
+                                            label={
+                                                <IntlMessage
+                                                    id={
+                                                        "account.company.PhoneNumber"
+                                                    }
+                                                />
+                                            }
+                                            name="PhoneNumber"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message:
+                                                        "Please input your phone number!",
+                                                },
+                                                {
+                                                    pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
+                                                    message:
+                                                        "Invalid phone format!",
+                                                },
+                                            ]}
+                                        >
+                                            <MaskedInput
+                                                mask="+(111) 111 111 11"
+                                                onChange={onChangeMask}
+                                            />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>
@@ -418,6 +468,28 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                                     pattern: /^[0-9]+$/,
                                                     message:
                                                         "Invalid VATCode format",
+                                                },
+                                            ]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24} sm={24} md={24}>
+                                        <Form.Item
+                                            label={
+                                                <IntlMessage
+                                                    id={
+                                                        "account.EditProfile.Email"
+                                                    }
+                                                />
+                                            }
+                                            name="Email"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    type: "email",
+                                                    message:
+                                                        "Please enter a valid email!",
                                                 },
                                             ]}
                                         >

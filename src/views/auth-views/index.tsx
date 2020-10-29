@@ -1,32 +1,31 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../../components/shared-components/Loading";
-import { signOut } from "../../redux/actions/Auth";
+import { AUTH_PREFIX_PATH } from "../../configs/AppConfig";
 
-export const AuthViews = ({ match }) => {
+export const AuthViews = () => {
     return (
         <Suspense fallback={<Loading cover="page" />}>
             <Switch>
                 <Route
-                    path={`${match.url}/login`}
+                    path={`${AUTH_PREFIX_PATH}/login`}
                     component={lazy(() => import(`./authentication/login`))}
                 />
                 <Route
-                    path={`${match.url}/forgot-password`}
+                    path={`${AUTH_PREFIX_PATH}/forgot-password`}
                     component={lazy(
                         () => import(`./authentication/forgot-password`)
                     )}
                 />
                 <Route
-                    path={`${match.url}/404`}
+                    path={`${AUTH_PREFIX_PATH}/404`}
                     component={lazy(() => import(`./errors/error-page-1`))}
                 />
 
-                {/*<Route*/}
-                {/*  path={`${match.url}/error-2`}*/}
-                {/*  component={lazy(() => import(`./errors/error-page-2`))}*/}
-                {/*/>*/}
-                <Redirect from={`${match.url}`} to={`${match.url}/login`} />
+                <Redirect
+                    from={`${AUTH_PREFIX_PATH}`}
+                    to={`${AUTH_PREFIX_PATH}/login`}
+                />
             </Switch>
         </Suspense>
     );

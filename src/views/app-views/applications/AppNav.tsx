@@ -30,11 +30,15 @@ const AppStoreNav = () => {
         Axios.get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
             params: { Token },
         }).then((res) => {
-            console.log(res.data);
             const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
             if (ErrorCode === 0) {
                 setApps(MarketAppList);
             } else if (ErrorCode === 118) {
+                message.loading(EXPIRE_TIME, 1.5);
+                setTimeout(() => {
+                    dispatch(signOut());
+                }, 1500);
+            } else if (ErrorCode === -1) {
                 message.loading(EXPIRE_TIME, 1.5);
                 setTimeout(() => {
                     dispatch(signOut());

@@ -4,6 +4,7 @@ import {
     EyeOutlined,
     DeleteOutlined,
     EditOutlined,
+    KeyOutlined,
     UserAddOutlined,
     CheckOutlined,
     PlusOutlined,
@@ -87,7 +88,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 console.log(res.data);
                 if (res.data.ErrorCode === 0) {
                     this.setState({ users: [...res.data.Users] });
-                } else if (res.data.ErrorCode === 118) {
+                } else {
                     message.loading(
                         "Time has expired. Redirecting you to login page...",
                         2
@@ -167,8 +168,8 @@ export class UserList extends Component<ReduxStoreProps> {
 
     render() {
         const { users, userProfileVisible, selectedUser } = this.state;
-
         const { token } = this.props;
+
         const tableColumns: ColumnsType<UsersProps> = [
             {
                 title: "User",
@@ -258,7 +259,7 @@ export class UserList extends Component<ReduxStoreProps> {
                         {elm.Status === 0 && (
                             <Tooltip title="Activate">
                                 <Button
-                                    icon={<UserAddOutlined />}
+                                    icon={<KeyOutlined />}
                                     className="mr-2"
                                     size="small"
                                     onClick={() =>

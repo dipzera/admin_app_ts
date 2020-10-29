@@ -19,6 +19,7 @@ import { connect } from "react-redux";
 import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
 import axios from "axios";
+import store from "../../../redux/store";
 const publicIp = require("react-public-ip");
 
 interface EditProfileProps {
