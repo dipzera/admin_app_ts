@@ -1,0 +1,130 @@
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
+import axios from "axios";
+import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
+import Utils from "../../../utils";
+import { DONE } from "../../../constants/Messages";
+import { ROW_GUTTER } from "../../../constants/ThemeConstant";
+const EditAppForm = ({ apps, visible, close, signOut }) => {
+    const [form] = Form.useForm();
+
+    /*  Destroy initialValues of form after Modal is closed */
+    useEffect(() => {
+        if (!visible) return;
+        form.resetFields();
+    }, [visible, form]);
+
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const Token = useSelector((state) => state["auth"].token);
+    const onFinish = (values) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            console.log({ App: { ...apps, ...values }, Token });
+            setIsLoading(false);
+            axios
+                .post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
+                    App: { ...apps, ...values },
+                    Token,
+                })
+                .then((res) => {
+                    console.log(res.data);
+
+                    if (res.data.ErrorCode === 0) {
+                        message.success(DONE, 1.5);
+                        window.location.reload();
+                    } else if (res.data.ErrorCode === 118) {
+                        Utils.redirect(signOut);
+                    }
+                });
+        }, 1000);
+    };
+
+    const onFinishFailed = () => {};
+
+    const onOk = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setIsLoading(false);
+            form.validateFields()
+                .then((values) => {
+                    close();
+                    onFinish(values);
+                })
+                .catch((info) => {
+                    console.log("Validate Failed:", info);
+                });
+        }, 1000);
+    };
+    return (
+        <Modal
+            destroyOnClose
+            title={"Edit app"}
+            visible={visible}
+            onCancel={close}
+            confirmLoading={isLoading}
+            onOk={onOk}
+        >
+            <Form
+                form={form}
+                name="basicInformation"
+                layout="vertical"
+                initialValues={apps}
+            >
+                <Row gutter={ROW_GUTTER}>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item
+                            label={"App Name"}
+                            name="Name"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input app name!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item
+                            label={"Short description"}
+                            name="ShortDescription"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input short description!",
+                                },
+                            ]}
+                        >
+                            <Input.TextArea style={{ resize: "none" }} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item
+                            label={"Long Description"}
+                            name="LongDescription"
+                            rules={[
+                                {
+                                    required: false,
+                                },
+                            ]}
+                        >
+                            <Input.TextArea style={{ resize: "none" }} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={"Activate app"}
+                            name="IsActive"
+                            valuePropName={"checked"}
+                        >
+                            <Switch />
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </Form>
+        </Modal>
+    );
+};
+export default EditAppForm;

@@ -3,6 +3,7 @@ import { Card, Table, Tag, Tooltip, message, Button, Modal } from "antd";
 import {
     EyeOutlined,
     DeleteOutlined,
+    KeyOutlined,
     EditOutlined,
     UserAddOutlined,
     CheckOutlined,
@@ -26,6 +27,7 @@ import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
 import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
+import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
 
 interface CompanyStateProps {
     users: CompanyProps[];
@@ -147,6 +149,27 @@ export class CompanyList extends Component<ReduxStoreProps> {
             newUserModalVisible: false,
         });
     };
+    showConfirmRegistrationModal = (UserID: number) => {
+        const Token = this.props.token;
+        Modal.confirm({
+            title: "User registration confirmation",
+            content: "Press OK if you want us to send a new activation message",
+            onOk() {
+                axios
+                    .get(`${API_IS_AUTH_SERVICE}/SendActivationCode`, {
+                        params: {
+                            Token,
+                            UserID,
+                        },
+                    })
+                    .then((res) => {
+                        message.success(REGISTRATION_SUCCESS, 1.5);
+                        console.log(res.data);
+                    });
+            },
+            onCancel() {},
+        });
+    };
 
     render() {
         const { users, userProfileVisible, selectedUser } = this.state;
@@ -202,19 +225,12 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                 ? "red"
                                 : "orange"
                         }
-                        onClick={() =>
-                            Status === 0 &&
-                            this.props.sendActivationCode(
-                                this.props.token,
-                                record.ID
-                            )
-                        }
                     >
                         {Status === 1
                             ? "Active"
                             : Status === 2
                             ? "Disabled"
-                            : " Re-send activation code"}
+                            : "Not Activated"}
                     </Tag>
                 ),
                 sorter: {
@@ -237,12 +253,10 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 dataIndex: "actions",
                 render: (_, elm: CompanyProps) => (
                     <div className="text-right">
-                        {/* Uncomment above if you want the user to send
-                        activation code by icon */}
-                        {/* {elm.Status === 0 && (
+                        {elm.Status === 0 && (
                             <Tooltip title="Activate">
                                 <Button
-                                    icon={<UserAddOutlined />}
+                                    icon={<KeyOutlined />}
                                     className="mr-2"
                                     size="small"
                                     onClick={() =>
@@ -252,7 +266,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                     }
                                 />
                             </Tooltip>
-                        )} */}
+                        )}
                         <Tooltip title="Edit">
                             <Button
                                 type="dashed"
@@ -347,7 +361,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     </Tooltip>
                 )} */}
                 {/* Continue coding here... */}
-                {/* Choose between Cascadia Code and MonoLisa fonts for VSCode */}
             </Card>
         );
     }

@@ -40,6 +40,7 @@
 	"sidenav.home": "Home",
 	"sidenav.dashboard": "Dashboard",
 
+    "sidenav.applications": "Applications",
 	"sidenav.catalog": "Catalog",
 	"sidenav.catalog.companies": "Companies",
 	"sidenav.catalog.group": "Groups",

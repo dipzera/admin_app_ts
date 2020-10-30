@@ -1,5 +1,4 @@
 import React, { lazy, Suspense, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../../components/shared-components/Loading";
 import { APP_PREFIX_PATH } from "../../configs/AppConfig";
@@ -12,6 +11,10 @@ export const AppViews = () => {
                     path={`${APP_PREFIX_PATH}/dashboard`}
                     component={lazy(() => import(`./dashboard`))}
                 />
+                <Route
+                    path={`${APP_PREFIX_PATH}/applications`}
+                    component={lazy(() => import(`./applications`))}
+                ></Route>
                 <Route
                     path={`${APP_PREFIX_PATH}/catalog/companies`}
                     component={lazy(() => import(`./catalog/company`))}

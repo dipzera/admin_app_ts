@@ -28,6 +28,8 @@ import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
 import { useApiRequest } from "../../../../api";
+import Utils from "../../../../utils";
+import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
 
 export interface UsersProps {
     CompanyID: number;
@@ -89,13 +91,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 if (res.data.ErrorCode === 0) {
                     this.setState({ users: [...res.data.Users] });
                 } else {
-                    message.loading(
-                        "Time has expired. Redirecting you to login page...",
-                        2
-                    );
-                    setTimeout(() => {
-                        this.props.signOut();
-                    }, 2000);
+                    Utils.redirect(this.props.signOut);
                 }
             });
     }
@@ -159,6 +155,7 @@ export class UserList extends Component<ReduxStoreProps> {
                         },
                     })
                     .then((res) => {
+                        message.success(REGISTRATION_SUCCESS, 1.5);
                         console.log(res.data);
                     });
             },
@@ -226,13 +223,6 @@ export class UserList extends Component<ReduxStoreProps> {
                                 ? "red"
                                 : "orange"
                         }
-                        // onClick={() =>
-                        //     Status === 0 &&
-                        //     Modal.confirm({
-                        //         title: "Send a new activation code?",
-                        //         content: "Hello",
-                        //     })
-                        // }
                     >
                         {Status === 1
                             ? "Active"
@@ -349,21 +339,6 @@ export class UserList extends Component<ReduxStoreProps> {
                     }}
                     token={this.props.token}
                 />
-                {/* {this.state.users.length > 0 && !this.state.loading ? (
-                    <Tooltip title="Register user">
-                        <PlusOutlined
-                            onClick={this.showNewUserModal}
-                            style={{
-                                position: "absolute",
-                                fontSize: "36px",
-                                bottom: "15px",
-                                left: "15px",
-                                cursor: "pointer",
-                            }}
-                        />
-                    </Tooltip>
-                ) : null} */}
-                {/* Continue coding here... */}
                 {/* Choose between Cascadia Code and MonoLisa fonts for VSCode */}
             </Card>
         );

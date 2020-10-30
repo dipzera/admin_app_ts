@@ -208,11 +208,10 @@ class Utils {
         return jsEncrypt.encrypt(input);
     }
 
-    /* Fix above. */
     static redirect(signOutFunc) {
         return new Promise((resolve) => {
             message.loading(EXPIRE_TIME, 1.5);
-            setTimeout(() => resolve(signOutFunc), 1500);
+            setTimeout(() => resolve(signOutFunc()), 1500);
         });
     }
 }

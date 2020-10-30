@@ -44,7 +44,7 @@
 
   "sidenav.home": "Главная",
   "sidenav.dashboard": "Панель",
-
+    "sidenav.applications": "Приложения",
   "sidenav.catalog": "Каталог",
   "sidenav.catalog.companies": "Компании",
   "sidenav.catalog.group": "Группы",

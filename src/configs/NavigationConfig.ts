@@ -1,5 +1,6 @@
 import {
     DashboardOutlined,
+    AppstoreOutlined,
     UserOutlined,
     AuditOutlined,
     ApartmentOutlined,
@@ -20,6 +21,14 @@ const dashBoardNavTree = [
         title: "sidenav.dashboard",
         icon: DashboardOutlined,
         breadcrumb: true,
+        submenu: [],
+    },
+    {
+        key: "applications",
+        path: "/app/applications",
+        title: "sidenav.applications",
+        icon: AppstoreOutlined,
+        breadcrumb: false,
         submenu: [],
     },
     {
