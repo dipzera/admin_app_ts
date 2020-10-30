@@ -12,19 +12,6 @@ import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 const Applications = ({ getMarketApps, signOut, Token, apps }) => {
     useEffect(() => {
         getMarketApps(Token);
-        // axios
-        //     .get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
-        //         params: { Token },
-        //     })
-        //     .then((res) => {
-        //         console.log(res.data);
-        //         const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
-        //         if (ErrorCode === 0) {
-        //             setApps(MarketAppList);
-        //         } else if (ErrorCode === 118) {
-        //             Utils.redirect(signOut);
-        //         }
-        //     });
     }, []);
     return (
         <>

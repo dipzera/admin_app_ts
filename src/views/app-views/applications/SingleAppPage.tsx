@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
+import { connect } from "react-redux";
 
-const SingleAppPage = ({ match, location }) => {
+const SingleAppPage = ({ match, apps }) => {
     const { appId } = match.params;
-    const appData = location.props;
-
+    const app = apps.find((application) => application.ID === appId);
     useEffect(() => {
-        console.log(appData);
-        console.log(appId);
+        console.log(app);
     }, []);
     return <div>You have selected App with the ID</div>;
 };
-export default SingleAppPage;
+const mapStateToProps = ({ apps }) => apps;
+export default connect(mapStateToProps, null)(SingleAppPage);

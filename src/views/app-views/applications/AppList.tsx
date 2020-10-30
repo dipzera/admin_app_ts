@@ -43,9 +43,6 @@ const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
                     <Link
                         to={{
                             pathname: `${APP_PREFIX_PATH}/applications/${data.ID}`,
-                            props: {
-                                ...data,
-                            },
                         }}
                     >
                         <EyeOutlined />
