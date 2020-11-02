@@ -13,6 +13,7 @@ export const AppViews = () => {
                 />
                 <Route
                     path={`${APP_PREFIX_PATH}/applications`}
+                    exact
                     component={lazy(() => import(`./applications`))}
                 />
                 <Route

@@ -32,19 +32,12 @@ import EditAppForm from "./EditAppForm";
 import { Link, NavLink, Route } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 
-const VIEW_LIST = "LIST";
-const VIEW_GRID = "GRID";
-
 const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
     <EllipsisDropdown
         menu={
             <Menu>
                 <Menu.Item key="1">
-                    <Link
-                        to={{
-                            pathname: `${APP_PREFIX_PATH}/applications/${data.ID}`,
-                        }}
-                    >
+                    <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
                         <EyeOutlined />
                         <span> View</span>
                     </Link>
@@ -63,60 +56,45 @@ const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
     />
 );
 
-const ItemInfo = ({ IsActive, ID }) => (
-    <Flex alignItems="center">
-        <div className="mr-3">
-            <Tooltip title="Application ID">
-                <span className="ml-1 text-muted">{ID}</span>
-            </Tooltip>
-        </div>
-        <div className="mr-3">
-            <Tooltip title="">
-                <span className="ml-1 text-muted">/</span>
-            </Tooltip>
-        </div>
-        <div>
-            <Tag className="text-capitalize" color={IsActive ? "cyan" : "red"}>
-                {IsActive ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
-                <span className="ml-2 font-weight-semibold">
-                    {IsActive ? "Active" : "Not Active"}
-                </span>
-            </Tag>
-        </div>
-    </Flex>
-);
-
-const ListItem = ({ data, removeId, showEditAppModal }) => (
-    <div className="bg-white rounded p-3 mb-3 border">
-        <Row align="middle">
-            <Col xs={24} sm={24} md={8}>
-                <ItemHeader
-                    avatar={data.Photo}
-                    name={data.Name}
-                    shortDescription={data.ShortDescription}
-                />
-            </Col>
-            <Col xs={24} sm={24} md={6}>
-                <ItemInfo ID={data.ID} IsActive={data.IsActive} />
-            </Col>
-            <Col xs={24} sm={24} md={2}>
-                <div className="text-right">
-                    <ItemAction
-                        data={data}
-                        showEditAppModal={showEditAppModal}
-                        id={data.ID}
-                        removeId={removeId}
-                    />
-                </div>
-            </Col>
-        </Row>
-    </div>
+const ItemInfo = ({ IsActive, ID, packages }) => (
+    <>
+        {/* <h3>Packages</h3>
+        <Row gutter={16}>
+            {packages.map((pckg) => (
+                <Col key={pckg.ID} xl={12} xxl={12} md={12} lg={12}>
+                    <Card hoverable>
+                        <h4>{pckg.Name}</h4>
+                        <div>
+                            From {pckg.MinValue} to {pckg.MaxValue} for{" "}
+                            {pckg.Price}
+                        </div>
+                        <div className="text-center">
+                            <Tag
+                                className="text-capitalize mt-3"
+                                color={pckg.IsActive ? "cyan" : "red"}
+                            >
+                                {pckg.IsActive ? (
+                                    <CheckCircleOutlined />
+                                ) : (
+                                    <ClockCircleOutlined />
+                                )}
+                                <span className="ml-2 font-weight-semibold">
+                                    {pckg.IsActive ? "Active" : "Not Active"}
+                                </span>
+                            </Tag>
+                        </div>
+                    </Card>
+                </Col>
+            ))}
+        </Row> */}
+    </>
 );
 
 const GridItem = ({ data, removeId, showEditAppModal }) => (
     <Card>
         <Flex alignItems="center" justifyContent="between">
             <ItemHeader
+                IsActive={data.IsActive}
                 avatar={data.Photo}
                 name={data.Name}
                 shortDescription={
@@ -133,30 +111,54 @@ const GridItem = ({ data, removeId, showEditAppModal }) => (
             />
         </Flex>
         <div className="mt-2">
-            <ItemInfo ID={data.ID} IsActive={data.IsActive} />
+            <ItemInfo
+                ID={data.ID}
+                IsActive={data.IsActive}
+                packages={data.Packages}
+            />
         </div>
     </Card>
 );
 
-const ItemHeader = ({ name, avatar, shortDescription }) => (
+const ItemHeader = ({ name, avatar, shortDescription, IsActive }) => (
     <>
-        <div className="mr-3 mb-2">
-            <Avatar src={avatar} icon={<ExperimentOutlined />} />
-        </div>
-        <div>
-            <h4 className="mb-0">{name}</h4>
-            <span className="text-muted">{shortDescription}</span>
-        </div>
+        <Flex>
+            <div className="mr-3">
+                <Avatar
+                    src={avatar}
+                    icon={<ExperimentOutlined />}
+                    shape="square"
+                    size={80}
+                />
+            </div>
+            <Flex flexDirection="column">
+                <Flex flexDirection="row">
+                    <h2 className="mr-3">{name} </h2>
+                    <Tag
+                        className="text-capitalize"
+                        color={IsActive ? "cyan" : "red"}
+                    >
+                        {IsActive ? (
+                            <CheckCircleOutlined />
+                        ) : (
+                            <ClockCircleOutlined />
+                        )}
+                        <span className="ml-2 font-weight-semibold">
+                            {IsActive ? "Active" : "Not Active"}
+                        </span>
+                    </Tag>
+                </Flex>
+                <div>
+                    <span className="text-muted ">{shortDescription}</span>
+                </div>
+            </Flex>
+        </Flex>
     </>
 );
 
 const AppList = ({ apps, setApps, signOut }) => {
-    const [view, setView] = useState(VIEW_GRID);
     const [selectedApp, setSelectedApp] = useState();
     const [editAppModalVisible, setEditAppModalVisible] = useState(false);
-    const onChangeProjectView = (e) => {
-        setView(e.target.value);
-    };
 
     const showEditAppModal = (selected) => {
         setSelectedApp(selected);
@@ -188,61 +190,32 @@ const AppList = ({ apps, setApps, signOut }) => {
                         className="py-4"
                     >
                         <h2>Applications</h2>
-                        <div>
-                            <Radio.Group
-                                defaultValue={VIEW_GRID}
-                                onChange={(e) => onChangeProjectView(e)}
-                            >
-                                <Radio.Button value={VIEW_GRID}>
-                                    <AppstoreOutlined />
-                                </Radio.Button>
-                                <Radio.Button value={VIEW_LIST}>
-                                    <UnorderedListOutlined />
-                                </Radio.Button>
-                            </Radio.Group>
-                            <Button type="primary" className="ml-2">
-                                <PlusOutlined />
-                                <span>New</span>
-                            </Button>
-                        </div>
                     </Flex>
                 </div>
             </PageHeaderAlt>
             <div
-                className={`my-4 ${
-                    view === VIEW_LIST ? "container" : "container-fluid"
-                }`}
+                className={`my-4 
+                    container-fluid`}
             >
-                {view === VIEW_LIST ? (
-                    apps.map((elm) => (
-                        <ListItem
-                            showEditAppModal={showEditAppModal}
-                            data={elm}
-                            removeId={(ID) => deleteItem(ID)}
+                <Row gutter={16}>
+                    {apps.map((elm) => (
+                        <Col
+                            xs={24}
+                            sm={24}
+                            lg={12}
+                            xl={8}
+                            xxl={8}
                             key={elm["ID"]}
-                        />
-                    ))
-                ) : (
-                    <Row gutter={16}>
-                        {apps.map((elm) => (
-                            <Col
-                                xs={24}
-                                sm={24}
-                                lg={8}
-                                xl={8}
-                                xxl={6}
+                        >
+                            <GridItem
+                                showEditAppModal={showEditAppModal}
+                                data={elm}
+                                removeId={(ID) => deleteItem(ID)}
                                 key={elm["ID"]}
-                            >
-                                <GridItem
-                                    showEditAppModal={showEditAppModal}
-                                    data={elm}
-                                    removeId={(ID) => deleteItem(ID)}
-                                    key={elm["ID"]}
-                                />
-                            </Col>
-                        ))}
-                    </Row>
-                )}
+                            />
+                        </Col>
+                    ))}
+                </Row>
             </div>
         </>
     );

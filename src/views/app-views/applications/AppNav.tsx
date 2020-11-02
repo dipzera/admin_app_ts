@@ -36,11 +36,10 @@ const AppStoreNav = () => {
             if (ErrorCode === 0) {
                 setApps(MarketAppList);
             } else if (ErrorCode === 118) {
-                return;
-                // message.loading(EXPIRE_TIME, 1.5);
-                // setTimeout(() => {
-                //     dispatch(signOut());
-                // }, 1500);
+                message.loading(EXPIRE_TIME, 1.5);
+                setTimeout(() => {
+                    dispatch(signOut());
+                }, 1500);
             } else if (ErrorCode === -1) {
                 // message.loading(EXPIRE_TIME, 1.5);
                 // setTimeout(() => {

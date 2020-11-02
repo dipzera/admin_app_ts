@@ -97,7 +97,10 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                                 },
                             ]}
                         >
-                            <Input.TextArea style={{ resize: "none" }} />
+                            <Input.TextArea
+                                style={{ resize: "none" }}
+                                maxLength={80}
+                            />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={24}>
