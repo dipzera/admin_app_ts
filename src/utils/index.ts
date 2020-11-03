@@ -1,7 +1,10 @@
 import { message } from "antd";
 import JSencrypt from "jsencrypt/bin/jsencrypt";
+import React from "react";
+import { connect } from "react-redux";
 import { EXPIRE_TIME } from "../constants/Messages";
-class Utils {
+import { signOut } from "../redux/actions/Auth";
+class Utils extends React.Component {
     /**
      * Get first character from first & last sentences of a username
      * @param {String} name - Username
@@ -216,4 +219,4 @@ class Utils {
     }
 }
 
-export default Utils;
+export default connect(null, { signOut })(Utils);

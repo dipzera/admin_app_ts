@@ -1,14 +1,14 @@
 import { SET_APPS } from "../constants/Applications";
 const initialState = [
-    {
-        ID: 0,
-        IsActive: false,
-        LongDescription: "",
-        Name: "App",
-        Packages: [],
-        Photo: "",
-        ShortDescription: "",
-    },
+    // {
+    //     ID: "",
+    //     IsActive: false,
+    //     LongDescription: "",
+    //     Name: "",
+    //     Packages: [],
+    //     Photo: "",
+    //     ShortDescription: "",
+    // },
 ];
 const applications = (state = initialState, action) => {
     switch (action.type) {

@@ -8,19 +8,18 @@ import { signOut } from "../../../redux/actions/Auth";
 import { getMarketApps } from "../../../redux/actions/Applications";
 import { Route } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
+import Loading from "../../../components/shared-components/Loading";
 
-const Applications = ({ getMarketApps, signOut, Token, apps }) => {
+const Applications = ({ getMarketApps, signOut, Token, apps, loading }) => {
     useEffect(() => {
         getMarketApps(Token);
     }, []);
     return (
-        <>
-            <AppList apps={apps} setApps={signOut} signOut={signOut} />
-        </>
+        <>{loading ? <Loading /> : <AppList apps={apps} signOut={signOut} />}</>
     );
 };
 const mapStateToProps = ({ auth, apps }) => {
-    const { token: Token } = auth;
+    const { token: Token, loading } = auth;
     return { Token, apps };
 };
 export default connect(mapStateToProps, { signOut, getMarketApps })(

@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import { EXPIRE_TIME } from "../../../constants/Messages";
 import { signOut } from "../../../redux/actions/Auth";
+import { getMarketApps } from "../../../redux/actions/Applications";
+import Loading from "../../../components/shared-components/Loading";
 export interface IApps {
     CustomerPrice: number;
     DataBaseServer: string;
@@ -21,51 +23,56 @@ export interface IApps {
     ReferalPercent: number;
 }
 const AppStoreNav = () => {
-    const [apps, setApps] = useState<IApps[]>([]);
+    // const [apps, setApps] = useState<IApps[]>([]);
     const dispatch = useDispatch();
     const Token = useSelector((state) => state["auth"].token);
+    const loading = useSelector((state) => state["auth"].loading);
+    const apps: IApps[] = useSelector((state) => state["apps"]);
+    // useEffect(() => {
+    //     Axios.get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
+    //         params: { Token },
+    //     }).then((res) => {
+    //         console.log(res.data);
 
-    const renderApps = () => {};
-    useEffect(() => {
-        Axios.get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
-            params: { Token },
-        }).then((res) => {
-            console.log(res.data);
-
-            const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
-            if (ErrorCode === 0) {
-                setApps(MarketAppList);
-            } else if (ErrorCode === 118) {
-                message.loading(EXPIRE_TIME, 1.5);
-                setTimeout(() => {
-                    dispatch(signOut());
-                }, 1500);
-            } else if (ErrorCode === -1) {
-                // message.loading(EXPIRE_TIME, 1.5);
-                // setTimeout(() => {
-                //     dispatch(signOut());
-                // }, 1500);
-            }
-        });
-    }, []);
+    //         const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
+    //         if (ErrorCode === 0) {
+    //             setApps(MarketAppList);
+    //         } else if (ErrorCode === 118) {
+    //             message.loading(EXPIRE_TIME, 1.5);
+    //             setTimeout(() => {
+    //                 dispatch(signOut());
+    //             }, 1500);
+    //         } else if (ErrorCode === -1) {
+    //             // message.loading(EXPIRE_TIME, 1.5);
+    //             // setTimeout(() => {
+    //             //     dispatch(signOut());
+    //             // }, 1500);
+    //         }
+    //     });
+    // }, []);
     /* applications/AppList.tsx */
     const menu = (
         <Menu
             style={{
                 width: "350px",
+                minHeight: loading && "300px",
             }}
         >
-            {apps ? (
-                <AppNavGrid apps={apps} />
+            {loading ? (
+                <Loading cover="content" align="center" />
             ) : (
-                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <AppNavGrid apps={apps} />
             )}
+            {!apps && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </Menu>
     );
 
     return (
         <Dropdown overlay={menu} trigger={["click"]} placement={"bottomRight"}>
-            <Menu mode={"horizontal"}>
+            <Menu
+                mode={"horizontal"}
+                onClick={() => dispatch(getMarketApps(Token))}
+            >
                 <Menu.Item>
                     <Tooltip title={<IntlMessage id={"header.applications"} />}>
                         <AppstoreOutlined className={"nav-icon"} />

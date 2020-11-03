@@ -1,5 +1,5 @@
 import { Button, Card, Col, Menu, Row, Tag } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     PlusOutlined,
     ExperimentOutlined,
@@ -9,26 +9,29 @@ import {
     ClockCircleOutlined,
     DeleteOutlined,
 } from "@ant-design/icons";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import EllipsisDropdown from "../../../components/shared-components/EllipsisDropdown";
 import Flex from "../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../components/layout-components/PageHeaderAlt";
+import EditPackageForm from "./EditPackageForm";
+import { signOut } from "../../../redux/actions/Auth";
+import AddPackageForm from "./AddPackageForm";
+import moment from "moment";
 
-const ItemAction = ({ packages }) => (
+const ItemAction = ({ packages, showEditPackageModal }) => (
     <EllipsisDropdown
         menu={
             <Menu>
-                <Menu.Item>
-                    <EyeOutlined />
-                    <span>View</span>
-                </Menu.Item>
-                <Menu.Item>
+                <Menu.Item
+                    key={1}
+                    onClick={() => showEditPackageModal(packages)}
+                >
                     <EditOutlined />
                     <span>Edit</span>
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item>
+                <Menu.Item key={2}>
                     <DeleteOutlined />
                     <span>Delete</span>
                 </Menu.Item>
@@ -38,38 +41,48 @@ const ItemAction = ({ packages }) => (
 );
 const ItemHeader = ({ packages }) => (
     <>
-        <div>
+        <Flex>
             <h4 className="mb-0">{packages.Name}</h4>
-        </div>
+            <Tag
+                className="text-capitalize ml-2"
+                color={packages.IsActive ? "cyan" : "red"}
+            >
+                {packages.IsActive ? (
+                    <CheckCircleOutlined />
+                ) : (
+                    <ClockCircleOutlined />
+                )}
+                <span className="ml-2 font-weight-semibold">
+                    {packages.IsActive ? "Active" : "Not Active"}
+                </span>
+            </Tag>
+        </Flex>
     </>
 );
 
 const ItemFooter = ({ packages }) => (
     <div>
         <h5>Pricing</h5>
-        <Flex alignItems="center" justifyContent="between">
-            <Card>
-                <Flex
-                    justifyContent="center"
-                    alignItems="center"
-                    flexDirection="column"
-                >
-                    <div>
-                        From {packages.MinValue} to {packages.MaxValue} for{" "}
-                        {packages.Price}
-                    </div>
-                </Flex>
+        <Flex justifyContent="center">
+            <Card className="mt-3">
+                <div>
+                    From {packages.MinValue} to {packages.MaxValue} for{" "}
+                    {packages.Price} MDL
+                </div>
             </Card>
         </Flex>
     </div>
 );
 
-const CardItem = ({ packages }) => {
+const CardItem = ({ packages, showEditPackageModal }) => {
     return (
         <Card>
             <Flex alignItems="center" justifyContent="between">
                 <ItemHeader packages={packages} />
-                <ItemAction packages={packages} />
+                <ItemAction
+                    packages={packages}
+                    showEditPackageModal={showEditPackageModal}
+                />
             </Flex>
             <div className="mt-2">
                 <ItemFooter packages={packages} />
@@ -79,13 +92,7 @@ const CardItem = ({ packages }) => {
 };
 
 const AboutItem = ({ appData }) => {
-    const {
-        Photo,
-        IsActive,
-        Name,
-        ShortDescription,
-        LongDescription,
-    } = appData;
+    const { Photo, Status, Name, ShortDescription, LongDescription } = appData;
     return (
         <Card className="mb-5">
             <Flex>
@@ -102,15 +109,15 @@ const AboutItem = ({ appData }) => {
                         <h2 className="mr-3">{Name} </h2>
                         <Tag
                             className="text-capitalize"
-                            color={IsActive ? "cyan" : "red"}
+                            color={Status === 1 ? "cyan" : "red"}
                         >
-                            {IsActive ? (
+                            {Status === 1 ? (
                                 <CheckCircleOutlined />
                             ) : (
                                 <ClockCircleOutlined />
                             )}
                             <span className="ml-2 font-weight-semibold">
-                                {IsActive ? "Active" : "Not Active"}
+                                {Status === 1 ? "Active" : "Not Active"}
                             </span>
                         </Tag>
                     </Flex>
@@ -130,12 +137,51 @@ const SingleAppPage = ({ match }) => {
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
+    const [selectedPackage, setSelectedPackage] = useState<{
+        [key: string]: any;
+    }>();
+    const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
+        boolean
+    >(false);
+    const [addPackageModalVisible, setAddPackageModalVisible] = useState<
+        boolean
+    >(false);
+    const showEditPackageModal = (selected) => {
+        setSelectedPackage({
+            ...selected,
+            Range: [selected.MinValue, selected.MaxValue],
+            ValidDate: [moment(selected.ValidFrom), moment(selected.ValidTo)],
+        });
+        setEditPackageModalVisbile(true);
+    };
+    const closeEditPackageModal = () => {
+        setEditPackageModalVisbile(false);
+    };
+
+    const showAddPackageModal = () => {
+        setAddPackageModalVisible(true);
+    };
+    const closeAddPackageModal = () => {
+        setAddPackageModalVisible(false);
+    };
     if (!app) {
         return <div>No app found</div>;
     }
 
     return (
         <>
+            <AddPackageForm
+                appID={appID}
+                close={closeAddPackageModal}
+                signOut={signOut}
+                visible={addPackageModalVisible}
+            />
+            <EditPackageForm
+                close={closeEditPackageModal}
+                signOut={signOut}
+                packages={selectedPackage}
+                visible={editPackageModalVisible}
+            />
             <AboutItem appData={app} />
             <PageHeaderAlt className="bg-white border-bottom">
                 <div className="container-fluid">
@@ -146,7 +192,11 @@ const SingleAppPage = ({ match }) => {
                     >
                         <h2>Packages</h2>
                         <div>
-                            <Button type="primary" className="ml-2">
+                            <Button
+                                type="primary"
+                                className="ml-2"
+                                onClick={() => setAddPackageModalVisible(true)}
+                            >
                                 <PlusOutlined />
                                 <span>New</span>
                             </Button>
@@ -165,7 +215,10 @@ const SingleAppPage = ({ match }) => {
                             xxl={6}
                             key={elm["ID"]}
                         >
-                            <CardItem packages={elm} />
+                            <CardItem
+                                packages={elm}
+                                showEditPackageModal={showEditPackageModal}
+                            />
                         </Col>
                     ))}
                 </Row>
@@ -173,4 +226,4 @@ const SingleAppPage = ({ match }) => {
         </>
     );
 };
-export default SingleAppPage;
+export default connect(null, { signOut })(SingleAppPage);

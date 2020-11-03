@@ -56,7 +56,7 @@ const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
     />
 );
 
-const ItemInfo = ({ IsActive, ID, packages }) => (
+const ItemInfo = ({ Status, ID, packages }) => (
     <>
         {/* <h3>Packages</h3>
         <Row gutter={16}>
@@ -94,7 +94,7 @@ const GridItem = ({ data, removeId, showEditAppModal }) => (
     <Card>
         <Flex alignItems="center" justifyContent="between">
             <ItemHeader
-                IsActive={data.IsActive}
+                Status={data.Status}
                 avatar={data.Photo}
                 name={data.Name}
                 shortDescription={
@@ -113,14 +113,14 @@ const GridItem = ({ data, removeId, showEditAppModal }) => (
         <div className="mt-2">
             <ItemInfo
                 ID={data.ID}
-                IsActive={data.IsActive}
+                Status={data.Status}
                 packages={data.Packages}
             />
         </div>
     </Card>
 );
 
-const ItemHeader = ({ name, avatar, shortDescription, IsActive }) => (
+const ItemHeader = ({ name, avatar, shortDescription, Status }) => (
     <>
         <Flex>
             <div className="mr-3">
@@ -136,15 +136,15 @@ const ItemHeader = ({ name, avatar, shortDescription, IsActive }) => (
                     <h2 className="mr-3">{name} </h2>
                     <Tag
                         className="text-capitalize"
-                        color={IsActive ? "cyan" : "red"}
+                        color={Status === 1 ? "cyan" : "red"}
                     >
-                        {IsActive ? (
+                        {Status === 1 ? (
                             <CheckCircleOutlined />
                         ) : (
                             <ClockCircleOutlined />
                         )}
                         <span className="ml-2 font-weight-semibold">
-                            {IsActive ? "Active" : "Not Active"}
+                            {Status === 1 ? "Active" : "Not Active"}
                         </span>
                     </Tag>
                 </Flex>
@@ -156,7 +156,7 @@ const ItemHeader = ({ name, avatar, shortDescription, IsActive }) => (
     </>
 );
 
-const AppList = ({ apps, setApps, signOut }) => {
+const AppList = ({ apps, signOut }) => {
     const [selectedApp, setSelectedApp] = useState();
     const [editAppModalVisible, setEditAppModalVisible] = useState(false);
 
@@ -171,7 +171,6 @@ const AppList = ({ apps, setApps, signOut }) => {
 
     const deleteItem = (id) => {
         const data = apps.filter((elm) => elm["ID"] !== id);
-        setApps(data);
     };
 
     return (

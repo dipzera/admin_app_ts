@@ -1,18 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
+import {
+    Col,
+    Slider,
+    Form,
+    Input,
+    message,
+    Modal,
+    Row,
+    Switch,
+    DatePicker,
+} from "antd";
 import axios from "axios";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
 import { DONE } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
+import moment from "moment";
 import { getMarketApps } from "../../../redux/actions/Applications";
-const EditAppForm = ({ apps, visible, close, signOut }) => {
+interface IEditPackageForm {
+    packages: any;
+    visible: boolean;
+    close: () => any;
+    signOut: () => any;
+}
+const EditPackageForm = ({
+    packages,
+    visible,
+    close,
+    signOut,
+}: IEditPackageForm) => {
     const [form] = Form.useForm();
-
+    // const { MinValue, MaxValue } = packages;
+    // const initialValues = { ...packages, Range: [MinValue, MaxValue] };
     /*  Destroy initialValues of form after Modal is closed */
     useEffect(() => {
         if (!visible) return;
+
         form.resetFields();
     }, [visible, form]);
 
@@ -20,15 +44,38 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
     const onFinish = (values) => {
-        const Status = values.IsActive ? 1 : 0;
+        const { ValidDate, Range } = values;
 
+        const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
+        const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
+        delete packages.Range;
+        delete packages.ValidDate;
+        delete values.Range;
+        delete values.ValidDate;
         setIsLoading(true);
         setTimeout(() => {
-            console.log({ App: { ...apps, ...values }, Token });
+            console.log({
+                AppPackage: {
+                    ...packages,
+                    ValidFrom,
+                    ValidTo,
+                    MinValue: Range[0],
+                    MaxValue: Range[1],
+                    ...values,
+                },
+                Token,
+            });
             setIsLoading(false);
             axios
-                .post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
-                    App: { ...apps, ...values, Status },
+                .post(`${API_IS_APP_SERVICE}/UpdateMarketAppPackage`, {
+                    AppPackage: {
+                        ...packages,
+                        ValidFrom,
+                        ValidTo,
+                        MinValue: Range[0],
+                        MaxValue: Range[1],
+                        ...values,
+                    },
                     Token,
                 })
                 .then((res) => {
@@ -63,7 +110,7 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
     return (
         <Modal
             destroyOnClose
-            title={"Edit app"}
+            title={"Edit package"}
             visible={visible}
             onCancel={close}
             confirmLoading={isLoading}
@@ -73,56 +120,63 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                 form={form}
                 name="basicInformation"
                 layout="vertical"
-                initialValues={apps}
+                initialValues={packages}
             >
                 <Row gutter={ROW_GUTTER}>
-                    <Col xs={24} sm={24} md={24}>
+                    <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"App Name"}
+                            label={"Package Name"}
                             name="Name"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input app name!",
+                                    message: "Please insert package name!",
                                 },
                             ]}
                         >
                             <Input />
                         </Form.Item>
                     </Col>
-                    <Col xs={24} sm={24} md={24}>
+                    <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Short description"}
-                            name="ShortDescription"
+                            label="Price"
+                            name="Price"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input short description!",
+                                    message: "Please insert the price!",
+                                },
+                                {
+                                    pattern: /[0-9]/,
+                                    message: "Digits only allowed!",
                                 },
                             ]}
                         >
-                            <Input.TextArea
-                                style={{ resize: "none" }}
-                                maxLength={80}
-                            />
+                            <Input prefix={"MDL"} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item label="Range" name="Range">
+                            <Slider range max={500} />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
-                            label={"Long Description"}
-                            name="LongDescription"
+                            label="Valid date"
+                            name="ValidDate"
                             rules={[
                                 {
-                                    required: false,
+                                    required: true,
+                                    message: "Please insert the date",
                                 },
                             ]}
                         >
-                            <Input.TextArea style={{ resize: "none" }} />
+                            <DatePicker.RangePicker format={"DD/MM/YYYY"} />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Activate app"}
+                            label={"Activate package"}
                             name="IsActive"
                             valuePropName={"checked"}
                         >
@@ -134,4 +188,4 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
         </Modal>
     );
 };
-export default EditAppForm;
+export default EditPackageForm;
