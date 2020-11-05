@@ -46,10 +46,7 @@ export class ChangePassword extends Component {
                         message.success(DONE, 1.5);
                     } else if (errorCode === 118) {
                         /* Token expired */
-                        message.loading(EXPIRE_TIME, 1.5);
-                        setTimeout(() => {
-                            signOut();
-                        }, 1500);
+                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     } else {
                         /* Incorrect old password */
                         message.error(errorMessage, 2);

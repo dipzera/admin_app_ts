@@ -4,7 +4,7 @@ import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
 import axios from "axios";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
-import { DONE } from "../../../constants/Messages";
+import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import { getMarketApps } from "../../../redux/actions/Applications";
 const EditAppForm = ({ apps, visible, close, signOut }) => {
@@ -38,7 +38,7 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                         message.success(DONE, 1.5);
                         dispatch(getMarketApps(Token));
                     } else if (res.data.ErrorCode === 118) {
-                        Utils.redirect(signOut);
+                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     }
                 });
         }, 1000);

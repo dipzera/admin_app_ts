@@ -22,10 +22,7 @@ export const getMarketApps = (Token) => async (dispatch) => {
         if (ErrorCode === 0) {
             dispatch(setApps(MarketAppList));
         } else if (ErrorCode === 118) {
-            message.loading(EXPIRE_TIME, 1.5);
-            setTimeout(() => {
-                dispatch(signOut());
-            });
+            message.loading(EXPIRE_TIME, 1.5).then(() => dispatch(signOut()));
         }
     });
 };

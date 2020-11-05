@@ -4,31 +4,51 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
-import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
+import {
+    EXPIRE_TIME,
+    REGISTRATION_SUCCESS,
+} from "../../../../constants/Messages";
+import { MaskedInput } from "antd-mask-input";
+import utils from "../../../../utils";
+const publicIp = require("react-public-ip");
 export const CompanyModalAdd = ({
     onCreate,
     onCancel,
     visible,
     token: Token,
     CompanyID,
+    signOut,
 }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const onFinish = (values) => {
+    const [mask, setMask] = useState<any>();
+    const onChangeMask = (e) => {
+        setMask({ [e.target.name]: e.target.value });
+    };
+    const onFinish = async (values) => {
+        // const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
         /*  EDIT ABOVE WHEN REGISTER COMPANY FUNCTION IS READY */
+        console.log({
+            Company: { ...values },
+            Token,
+            info: await publicIp.v4(),
+        });
         axios
-            .post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
+            .post(`${API_IS_AUTH_SERVICE}/RegisterClientCompany`, {
                 /* Get the companyID, token and uilanguage from redux store */
-                ...values,
-                CompanyID,
+                Company: {
+                    ...values,
+                },
                 Token,
-                UiLanguage: 0,
+                info: (await publicIp.v4()) || "",
             })
             .then((res) => {
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
                     message.success(REGISTRATION_SUCCESS, 2);
+                } else if (res.data.ErrorCode === 118) {
+                    message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                 } else {
                     message.error(res.data.ErrorMessage);
                 }
@@ -37,7 +57,7 @@ export const CompanyModalAdd = ({
     return (
         /* The component above doesn't work just yet */
         <Modal
-            title={"TO BE BUILDED... ABOVE DOESN't WORK"}
+            title={"Register company"}
             visible={visible}
             okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
             onCancel={onCancel}
@@ -61,16 +81,34 @@ export const CompanyModalAdd = ({
                 <Row gutter={ROW_GUTTER}>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={
-                                <IntlMessage
-                                    id={"account.EditProfile.FirstName"}
-                                />
-                            }
-                            name="FirstName"
+                            label={<IntlMessage id={"account.company.BIC"} />}
+                            name="BIC"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input your first name!",
+                                    message: "Please input your BIC!",
+                                },
+                                {
+                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                    message: "Invalid BIC format",
+                                },
+                            ]}
+                        >
+                            <MaskedInput
+                                mask="AAAA-AA-11111"
+                                name="BIC"
+                                onChange={onChangeMask}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={<IntlMessage id={"account.company.Bank"} />}
+                            name="Bank"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your bank!",
                                 },
                             ]}
                         >
@@ -81,14 +119,153 @@ export const CompanyModalAdd = ({
                         <Form.Item
                             label={
                                 <IntlMessage
-                                    id={"account.EditProfile.LastName"}
+                                    id={"account.company.CommercialName"}
                                 />
                             }
-                            name="LastName"
+                            name="CommercialName"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Please input your last name!",
+                                    message:
+                                        "Please input your commercial name!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={<IntlMessage id={"account.company.IBAN"} />}
+                            name="IBAN"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your IBAN!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={<IntlMessage id={"account.company.IDNO"} />}
+                            name="IDNO"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your IDNO!",
+                                },
+                                {
+                                    pattern: /^(\d{13})?$/,
+                                    message: (
+                                        <IntlMessage
+                                            id={"auth.IDNOValidation"}
+                                        />
+                                    ),
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage
+                                    id={"account.company.JuridicalAddress"}
+                                />
+                            }
+                            name="JuridicalAddress"
+                            rules={[
+                                {
+                                    required: true,
+                                    message:
+                                        "Please input your juridical address!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage
+                                    id={"account.company.JuridicalName"}
+                                />
+                            }
+                            name="JuridicalName"
+                            rules={[
+                                {
+                                    required: true,
+                                    message:
+                                        "Please input your juridical name!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage
+                                    id={"account.company.PhoneNumber"}
+                                />
+                            }
+                            name="PhoneNumber"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your phone number!",
+                                },
+                                {
+                                    pattern: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
+                                    message: "Invalid phone format!",
+                                },
+                            ]}
+                        >
+                            <MaskedInput
+                                mask="+(111) 111 111 11"
+                                onChange={onChangeMask}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage
+                                    id={"account.company.OfficeAddress"}
+                                />
+                            }
+                            name="OfficeAddress"
+                            rules={[
+                                {
+                                    required: true,
+                                    message:
+                                        "Please input your office address!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage id={"account.company.VATCode"} />
+                            }
+                            name="VATCode"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input your VAT code!",
+                                },
+                                {
+                                    pattern: /^[0-9]+$/,
+                                    message: "Invalid VATCode format",
                                 },
                             ]}
                         >

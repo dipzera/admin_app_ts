@@ -11,17 +11,17 @@ import {
     Upload,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { ROW_GUTTER } from "../../../constants/ThemeConstant";
-import Flex from "../../../components/shared-components/Flex";
-import IntlMessage from "../../../components/util-components/IntlMessage";
-import { updateSettings } from "../../../redux/actions/Account";
+import { ROW_GUTTER } from "../../../../../constants/ThemeConstant";
+import Flex from "../../../../../components/shared-components/Flex";
+import IntlMessage from "../../../../../components/util-components/IntlMessage";
+import { updateSettings } from "../../../../../redux/actions/Account";
 import { connect } from "react-redux";
 import { IntlProvider } from "react-intl";
-import AppLocale from "../../../lang";
+import AppLocale from "../../../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
-import { signOut } from "../../../redux/actions/Auth";
+import { API_IS_APP_SERVICE } from "../../../../../constants/ApiConstant";
+import { signOut } from "../../../../../redux/actions/Auth";
 import {
     DONE,
     ERROR,
@@ -30,7 +30,7 @@ import {
     UPDATING,
     UPLOADED,
     UPLOADING,
-} from "../../../constants/Messages";
+} from "../../../../../constants/Messages";
 const publicIp = require("react-public-ip");
 
 function beforeUpload(file) {
@@ -45,34 +45,11 @@ function beforeUpload(file) {
     return isJpgOrPng && isLt2M;
 }
 
-class CompanyForm extends Component<{ [key: string]: any }> {
+class CompanyFormWizard extends Component<{ [key: string]: any }> {
     avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
 
     state = { Company: {} } as { [key: string]: any };
     formRef = React.createRef() as any;
-
-    componentDidMount() {
-        axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyInfo`, {
-                params: {
-                    Token: this.props.token,
-                },
-            })
-            .then((res) => {
-                const { ErrorCode, ErrorMessage, Company } = res.data;
-                if (ErrorCode === 0) {
-                    console.log(Company);
-                    this.setState({ Company: { ...Company } });
-                    this.formRef["current"].setFieldsValue(Company);
-                } else if (res.data.ErrorCode === 118) {
-                    message
-                        .loading(EXPIRE_TIME, 1.5)
-                        .then(() => this.props.signOut());
-                } else {
-                    message.error(ErrorMessage);
-                }
-            });
-    }
 
     getBase64(img, callback) {
         const reader = new FileReader();
@@ -208,11 +185,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                             action={this.avatarEndpoint}
                             // beforeUpload={beforeUpload}
                         >
-                            <Button type="primary">
-                                <IntlMessage
-                                    id={"account.EditProfile.ChangeAvatar"}
-                                />
-                            </Button>
+                            <Button type="primary">Upload Avatar</Button>
                         </Upload>
                         <Button className="ml-2" onClick={onRemoveAvater}>
                             <IntlMessage id={"account.EditProfile.Remove"} />
@@ -488,11 +461,6 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                         </Form.Item>
                                     </Col>
                                 </Row>
-                                <Button type="primary" htmlType="submit">
-                                    <IntlMessage
-                                        id={"account.EditProfile.SaveChange"}
-                                    />
-                                </Button>
                             </Col>
                         </Row>
                     </Form>
@@ -523,4 +491,4 @@ const mapStateToProps = ({ account, theme, auth }) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CompanyForm);
+export default connect(mapStateToProps, mapDispatchToProps)(CompanyFormWizard);

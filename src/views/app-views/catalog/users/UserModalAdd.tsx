@@ -1,26 +1,66 @@
-import { Row, Col, Input, Modal, Form, message } from "antd";
-import React, { useState } from "react";
+import { Row, Col, Input, Modal, Form, message, Select, Empty } from "antd";
+import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
+import {
+    API_IS_APP_SERVICE,
+    API_IS_AUTH_SERVICE,
+} from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
-import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
+import {
+    EXPIRE_TIME,
+    LOADING,
+    REGISTRATION_SUCCESS,
+} from "../../../../constants/Messages";
+import utils from "../../../../utils";
+
+const renderItem = (id, title, idno) => ({
+    value: id,
+    title,
+    label: (
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {title}
+            <span>{idno}</span>
+        </div>
+    ),
+});
+
 export const UserModalAdd = ({
     onCreate,
     onCancel,
     visible,
     token: Token,
     CompanyID,
+    signOut,
 }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const [companies, setCompanies] = useState<any>([]);
+    const [showOptions, setShowOptions] = useState(false);
+    useEffect(() => {
+        axios
+            .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
+                params: { Token },
+            })
+            .then((res) => {
+                const { ErrorCode, ErrorMessage, CompanyList } = res.data;
+                if (ErrorCode === 0) {
+                    setCompanies(CompanyList);
+                } else if (ErrorCode === 118) {
+                }
+            });
+    }, []);
+    const onSearch = (value) => {
+        if (value.length > 1) {
+            setShowOptions(true);
+        } else {
+            setShowOptions(false);
+        }
+    };
     const onFinish = (values) => {
         axios
             .post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
-                /* Get the companyID ?? , token and uilanguage from redux store,
-                   TODO: Add new input fields */
                 ...values,
-                CompanyID,
                 Token,
                 UiLanguage: 0,
             })
@@ -28,17 +68,24 @@ export const UserModalAdd = ({
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
-                    message.success(REGISTRATION_SUCCESS, 2);
+                    message.success(REGISTRATION_SUCCESS, 1.5);
                 } else {
                     message.error(res.data.ErrorMessage);
                 }
             });
     };
+
+    const { Option } = Select;
     return (
         <Modal
             title={"Register user"}
             visible={visible}
-            okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
+            okText={
+                <>
+                    {" "}
+                    <IntlMessage id={"auth.Send"} />
+                </>
+            }
             onCancel={onCancel}
             confirmLoading={loading}
             onOk={() => {
@@ -109,6 +156,58 @@ export const UserModalAdd = ({
                             ]}
                         >
                             <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item
+                            label={"Company"}
+                            name="CompanyID"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please choose your company!",
+                                },
+                            ]}
+                        >
+                            <Select
+                                onSearch={onSearch}
+                                allowClear
+                                placeholder="Start typing..."
+                                showSearch
+                                notFoundContent={
+                                    !companies && (
+                                        <Empty
+                                            image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                        />
+                                    )
+                                }
+                                filterOption={(input, option) =>
+                                    option!.title
+                                        .toUpperCase()
+                                        .indexOf(input.toUpperCase()) !== -1
+                                }
+                            >
+                                {showOptions
+                                    ? companies.map((company) => (
+                                          <Option
+                                              value={company.ID}
+                                              key={company.ID}
+                                              title={company.CommercialName}
+                                          >
+                                              <div
+                                                  style={{
+                                                      display: "flex",
+                                                      justifyContent:
+                                                          "space-between",
+                                                  }}
+                                              >
+                                                  {company.CommercialName}
+                                                  <span>{company.IDNO}</span>
+                                              </div>
+                                          </Option>
+                                      ))
+                                    : "Start typing..."}
+                            </Select>
                         </Form.Item>
                     </Col>
                 </Row>

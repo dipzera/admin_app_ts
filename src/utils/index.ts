@@ -210,13 +210,6 @@ class Utils extends React.Component {
         jsEncrypt.setPublicKey(publicKey);
         return jsEncrypt.encrypt(input);
     }
-
-    static redirect(signOutFunc) {
-        return new Promise((resolve) => {
-            message.loading(EXPIRE_TIME, 1.5);
-            setTimeout(() => resolve(signOutFunc()), 1500);
-        });
-    }
 }
 
 export default connect(null, { signOut })(Utils);

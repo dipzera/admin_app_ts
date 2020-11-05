@@ -35,13 +35,9 @@ export const getProfileInfo = (Token) => {
                         dispatch(onLocaleChange("en"));
                     }
                 } else {
-                    message.loading(
-                        "Time has expired. Redirecting you to login page...",
-                        1.5
-                    );
-                    setTimeout(() => {
-                        dispatch(signOut());
-                    }, 1500);
+                    message
+                        .loading(EXPIRE_TIME, 1.5)
+                        .then(() => dispatch(signOut()));
                 }
             });
     };

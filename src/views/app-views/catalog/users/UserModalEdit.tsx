@@ -44,10 +44,7 @@ export const UserModalEdit = ({
                         message.success(DONE, 1.5);
                         window.location.reload();
                     } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5);
-                        setTimeout(() => {
-                            signOut();
-                        }, 1500);
+                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     }
                 });
         }, 1000);

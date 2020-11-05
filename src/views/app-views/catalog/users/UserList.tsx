@@ -29,7 +29,10 @@ import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
 import { useApiRequest } from "../../../../api";
 import Utils from "../../../../utils";
-import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
+import {
+    EXPIRE_TIME,
+    REGISTRATION_SUCCESS,
+} from "../../../../constants/Messages";
 
 export interface UsersProps {
     CompanyID: number;
@@ -91,7 +94,9 @@ export class UserList extends Component<ReduxStoreProps> {
                 if (res.data.ErrorCode === 0) {
                     this.setState({ users: [...res.data.Users] });
                 } else {
-                    Utils.redirect(this.props.signOut);
+                    message
+                        .loading(EXPIRE_TIME, 1.5)
+                        .then(() => this.props.signOut());
                 }
             });
     }
@@ -323,6 +328,7 @@ export class UserList extends Component<ReduxStoreProps> {
                     }}
                 />
                 <UserModalAdd
+                    signOut={signOut}
                     CompanyID={this.props.CompanyID}
                     onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}

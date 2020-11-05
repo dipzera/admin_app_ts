@@ -28,7 +28,7 @@ const dashBoardNavTree = [
         path: "/app/applications",
         title: "sidenav.applications",
         icon: AppstoreOutlined,
-        breadcrumb: false,
+        breadcrumb: true,
         submenu: [],
     },
     {

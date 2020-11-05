@@ -75,10 +75,7 @@ export const CompanyModalEdit = ({
                         message.success(DONE, 1.5);
                         window.location.reload();
                     } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5);
-                        setTimeout(() => {
-                            signOut();
-                        }, 1500);
+                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     } else {
                         message.error(ERROR, 2);
                     }
@@ -91,7 +88,7 @@ export const CompanyModalEdit = ({
         <Modal
             destroyOnClose
             title={"Edit company"}
-            style={{ top: "0" }}
+            // style={{ top: "0" }}
             visible={visible}
             okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
             onCancel={onCancel}

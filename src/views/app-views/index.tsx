@@ -8,6 +8,10 @@ export const AppViews = () => {
         <Suspense fallback={<Loading cover="content" />}>
             <Switch>
                 <Route
+                    path={`${APP_PREFIX_PATH}/wizard`}
+                    component={lazy(() => import(`./catalog/company/wizard`))}
+                />
+                <Route
                     path={`${APP_PREFIX_PATH}/dashboard`}
                     component={lazy(() => import(`./dashboard`))}
                 />

@@ -181,7 +181,7 @@ const AppList = ({ apps, signOut }) => {
                 close={closeEditAppModal}
                 signOut={signOut}
             />
-            <PageHeaderAlt className="bg-white border-bottom">
+            {/* <PageHeaderAlt className="bg-white border-bottom">
                 <div className="container-fluid">
                     <Flex
                         justifyContent="between"
@@ -191,7 +191,7 @@ const AppList = ({ apps, signOut }) => {
                         <h2>Applications</h2>
                     </Flex>
                 </div>
-            </PageHeaderAlt>
+            </PageHeaderAlt> */}
             <div
                 className={`my-4 
                     container-fluid`}

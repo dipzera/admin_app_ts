@@ -27,7 +27,12 @@ import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
 import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { REGISTRATION_SUCCESS } from "../../../../constants/Messages";
+import {
+    EXPIRE_TIME,
+    REGISTRATION_SUCCESS,
+} from "../../../../constants/Messages";
+import { Link } from "react-router-dom";
+import { APP_PREFIX_PATH } from "../../../../configs/AppConfig";
 
 interface CompanyStateProps {
     users: CompanyProps[];
@@ -94,13 +99,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 if (res.data.ErrorCode === 0) {
                     this.setState({ users: [...res.data.CompanyList] });
                 } else {
-                    message.loading(
-                        "Time has expired. Redirecting you to login page...",
-                        2
-                    );
-                    setTimeout(() => {
-                        this.props.signOut();
-                    }, 2000);
+                    message
+                        .loading(EXPIRE_TIME, 1.5)
+                        .then(() => this.props.signOut());
                 }
             });
     }
@@ -242,11 +243,11 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     <div className="text-right">
                         <Button
                             /* Turn off disabled when register company api comes */
-                            disabled
-                            onClick={this.showNewUserModal}
                             type="primary"
                         >
-                            Register company
+                            <Link to={`${APP_PREFIX_PATH}/wizard`}>
+                                Register company
+                            </Link>
                         </Button>
                     </div>
                 ),
@@ -329,6 +330,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     }}
                 />
                 <CompanyModalAdd
+                    signOut={signOut}
                     CompanyID={this.props.CompanyID}
                     onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
