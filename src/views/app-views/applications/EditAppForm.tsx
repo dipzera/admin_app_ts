@@ -15,16 +15,15 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
         if (!visible) return;
         form.resetFields();
     }, [visible, form]);
-
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
     const onFinish = (values) => {
-        const Status = values.IsActive ? 1 : 0;
+        const Status = values.Status ? 1 : 0;
 
         setIsLoading(true);
         setTimeout(() => {
-            console.log({ App: { ...apps, ...values }, Token });
+            console.log({ App: { ...apps, ...values, Status }, Token });
             setIsLoading(false);
             axios
                 .post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
@@ -35,8 +34,9 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                     console.log(res.data);
 
                     if (res.data.ErrorCode === 0) {
-                        message.success(DONE, 1.5);
-                        dispatch(getMarketApps(Token));
+                        message
+                            .success(DONE, 1.5)
+                            .then(() => dispatch(getMarketApps(Token)));
                     } else if (res.data.ErrorCode === 118) {
                         message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     }
@@ -123,7 +123,7 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
                             label={"Activate app"}
-                            name="IsActive"
+                            name="Status"
                             valuePropName={"checked"}
                         >
                             <Switch />

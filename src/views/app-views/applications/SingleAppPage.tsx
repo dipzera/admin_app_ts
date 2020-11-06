@@ -45,15 +45,15 @@ const ItemHeader = ({ packages }) => (
             <h4 className="mb-0">{packages.Name}</h4>
             <Tag
                 className="text-capitalize ml-2"
-                color={packages.IsActive ? "cyan" : "red"}
+                color={packages.Status === 1 ? "cyan" : "red"}
             >
-                {packages.IsActive ? (
+                {packages.Status === 1 ? (
                     <CheckCircleOutlined />
                 ) : (
                     <ClockCircleOutlined />
                 )}
                 <span className="ml-2 font-weight-semibold">
-                    {packages.IsActive ? "Active" : "Not Active"}
+                    {packages.Status === 1 ? "Active" : "Not Active"}
                 </span>
             </Tag>
         </Flex>

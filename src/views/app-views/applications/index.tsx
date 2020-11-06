@@ -20,7 +20,7 @@ const Applications = ({ getMarketApps, signOut, Token, apps, loading }) => {
 };
 const mapStateToProps = ({ auth, apps }) => {
     const { token: Token, loading } = auth;
-    return { Token, apps };
+    return { Token, apps, loading };
 };
 export default connect(mapStateToProps, { signOut, getMarketApps })(
     Applications

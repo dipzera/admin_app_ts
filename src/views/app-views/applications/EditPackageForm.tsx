@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
     Col,
@@ -39,13 +39,12 @@ const EditPackageForm = ({
 
         form.resetFields();
     }, [visible, form]);
-
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
     const onFinish = (values) => {
         const { ValidDate, Range } = values;
-
+        const Status = values.Status ? 1 : 0;
         const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete packages.Range;
@@ -62,6 +61,7 @@ const EditPackageForm = ({
                     MinValue: Range[0],
                     MaxValue: Range[1],
                     ...values,
+                    Status,
                 },
                 Token,
             });
@@ -75,6 +75,7 @@ const EditPackageForm = ({
                         MinValue: Range[0],
                         MaxValue: Range[1],
                         ...values,
+                        Status,
                     },
                     Token,
                 })
@@ -85,7 +86,9 @@ const EditPackageForm = ({
                         message.success(DONE, 1.5);
                         dispatch(getMarketApps(Token));
                     } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
+                        message
+                            .loading(EXPIRE_TIME, 1.5)
+                            .then(() => dispatch(signOut()));
                     }
                 });
         }, 1000);
@@ -177,7 +180,7 @@ const EditPackageForm = ({
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
                             label={"Activate package"}
-                            name="IsActive"
+                            name="Status"
                             valuePropName={"checked"}
                         >
                             <Switch />

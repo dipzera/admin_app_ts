@@ -54,7 +54,7 @@ const AppStoreNav = () => {
     const menu = (
         <Menu
             style={{
-                width: "350px",
+                width: "330px",
                 minHeight: loading && "300px",
             }}
         >

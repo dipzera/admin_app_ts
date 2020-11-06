@@ -30,7 +30,6 @@ export const UserModalAdd = ({
     onCancel,
     visible,
     token: Token,
-    CompanyID,
     signOut,
 }) => {
     const [form] = Form.useForm();
@@ -39,10 +38,12 @@ export const UserModalAdd = ({
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
         axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
+            .get(`${API_IS_APP_SERVICE}/GetBasicCompaniesList`, {
                 params: { Token },
             })
             .then((res) => {
+                console.log(res.data);
+
                 const { ErrorCode, ErrorMessage, CompanyList } = res.data;
                 if (ErrorCode === 0) {
                     setCompanies(CompanyList);
@@ -192,18 +193,9 @@ export const UserModalAdd = ({
                                           <Option
                                               value={company.ID}
                                               key={company.ID}
-                                              title={company.CommercialName}
+                                              title={company.Name}
                                           >
-                                              <div
-                                                  style={{
-                                                      display: "flex",
-                                                      justifyContent:
-                                                          "space-between",
-                                                  }}
-                                              >
-                                                  {company.CommercialName}
-                                                  <span>{company.IDNO}</span>
-                                              </div>
+                                              {company.Name}
                                           </Option>
                                       ))
                                     : "Start typing..."}

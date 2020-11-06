@@ -61,6 +61,7 @@ interface UserListStateProps {
 interface ReduxStoreProps {
     token: string;
     locale: string;
+    ID: number;
     CompanyID: number;
     signOut: any;
     /* From state */
@@ -92,7 +93,10 @@ export class UserList extends Component<ReduxStoreProps> {
                 this.setState({ loading: false });
                 console.log(res.data);
                 if (res.data.ErrorCode === 0) {
-                    this.setState({ users: [...res.data.Users] });
+                    const filteredUsers = res.data.Users.filter(
+                        (user) => user.ID !== this.props.ID
+                    );
+                    this.setState({ users: [...filteredUsers] });
                 } else {
                     message
                         .loading(EXPIRE_TIME, 1.5)
@@ -329,7 +333,6 @@ export class UserList extends Component<ReduxStoreProps> {
                 />
                 <UserModalAdd
                     signOut={signOut}
-                    CompanyID={this.props.CompanyID}
                     onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
@@ -357,9 +360,9 @@ const mapDispatchToProps = {
 
 const mapStateToProps = ({ auth, theme, account }) => {
     const { token, loading } = auth;
-    const { CompanyID } = account;
+    const { CompanyID, ID } = account;
     const { locale } = theme;
-    return { token, locale, CompanyID, loading };
+    return { token, ID, locale, CompanyID, loading };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserList);

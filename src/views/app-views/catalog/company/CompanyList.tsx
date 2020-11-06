@@ -97,7 +97,10 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 this.setState({ loading: false });
                 console.log(res.data);
                 if (res.data.ErrorCode === 0) {
-                    this.setState({ users: [...res.data.CompanyList] });
+                    const filteredCompanies = res.data.CompanyList.filter(
+                        (company) => company.ID !== this.props.CompanyID
+                    );
+                    this.setState({ users: [...filteredCompanies] });
                 } else {
                     message
                         .loading(EXPIRE_TIME, 1.5)
@@ -176,7 +179,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
         const { users, userProfileVisible, selectedUser } = this.state;
 
         const tableColumns: ColumnsType<CompanyProps> = [
-            /* FIXME: Fix the CompanyList Array Object pathnames */
             {
                 title: "Company",
                 dataIndex: "",
