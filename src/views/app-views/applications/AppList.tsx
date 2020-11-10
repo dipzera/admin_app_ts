@@ -56,41 +56,61 @@ const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
     />
 );
 
-const ItemInfo = ({ Status, ID, packages }) => (
-    <>
-        {/* <h3>Packages</h3>
-        <Row gutter={16}>
-            {packages.map((pckg) => (
-                <Col key={pckg.ID} xl={12} xxl={12} md={12} lg={12}>
-                    <Card hoverable>
-                        <h4>{pckg.Name}</h4>
-                        <div>
-                            From {pckg.MinValue} to {pckg.MaxValue} for{" "}
-                            {pckg.Price}
-                        </div>
-                        <div className="text-center">
-                            <Tag
-                                className="text-capitalize mt-3"
-                                color={pckg.IsActive ? "cyan" : "red"}
-                            >
-                                {pckg.IsActive ? (
-                                    <CheckCircleOutlined />
-                                ) : (
-                                    <ClockCircleOutlined />
-                                )}
-                                <span className="ml-2 font-weight-semibold">
-                                    {pckg.IsActive ? "Active" : "Not Active"}
-                                </span>
-                            </Tag>
-                        </div>
-                    </Card>
-                </Col>
-            ))}
-        </Row> */}
-    </>
-);
-
-const GridItem = ({ data, removeId, showEditAppModal }) => (
+const GridItem = ({ showEditAppModal, data }) => {
+    return (
+        <Card>
+            <Flex className="mb-3 " justifyContent="between">
+                <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
+                    <div className="cursor-pointer">
+                        <Avatar
+                            src={data.Photo}
+                            icon={<ExperimentOutlined />}
+                            shape="square"
+                            size={60}
+                        />
+                    </div>
+                </Link>
+                {data.Status === 0 ? (
+                    <Tag
+                        className="text-capitalize cursor-pointer"
+                        color="volcano"
+                    >
+                        <ClockCircleOutlined />
+                        <span className="ml-2 font-weight-semibold">
+                            Not Active
+                        </span>
+                    </Tag>
+                ) : (
+                    <Tag className="text-capitalize" color="cyan">
+                        <CheckCircleOutlined />
+                        <span className="ml-2 font-weight-semibold">
+                            Active
+                        </span>
+                    </Tag>
+                )}
+            </Flex>
+            <div>
+                <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
+                    <h3 className="mb-0 cursor-pointer ">{data.Name}</h3>
+                </Link>
+                <p className="text-muted">By IntelectSoft</p>
+                <div style={{ minHeight: "70px" }}>{data.ShortDescription}</div>
+            </div>
+            <div>
+                <Link
+                    to={`${APP_PREFIX_PATH}/applications/${data.ID}`}
+                    className="mr-3"
+                >
+                    View
+                </Link>
+                <Link to="#" onClick={() => showEditAppModal(data)}>
+                    Edit
+                </Link>
+            </div>
+        </Card>
+    );
+};
+const GridItem2 = ({ data, removeId, showEditAppModal }) => (
     <Card>
         <Flex alignItems="center" justifyContent="between">
             <ItemHeader
@@ -110,13 +130,6 @@ const GridItem = ({ data, removeId, showEditAppModal }) => (
                 showEditAppModal={showEditAppModal}
             />
         </Flex>
-        <div className="mt-2">
-            <ItemInfo
-                ID={data.ID}
-                Status={data.Status}
-                packages={data.Packages}
-            />
-        </div>
     </Card>
 );
 
@@ -148,9 +161,7 @@ const ItemHeader = ({ name, avatar, shortDescription, Status }) => (
                         </span>
                     </Tag>
                 </Flex>
-                <div>
-                    <span className="text-muted ">{shortDescription}</span>
-                </div>
+                <div>{shortDescription}</div>
             </Flex>
         </Flex>
     </>
@@ -209,7 +220,6 @@ const AppList = ({ apps, signOut }) => {
                             <GridItem
                                 showEditAppModal={showEditAppModal}
                                 data={elm}
-                                removeId={(ID) => deleteItem(ID)}
                                 key={elm["ID"]}
                             />
                         </Col>
