@@ -1,4 +1,4 @@
-import { Button, Card, Col, Menu, Row, Tag } from "antd";
+import { Button, Card, Col, Menu, message, Modal, Row, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import {
     PlusOutlined,
@@ -16,10 +16,14 @@ import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "./EditPackageForm";
 import { signOut } from "../../../redux/actions/Auth";
+import { getMarketApps } from "../../../redux/actions/Applications";
 import AddPackageForm from "./AddPackageForm";
 import moment from "moment";
+import Axios from "axios";
+import { API_APP_URL } from "../../../configs/AppConfig";
+import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 
-const ItemAction = ({ packages, showEditPackageModal }) => (
+const ItemAction = ({ packages, showEditPackageModal, deletePackage }) => (
     <EllipsisDropdown
         menu={
             <Menu>
@@ -31,7 +35,7 @@ const ItemAction = ({ packages, showEditPackageModal }) => (
                     <span>Edit</span>
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item key={2}>
+                <Menu.Item key={2} onClick={() => deletePackage(packages.ID)}>
                     <DeleteOutlined />
                     <span>Delete</span>
                 </Menu.Item>
@@ -74,12 +78,13 @@ const ItemFooter = ({ packages }) => (
     </div>
 );
 
-const CardItem = ({ packages, showEditPackageModal }) => {
+const CardItem = ({ packages, showEditPackageModal, deletePackage }) => {
     return (
         <Card>
             <Flex alignItems="center" justifyContent="between">
                 <ItemHeader packages={packages} />
                 <ItemAction
+                    deletePackage={deletePackage}
                     packages={packages}
                     showEditPackageModal={showEditPackageModal}
                 />
@@ -131,12 +136,13 @@ const AboutItem = ({ appData }) => {
     );
 };
 
-const SingleAppPage = ({ match }) => {
+const SingleAppPage = ({ match, getMarketApps }) => {
     const { appID } = match.params;
-
+    const { confirm } = Modal;
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
+    const Token = useSelector((state) => state["auth"].token);
     const [selectedPackage, setSelectedPackage] = useState<{
         [key: string]: any;
     }>();
@@ -167,6 +173,27 @@ const SingleAppPage = ({ match }) => {
     if (!app) {
         return <div>No app found</div>;
     }
+
+    const deletePackage = (ID) => {
+        confirm({
+            title: `Are you sure you want to delete package with ID: ${ID}`,
+            onOk: () => {
+                Axios.post(`${API_APP_URL}/DeleteMarketAppPackage`, {
+                    ID,
+                    Token,
+                }).then((res) => {
+                    if (res.data.ErrorCode === 0) {
+                        message
+                            .success(DONE, 1.5)
+                            .then(() => getMarketApps(Token));
+                    } else if (res.data.ErrorCode === 118) {
+                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
+                    }
+                });
+            },
+            onCancel: () => {},
+        });
+    };
 
     return (
         <>
@@ -216,6 +243,7 @@ const SingleAppPage = ({ match }) => {
                             key={elm["ID"]}
                         >
                             <CardItem
+                                deletePackage={deletePackage}
                                 packages={elm}
                                 showEditPackageModal={showEditPackageModal}
                             />
@@ -226,4 +254,4 @@ const SingleAppPage = ({ match }) => {
         </>
     );
 };
-export default connect(null, { signOut })(SingleAppPage);
+export default connect(null, { signOut, getMarketApps })(SingleAppPage);

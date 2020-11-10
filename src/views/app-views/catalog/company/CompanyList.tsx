@@ -154,6 +154,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
         });
     };
     showConfirmRegistrationModal = (UserID: number) => {
+        // TODO: Change this to switch button that changes status of company from 1 to 0 and vice-versa
         const Token = this.props.token;
         Modal.confirm({
             title: "User registration confirmation",

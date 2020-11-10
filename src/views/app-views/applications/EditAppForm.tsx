@@ -7,9 +7,14 @@ import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import { getMarketApps } from "../../../redux/actions/Applications";
+import TextEditor from "./TextEditor";
 const EditAppForm = ({ apps, visible, close, signOut }) => {
     const [form] = Form.useForm();
 
+    const [textEditorValue, setTextEditorValue] = useState("");
+    const handleEditorChange = (content) => {
+        setTextEditorValue(content);
+    };
     /*  Destroy initialValues of form after Modal is closed */
     useEffect(() => {
         if (!visible) return;
@@ -23,11 +28,24 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
 
         setIsLoading(true);
         setTimeout(() => {
-            console.log({ App: { ...apps, ...values, Status }, Token });
+            console.log({
+                App: {
+                    ...apps,
+                    ...values,
+                    Status,
+                    TermsOfUse: textEditorValue,
+                },
+                Token,
+            });
             setIsLoading(false);
             axios
                 .post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
-                    App: { ...apps, ...values, Status },
+                    App: {
+                        ...apps,
+                        ...values,
+                        Status,
+                        TermsOfUse: textEditorValue,
+                    },
                     Token,
                 })
                 .then((res) => {
@@ -118,6 +136,14 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                             ]}
                         >
                             <Input.TextArea style={{ resize: "none" }} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={24}>
+                        <Form.Item label={"Terms of use"}>
+                            <TextEditor
+                                apps={apps}
+                                handleEditorChange={handleEditorChange}
+                            />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>
