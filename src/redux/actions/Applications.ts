@@ -1,5 +1,6 @@
 import { message } from "antd";
 import Axios from "axios";
+import { API_APP_URL } from "../../configs/AppConfig";
 import { API_IS_APP_SERVICE } from "../../constants/ApiConstant";
 import { EXPIRE_TIME } from "../../constants/Messages";
 import { SET_APPS } from "../constants/Applications";
@@ -25,4 +26,59 @@ export const getMarketApps = (Token) => async (dispatch) => {
             message.loading(EXPIRE_TIME, 1.5).then(() => dispatch(signOut()));
         }
     });
+};
+
+export const createMarketAppPackage = (
+    middlewareData,
+    MarketAppID,
+    Token
+) => async (dispatch, getState) => {
+    dispatch(showLoading());
+    Axios.post(`${API_IS_APP_SERVICE}/CreateMarketAppPackage`, {
+        AppPackage: {
+            ...middlewareData,
+        },
+        MarketAppID,
+        Token,
+    })
+        .then((res) => {
+            dispatch(hideLoading());
+            console.log(res.data);
+            const { ErrorCode, ErrorMessage } = res.data;
+            if (ErrorCode === 0) {
+                dispatch(getMarketApps(getState()["auth"].token));
+            } else if (ErrorCode === 118) {
+                message
+                    .loading(EXPIRE_TIME, 1.5)
+                    .then(() => dispatch(signOut()));
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(hideLoading());
+        });
+};
+
+export const deleteMarketAppPackage = (ID) => async (dispatch, getState) => {
+    dispatch(showLoading());
+    Axios.post(`${API_IS_APP_SERVICE}/DeleteMarketAppPackage`, {
+        ID,
+        Token: getState()["auth"].token,
+    })
+        .then((res) => {
+            dispatch(hideLoading());
+            console.log(res.data);
+            const { ErrorCode, ErrorMessage } = res.data;
+            if (ErrorCode === 0) {
+                dispatch(getMarketApps(getState()["auth"].token));
+            } else if (ErrorCode === 118) {
+                message
+                    .loading(EXPIRE_TIME, 1.5)
+                    .then(() => dispatch(signOut()));
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            dispatch(hideLoading());
+        });
 };

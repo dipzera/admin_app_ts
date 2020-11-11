@@ -33,6 +33,7 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                     ...apps,
                     ...values,
                     Status,
+
                     TermsOfUse: textEditorValue,
                 },
                 Token,

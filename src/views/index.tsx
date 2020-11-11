@@ -59,7 +59,7 @@ export const Views = (props) => {
     );
 };
 
-const mapStateToProps = ({ theme, auth }) => {
+const mapStateToProps = ({ auth, theme }) => {
     const { locale } = theme;
     const { token } = auth;
     return { locale, token };

@@ -1,4 +1,4 @@
-import React, { lazy, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import PageHeaderAlt from "../../../components/layout-components/PageHeaderAlt";
 import {
     Radio,
@@ -31,6 +31,10 @@ import EllipsisDropdown from "../../../components/shared-components/EllipsisDrop
 import EditAppForm from "./EditAppForm";
 import { Link, NavLink, Route } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { getMarketApps } from "../../../redux/actions/Applications";
+import { signOut } from "../../../redux/actions/Auth";
+import Loading from "../../../components/shared-components/Loading";
 
 const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
     <EllipsisDropdown
@@ -167,10 +171,12 @@ const ItemHeader = ({ name, avatar, shortDescription, Status }) => (
     </>
 );
 
-const AppList = ({ apps, signOut }) => {
+const AppList = ({ getMarketApps, signOut, token: Token, loading, apps }) => {
     const [selectedApp, setSelectedApp] = useState();
     const [editAppModalVisible, setEditAppModalVisible] = useState(false);
-
+    useEffect(() => {
+        getMarketApps(Token);
+    }, []);
     const showEditAppModal = (selected) => {
         setSelectedApp(selected);
         setEditAppModalVisible(true);
@@ -186,48 +192,48 @@ const AppList = ({ apps, signOut }) => {
 
     return (
         <>
-            <EditAppForm
-                apps={selectedApp}
-                visible={editAppModalVisible}
-                close={closeEditAppModal}
-                signOut={signOut}
-            />
-            {/* <PageHeaderAlt className="bg-white border-bottom">
-                <div className="container-fluid">
-                    <Flex
-                        justifyContent="between"
-                        alignItems="center"
-                        className="py-4"
-                    >
-                        <h2>Applications</h2>
-                    </Flex>
-                </div>
-            </PageHeaderAlt> */}
-            <div
-                className={`my-4 
+            {loading ? (
+                <Loading />
+            ) : (
+                <>
+                    <EditAppForm
+                        apps={selectedApp}
+                        visible={editAppModalVisible}
+                        close={closeEditAppModal}
+                        signOut={signOut}
+                    />
+                    <div
+                        className={`my-4 
                     container-fluid`}
-            >
-                <Row gutter={16}>
-                    {apps.map((elm) => (
-                        <Col
-                            xs={24}
-                            sm={24}
-                            lg={12}
-                            xl={8}
-                            xxl={8}
-                            key={elm["ID"]}
-                        >
-                            <GridItem
-                                showEditAppModal={showEditAppModal}
-                                data={elm}
-                                key={elm["ID"]}
-                            />
-                        </Col>
-                    ))}
-                </Row>
-            </div>
+                    >
+                        <Row gutter={16}>
+                            {apps.map((elm) => (
+                                <Col
+                                    xs={24}
+                                    sm={24}
+                                    lg={12}
+                                    xl={6}
+                                    xxl={6}
+                                    key={elm["ID"]}
+                                >
+                                    <GridItem
+                                        showEditAppModal={showEditAppModal}
+                                        data={elm}
+                                        key={elm["ID"]}
+                                    />
+                                </Col>
+                            ))}
+                        </Row>
+                    </div>
+                </>
+            )}
         </>
     );
 };
 
-export default AppList;
+const mapStateToProps = ({ apps, auth }) => {
+    const { loading, token } = auth;
+    return { apps, loading, token };
+};
+
+export default connect(mapStateToProps, { getMarketApps, signOut })(AppList);

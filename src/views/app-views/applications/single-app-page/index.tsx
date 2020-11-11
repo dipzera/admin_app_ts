@@ -21,13 +21,14 @@ import AddPackageForm from "../AddPackageForm";
 import moment from "moment";
 import Axios from "axios";
 import { API_APP_URL, APP_PREFIX_PATH } from "../../../../configs/AppConfig";
-import { DONE, EXPIRE_TIME } from "../../../../constants/Messages";
+import { DONE, EXPIRE_TIME, LOADING } from "../../../../constants/Messages";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import Packages from "./Packages";
 import Description from "./Description";
 import TermsOfUse from "./TermsOfUse";
 import InnerAppLayout from "../../../../layouts/inner-app-layout";
 import EditAppForm from "../EditAppForm";
+import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 
 const ItemAction = ({ data, showEditAppModal }) => (
     <EllipsisDropdown
@@ -191,17 +192,24 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
         confirm({
             title: `Are you sure you want to delete package with ID: ${ID}`,
             onOk: () => {
-                Axios.post(`${API_APP_URL}/DeleteMarketAppPackage`, {
-                    ID,
-                    Token,
-                }).then((res) => {
-                    if (res.data.ErrorCode === 0) {
-                        message
-                            .success(DONE, 1.5)
-                            .then(() => getMarketApps(Token));
-                    } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                    }
+                message.loading(LOADING, 1.5).then(() => {
+                    Axios.post(`${API_IS_APP_SERVICE}/DeleteMarketAppPackage`, {
+                        ID,
+                        Token,
+                    }).then((res) => {
+                        console.log(res.data);
+                        if (res.data.ErrorCode === 0) {
+                            getMarketApps(Token);
+                            message.success(
+                                `Deleted package with ID: ${ID}`,
+                                2
+                            );
+                        } else if (res.data.ErrorCode === 118) {
+                            message
+                                .loading(EXPIRE_TIME, 1.5)
+                                .then(() => signOut());
+                        }
+                    });
                 });
             },
             onCancel: () => {},

@@ -14,10 +14,13 @@ import {
 import axios from "axios";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
-import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
+import { DONE, EXPIRE_TIME, LOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import { getMarketApps } from "../../../redux/actions/Applications";
+import {
+    createMarketAppPackage,
+    getMarketApps,
+} from "../../../redux/actions/Applications";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
@@ -38,70 +41,55 @@ const AddPackageForm = ({
         form.resetFields();
     }, [visible, form]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const loading = useSelector((state) => state["auth"].loading);
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
     const onFinish = (values) => {
-        // console.log(values);
+        const Status = values.Status ? 1 : 0;
         const { ValidDate, Range } = values;
         const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete values.ValidDate;
         delete values.Range;
-        setIsLoading(true);
-        setTimeout(() => {
-            console.log({
-                AppPackage: {
+        console.log({
+            AppPackage: {
+                ...values,
+                ValidFrom,
+                ValidTo,
+                MinValue: Range[0],
+                MaxValue: Range[1],
+                Status,
+            },
+            MarketAppID: appID,
+            Token,
+        });
+        dispatch(
+            createMarketAppPackage(
+                {
                     ...values,
                     ValidFrom,
                     ValidTo,
                     MinValue: Range[0],
                     MaxValue: Range[1],
+                    Status,
                 },
-                MarketAppID: appID,
-                Token,
-            });
-            setIsLoading(false);
-            axios
-                .post(`${API_IS_APP_SERVICE}/CreateMarketAppPackage`, {
-                    AppPackage: {
-                        ...values,
-                        ValidFrom,
-                        ValidTo,
-                        MinValue: Range[0],
-                        MaxValue: Range[1],
-                    },
-                    MarketAppID: appID,
-                    Token,
-                })
-                .then((res) => {
-                    console.log(res.data);
-
-                    if (res.data.ErrorCode === 0) {
-                        message.success(DONE, 1.5);
-                        dispatch(getMarketApps(Token));
-                    } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                    }
-                });
-        }, 1000);
+                appID,
+                Token
+            )
+        );
     };
 
     const onFinishFailed = () => {};
 
     const onOk = () => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            form.validateFields()
-                .then((values) => {
-                    close();
-                    onFinish(values);
-                })
-                .catch((info) => {
-                    console.log("Validate Failed:", info);
-                });
-        }, 1000);
+        form.validateFields()
+            .then((values) => {
+                close();
+                onFinish(values);
+            })
+            .catch((info) => {
+                console.log("Validate Failed:", info);
+            });
     };
     return (
         <Modal
@@ -109,7 +97,7 @@ const AddPackageForm = ({
             title={"Add package"}
             visible={visible}
             onCancel={close}
-            confirmLoading={isLoading}
+            confirmLoading={loading}
             onOk={onOk}
         >
             <Form
@@ -173,7 +161,7 @@ const AddPackageForm = ({
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
                             label={"Activate package"}
-                            name="IsActive"
+                            name="Status"
                             valuePropName={"checked"}
                         >
                             <Switch />
