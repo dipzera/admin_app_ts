@@ -6,7 +6,7 @@ import { REMOVE_AVATAR, UPDATE_SETTINGS } from "../constants/Account";
 import axios from "axios";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { hideLoading, showLoading, signOut } from "./Auth";
+import { hideLoading, refreshToken, showLoading, signOut } from "./Auth";
 import { DONE, EXPIRE_TIME, LOADING } from "../../constants/Messages";
 
 export const updateSettings = (payload) => ({
@@ -35,14 +35,12 @@ export const getProfileInfo = (Token) => {
                         dispatch(onLocaleChange("en"));
                     }
                 } else {
-                    message
-                        .loading(EXPIRE_TIME, 1.5)
-                        .then(() => dispatch(signOut()));
+                    dispatch(refreshToken(Token));
                 }
             });
     };
 };
-export const setProfileInfo = (accountInfo) => {
+export const setProfileInfo = (accountInfo, Token) => {
     return async (dispatch) => {
         axios
             .post(`${API_IS_APP_SERVICE}/UpdateUser`, accountInfo)
@@ -51,13 +49,7 @@ export const setProfileInfo = (accountInfo) => {
                     const { User } = accountInfo;
                     dispatch(updateSettings(User));
                 } else if (res.data.ErrorCode === 118) {
-                    message.loading(
-                        "Time has expired. Redirecting you to login page...",
-                        1.5
-                    );
-                    setTimeout(() => {
-                        signOut();
-                    }, 1500);
+                    dispatch(refreshToken(Token));
                 }
             });
     };

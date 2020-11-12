@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Card, Table, Tag, Tooltip, message, Button, Modal } from "antd";
+import { Card, Table, Tag, Tooltip, message, Button, Modal, Input } from "antd";
 import {
     EyeOutlined,
+    SearchOutlined,
     DeleteOutlined,
     KeyOutlined,
     EditOutlined,
@@ -23,19 +24,19 @@ import {
 } from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
-import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
+import { signOut, refreshToken } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
 import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import {
-    EXPIRE_TIME,
-    REGISTRATION_SUCCESS,
-} from "../../../../constants/Messages";
+import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../../configs/AppConfig";
+import utils from "../../../../utils";
+import Flex from "../../../../components/shared-components/Flex";
 
 interface CompanyStateProps {
     users: CompanyProps[];
+    companiesToSearch: any;
     userProfileVisible: boolean;
     selectedUser: any;
     isHidden: string;
@@ -70,12 +71,13 @@ interface ReduxStoreProps {
     locale: string;
     CompanyID: number;
     signOut: () => any;
-    sendActivationCode: (Token: any, UserID: any) => any;
+    refreshToken: any;
 }
 export class CompanyList extends Component<ReduxStoreProps> {
     /* MAKE THIS FROM API CALL */
     state: CompanyStateProps = {
         users: [],
+        companiesToSearch: [],
         userProfileVisible: false,
         selectedUser: null,
         isHidden: "block",
@@ -101,10 +103,11 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         (company) => company.ID !== this.props.CompanyID
                     );
                     this.setState({ users: [...filteredCompanies] });
+                    this.setState({
+                        companiesToSearch: [...filteredCompanies],
+                    });
                 } else {
-                    message
-                        .loading(EXPIRE_TIME, 1.5)
-                        .then(() => this.props.signOut());
+                    this.props.refreshToken(this.props.token);
                 }
             });
     }
@@ -156,8 +159,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
     showConfirmRegistrationModal = (UserID: number) => {
         // TODO: Change this to switch button that changes status of company from 1 to 0 and vice-versa
         const Token = this.props.token;
+        const refreshToken = this.props.refreshToken;
         Modal.confirm({
-            title: "User registration confirmation",
+            title: "Company registration confirmation",
             content: "Press OK if you want us to send a new activation message",
             onOk() {
                 axios
@@ -168,12 +172,25 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         },
                     })
                     .then((res) => {
-                        message.success(REGISTRATION_SUCCESS, 1.5);
                         console.log(res.data);
+                        if (res.data.ErrorCode === 0) {
+                            message.success(EMAIL_CONFIRM_MSG, 1.5);
+                        } else if (res.data.ErrorCode === 118) {
+                            refreshToken(Token);
+                        }
                     });
             },
             onCancel() {},
         });
+    };
+
+    onSearch = (e) => {
+        const value = e.currentTarget.value;
+        const searchArray = value
+            ? this.state.users
+            : this.state.companiesToSearch;
+        const data = utils.wildCardSearch(searchArray, value);
+        this.setState({ users: data });
     };
 
     render() {
@@ -306,25 +323,36 @@ export class CompanyList extends Component<ReduxStoreProps> {
             },
         ];
         return (
-            <Card bodyStyle={{ padding: "0px", position: "relative" }}>
-                <Table
-                    loading={this.state.loading}
-                    columns={tableColumns}
-                    dataSource={users}
-                    rowKey="ID"
-                    style={{ position: "relative" }}
-                    locale={{
-                        emptyText: !this["state"].loading && (
-                            <PlusOutlined
-                                onClick={this.showNewUserModal}
-                                style={{
-                                    cursor: "pointer",
-                                    fontSize: "36px",
-                                }}
-                            />
-                        ),
-                    }}
-                />
+            <Card>
+                <Flex className="mb-1" mobileFlex={false}>
+                    <div className="mr-md-3 mb-3">
+                        <Input
+                            placeholder="Search"
+                            prefix={<SearchOutlined />}
+                            onChange={(e) => this.onSearch(e)}
+                        />
+                    </div>
+                </Flex>
+                <div className="table-responsive">
+                    <Table
+                        loading={this.state.loading}
+                        columns={tableColumns}
+                        dataSource={users}
+                        rowKey="ID"
+                        style={{ position: "relative" }}
+                        locale={{
+                            emptyText: !this["state"].loading && (
+                                <PlusOutlined
+                                    onClick={this.showNewUserModal}
+                                    style={{
+                                        cursor: "pointer",
+                                        fontSize: "36px",
+                                    }}
+                                />
+                            ),
+                        }}
+                    />
+                </div>
                 <UserView
                     data={selectedUser}
                     visible={userProfileVisible}
@@ -379,6 +407,6 @@ const mapStateToProps = ({ auth, theme, account }) => {
 };
 const mapDispatchToProps = {
     signOut,
-    sendActivationCode,
+    refreshToken,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(CompanyList);

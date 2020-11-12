@@ -21,7 +21,7 @@ import AppLocale from "../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
 import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
-import { signOut } from "../../../redux/actions/Auth";
+import { refreshToken, signOut } from "../../../redux/actions/Auth";
 import {
     DONE,
     ERROR,
@@ -65,9 +65,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     this.setState({ Company: { ...Company } });
                     this.formRef["current"].setFieldsValue(Company);
                 } else if (res.data.ErrorCode === 118) {
-                    message
-                        .loading(EXPIRE_TIME, 1.5)
-                        .then(() => this.props.signOut());
+                    this.props.refreshToken(this.props.token);
                 } else {
                     message.error(ErrorMessage);
                 }
@@ -505,6 +503,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
 const mapDispatchToProps = {
     updateSettings,
     signOut,
+    refreshToken,
 };
 
 const mapStateToProps = ({ account, theme, auth }) => {

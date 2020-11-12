@@ -80,7 +80,7 @@ class EditProfile extends Component<EditProfileProps> {
             locale,
             updateSettings,
             setProfileInfo,
-            token,
+            token: Token,
         } = this.props;
 
         const currentAppLocale = AppLocale[locale];
@@ -100,13 +100,16 @@ class EditProfile extends Component<EditProfileProps> {
             });
             setTimeout(async () => {
                 // console.log({ Token: token, User: { ...account, ...values } });
-                setProfileInfo({
-                    Token: token,
-                    User: {
-                        ...account,
-                        ...values,
+                setProfileInfo(
+                    {
+                        Token,
+                        User: {
+                            ...account,
+                            ...values,
+                        },
                     },
-                });
+                    Token
+                );
                 message.success({
                     content: (
                         <IntlProvider
@@ -147,10 +150,13 @@ class EditProfile extends Component<EditProfileProps> {
             }
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, (imageUrl) => {
-                    setProfileInfo({
-                        Token: token,
-                        User: { ...account, Photo: imageUrl },
-                    });
+                    setProfileInfo(
+                        {
+                            Token,
+                            User: { ...account, Photo: imageUrl },
+                        },
+                        Token
+                    );
                 });
                 message.success({
                     content: (
@@ -183,10 +189,13 @@ class EditProfile extends Component<EditProfileProps> {
         };
 
         const onRemoveAvater = () => {
-            setProfileInfo({
-                Token: token,
-                User: { ...account, Photo: "" },
-            });
+            setProfileInfo(
+                {
+                    Token,
+                    User: { ...account, Photo: "" },
+                },
+                Token
+            );
         };
 
         return (

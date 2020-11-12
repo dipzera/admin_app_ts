@@ -21,7 +21,7 @@ import AppLocale from "../../../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
 import { API_IS_APP_SERVICE } from "../../../../../constants/ApiConstant";
-import { signOut } from "../../../../../redux/actions/Auth";
+import { signOut, refreshToken } from "../../../../../redux/actions/Auth";
 import {
     DONE,
     ERROR,
@@ -31,6 +31,7 @@ import {
     UPLOADED,
     UPLOADING,
 } from "../../../../../constants/Messages";
+import { WizardContext } from "./WizardContext";
 const publicIp = require("react-public-ip");
 
 function beforeUpload(file) {
@@ -48,7 +49,7 @@ function beforeUpload(file) {
 class CompanyFormWizard extends Component<{ [key: string]: any }> {
     avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
 
-    state = { Company: {} } as { [key: string]: any };
+    static contextType = WizardContext;
     formRef = React.createRef() as any;
 
     getBase64(img, callback) {
@@ -65,40 +66,18 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
         };
         const currentAppLocale = AppLocale[locale];
         const onFinish = async (values) => {
-            const key = "updatable";
-            message.loading({
-                content: UPDATING,
-                key,
-                duration: 1,
-            });
-            setTimeout(async () => {
-                console.log({
-                    Company: { ...this.state.Company, ...values },
+            this.context.setWizardData({
+                ...this.context.wizardData,
+                CompanyData: {
+                    Company: {
+                        ...this.context.wizardData.CompanyData.Company,
+                        ...values,
+                    },
                     Token: this.props.token,
                     info: await publicIp.v4(),
-                });
-                axios
-                    .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
-                        Company: {
-                            ...this.state.Company,
-                            ...values,
-                        },
-                        Token: this.props.token,
-                        info: (await publicIp.v4()) || "",
-                    })
-                    .then((res) => {
-                        console.log(res.data);
-                        if (res.data.ErrorCode === 0) {
-                            message.success(DONE, 2);
-                        } else if (res.data.ErrorCode === 118) {
-                            message
-                                .loading(EXPIRE_TIME, 1.5)
-                                .then(() => signOut());
-                        } else {
-                            message.error(ERROR, 2);
-                        }
-                    });
-            }, 1000);
+                },
+            });
+            this.context.setCurrent(this.context.current + 1);
         };
 
         const onFinishFailed = (errorInfo) => {
@@ -113,30 +92,15 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             }
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, async (imageUrl) => {
-                    axios
-                        .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+                    this.context.setWizardData({
+                        ...this.context.wizardData,
+                        CompanyData: {
                             Company: {
-                                ...this.state.Company,
+                                ...this.context.wizardData.CompanyData.Company,
                                 Logo: imageUrl,
                             },
-                            Token: this.props.token,
-                            info: (await publicIp.v4()) || "",
-                        })
-                        .then((res) => {
-                            console.log(res.data);
-                            if (res.data.ErrorCode === 0) {
-                                this.setState({
-                                    Company: {
-                                        ...this.state.Company,
-                                        Logo: imageUrl,
-                                    },
-                                });
-                            } else if (res.data.ErrorCode === 118) {
-                                message
-                                    .loading(EXPIRE_TIME, 1.5)
-                                    .then(() => signOut());
-                            }
-                        });
+                        },
+                    });
                 });
                 message.success({ content: UPLOADED, key });
             } else {
@@ -145,25 +109,15 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
         };
 
         const onRemoveAvater = async () => {
-            axios
-                .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+            this.context.setWizardData({
+                ...this.context.wizardData,
+                CompanyData: {
                     Company: {
-                        ...this.state.Company,
+                        ...this.context.wizardData.CompanyData.Company,
                         Logo: "",
                     },
-                    Token: this.props.token,
-                    info: (await publicIp.v4()) || "",
-                })
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data.ErrorCode === 0) {
-                        this.setState({
-                            Company: { ...this.state.Company, Logo: "" },
-                        });
-                    } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                    }
-                });
+                },
+            });
         };
 
         return (
@@ -175,7 +129,10 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                 >
                     <Avatar
                         size={90}
-                        src={this.state.Company.Logo}
+                        src={
+                            this.context.wizardData.CompanyData.Company &&
+                            this.context.wizardData.CompanyData.Company.Logo
+                        }
                         icon={<UserOutlined />}
                     />
                     <div className="ml-md-3 mt-md-0 mt-3">
@@ -194,10 +151,11 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                 </Flex>
                 <div className="mt-4">
                     <Form
-                        ref={this.formRef}
                         name="basicInformation"
                         layout="vertical"
-                        initialValues={this.state.Company}
+                        initialValues={
+                            this.context.wizardData.CompanyData.Company
+                        }
                         onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
                     >
@@ -214,7 +172,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="BIC"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your BIC!",
                                                 },
@@ -242,7 +200,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="Bank"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your bank!",
                                                 },
@@ -263,7 +221,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="CommercialName"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your commercial name!",
                                                 },
@@ -282,7 +240,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IBAN"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your IBAN!",
                                                 },
@@ -301,7 +259,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IDNO"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your IDNO!",
                                                 },
@@ -332,7 +290,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalAddress"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your juridical address!",
                                                 },
@@ -353,7 +311,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalName"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your juridical name!",
                                                 },
@@ -374,7 +332,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="PhoneNumber"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your phone number!",
                                                 },
@@ -403,7 +361,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="OfficeAddress"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your office address!",
                                                 },
@@ -424,7 +382,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="VATCode"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your VAT code!",
                                                 },
@@ -450,7 +408,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="Email"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     type: "email",
                                                     message:
                                                         "Please enter a valid email!",
@@ -459,6 +417,12 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                         >
                                             <Input />
                                         </Form.Item>
+                                        <Button
+                                            htmlType="submit"
+                                            type="primary"
+                                        >
+                                            Next
+                                        </Button>
                                     </Col>
                                 </Row>
                             </Col>
@@ -473,6 +437,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
 const mapDispatchToProps = {
     updateSettings,
     signOut,
+    refreshToken,
 };
 
 const mapStateToProps = ({ account, theme, auth }) => {

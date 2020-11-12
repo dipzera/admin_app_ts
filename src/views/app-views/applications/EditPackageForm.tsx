@@ -17,7 +17,10 @@ import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import { getMarketApps } from "../../../redux/actions/Applications";
+import {
+    getMarketApps,
+    updateMarketAppPackage,
+} from "../../../redux/actions/Applications";
 interface IEditPackageForm {
     packages: any;
     visible: boolean;
@@ -51,64 +54,41 @@ const EditPackageForm = ({
         delete packages.ValidDate;
         delete values.Range;
         delete values.ValidDate;
-        setIsLoading(true);
-        setTimeout(() => {
-            console.log({
-                AppPackage: {
-                    ...packages,
-                    ValidFrom,
-                    ValidTo,
-                    MinValue: Range[0],
-                    MaxValue: Range[1],
-                    ...values,
-                    Status,
-                },
-                Token,
-            });
-            setIsLoading(false);
-            axios
-                .post(`${API_IS_APP_SERVICE}/UpdateMarketAppPackage`, {
-                    AppPackage: {
-                        ...packages,
-                        ValidFrom,
-                        ValidTo,
-                        MinValue: Range[0],
-                        MaxValue: Range[1],
-                        ...values,
-                        Status,
-                    },
-                    Token,
-                })
-                .then((res) => {
-                    console.log(res.data);
-
-                    if (res.data.ErrorCode === 0) {
-                        message.success(DONE, 1.5);
-                        dispatch(getMarketApps(Token));
-                    } else if (res.data.ErrorCode === 118) {
-                        message
-                            .loading(EXPIRE_TIME, 1.5)
-                            .then(() => dispatch(signOut()));
-                    }
-                });
-        }, 1000);
+        const AppPackage = {
+            ...packages,
+            ValidFrom,
+            ValidTo,
+            MinValue: Range[0],
+            MaxValue: Range[1],
+            ...values,
+            Status,
+        };
+        console.log({
+            AppPackage: {
+                ...packages,
+                ValidFrom,
+                ValidTo,
+                MinValue: Range[0],
+                MaxValue: Range[1],
+                ...values,
+                Status,
+            },
+            Token,
+        });
+        dispatch(updateMarketAppPackage(AppPackage, Token));
     };
 
     const onFinishFailed = () => {};
 
     const onOk = () => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            form.validateFields()
-                .then((values) => {
-                    close();
-                    onFinish(values);
-                })
-                .catch((info) => {
-                    console.log("Validate Failed:", info);
-                });
-        }, 1000);
+        form.validateFields()
+            .then((values) => {
+                close();
+                onFinish(values);
+            })
+            .catch((info) => {
+                console.log("Validate Failed:", info);
+            });
     };
     return (
         <Modal

@@ -4,10 +4,7 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
-import {
-    EXPIRE_TIME,
-    REGISTRATION_SUCCESS,
-} from "../../../../constants/Messages";
+import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
 import { MaskedInput } from "antd-mask-input";
 import utils from "../../../../utils";
 const publicIp = require("react-public-ip");
@@ -46,7 +43,7 @@ export const CompanyModalAdd = ({
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
-                    message.success(REGISTRATION_SUCCESS, 2);
+                    message.success(EMAIL_CONFIRM_MSG, 2);
                 } else if (res.data.ErrorCode === 118) {
                     message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                 } else {

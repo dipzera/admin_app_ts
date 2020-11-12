@@ -15,13 +15,18 @@ import {
     SIGNIN_WITH_FACEBOOK_AUTHENTICATED,
     HIDE_LOADING,
     VALIDATE_USER,
+    SET_TOKEN,
 } from "../constants/Auth";
 import axios from "axios";
 import { message, Modal } from "antd";
 import { IS_USER_ACTIVATED } from "../constants/Auth";
 import { getProfileInfo } from "./Account";
 import { onLocaleChange } from "./Theme";
-import { PASSWORD_SENT, REGISTRATION_SUCCESS } from "../../constants/Messages";
+import {
+    EMAIL_CONFIRM_MSG,
+    EXPIRE_TIME,
+    PASSWORD_SENT,
+} from "../../constants/Messages";
 const publicIp = require("react-public-ip");
 
 export const signIn = (user) => ({
@@ -91,7 +96,25 @@ export const isUserActivated = (boolean, Token) => ({
     activationToken: Token,
 });
 
-export const sendActivationCode = (Token, UserID = null) => {
+export const refreshToken = (Token) => async (dispatch) => {
+    axios
+        .get(`${API_IS_AUTH_SERVICE}/RefreshToken`, {
+            params: { Token },
+        })
+        .then((res) => {
+            console.log(res.data);
+            console.log(Token);
+            if (res.data.ErrorCode === 0) {
+                dispatch({ type: SET_TOKEN, token: res.data.Token });
+                window.location.reload();
+            } else if (res.data.ErrorCode === 105) {
+                message
+                    .loading(EXPIRE_TIME, 1.5)
+                    .then(() => dispatch(signOut()));
+            }
+        });
+};
+const sendActivationCode = (Token, UserID = null) => {
     return async (dispatch) => {
         Modal.confirm({
             title: "Confirm registration",
@@ -114,7 +137,7 @@ export const sendActivationCode = (Token, UserID = null) => {
                                 .then((res) => {
                                     console.log(res.data);
                                     if (res.data.ErrorCode === 0) {
-                                        message.success(REGISTRATION_SUCCESS);
+                                        message.success(EMAIL_CONFIRM_MSG);
                                     } else {
                                         dispatch(
                                             showAuthMessage(

@@ -36,30 +36,6 @@ import { getMarketApps } from "../../../redux/actions/Applications";
 import { signOut } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
 
-const ItemAction = ({ data, id, removeId, showEditAppModal }) => (
-    <EllipsisDropdown
-        menu={
-            <Menu>
-                <Menu.Item key="1">
-                    <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
-                        <EyeOutlined />
-                        <span> View</span>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="2" onClick={() => showEditAppModal(data)}>
-                    <EditOutlined />
-                    <span>Edit</span>
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Item key="3">
-                    <DeleteOutlined />
-                    <span>Delete</span>
-                </Menu.Item>
-            </Menu>
-        }
-    />
-);
-
 const GridItem = ({ showEditAppModal, data }) => {
     return (
         <Card>
@@ -107,36 +83,15 @@ const GridItem = ({ showEditAppModal, data }) => {
                 >
                     View
                 </Link>
-                <Link to="#" onClick={() => showEditAppModal(data)}>
+                <Link
+                    to={`${APP_PREFIX_PATH}/applications/${data.ID}/edit`} /* onClick={() => showEditAppModal(data)} */
+                >
                     Edit
                 </Link>
             </div>
         </Card>
     );
 };
-const GridItem2 = ({ data, removeId, showEditAppModal }) => (
-    <Card>
-        <Flex alignItems="center" justifyContent="between">
-            <ItemHeader
-                Status={data.Status}
-                avatar={data.Photo}
-                name={data.Name}
-                shortDescription={
-                    data.ShortDescription
-                        ? data.ShortDescription
-                        : "Here could be your description. Here could be your description .Here could be your description."
-                }
-            />
-            <ItemAction
-                data={data}
-                id={data.ID}
-                removeId={removeId}
-                showEditAppModal={showEditAppModal}
-            />
-        </Flex>
-    </Card>
-);
-
 const ItemHeader = ({ name, avatar, shortDescription, Status }) => (
     <>
         <Flex>
@@ -174,9 +129,11 @@ const ItemHeader = ({ name, avatar, shortDescription, Status }) => (
 const AppList = ({ getMarketApps, signOut, token: Token, loading, apps }) => {
     const [selectedApp, setSelectedApp] = useState();
     const [editAppModalVisible, setEditAppModalVisible] = useState(false);
+
     useEffect(() => {
         getMarketApps(Token);
     }, []);
+
     const showEditAppModal = (selected) => {
         setSelectedApp(selected);
         setEditAppModalVisible(true);
@@ -184,10 +141,6 @@ const AppList = ({ getMarketApps, signOut, token: Token, loading, apps }) => {
 
     const closeEditAppModal = () => {
         setEditAppModalVisible(false);
-    };
-
-    const deleteItem = (id) => {
-        const data = apps.filter((elm) => elm["ID"] !== id);
     };
 
     return (

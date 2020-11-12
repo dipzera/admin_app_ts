@@ -1,7 +1,19 @@
 import React, { Component } from "react";
-import { Card, Table, Tag, Tooltip, message, Button, Modal } from "antd";
+import {
+    Card,
+    Table,
+    Tag,
+    Tooltip,
+    message,
+    Button,
+    Modal,
+    Input,
+    Menu,
+} from "antd";
 import {
     EyeOutlined,
+    SearchOutlined,
+    PlusCircleOutlined,
     DeleteOutlined,
     EditOutlined,
     KeyOutlined,
@@ -23,16 +35,21 @@ import {
 } from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
-import { signOut } from "../../../../redux/actions/Auth";
+import { refreshToken, signOut } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
 import { useApiRequest } from "../../../../api";
 import Utils from "../../../../utils";
 import {
+    ACTIVATION_MSG_CONTENT,
+    ACTIVATION_MSG_TITLE,
+    EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
-    REGISTRATION_SUCCESS,
 } from "../../../../constants/Messages";
+import Flex from "../../../../components/shared-components/Flex";
+import utils from "../../../../utils";
+import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 
 export interface UsersProps {
     CompanyID: number;
@@ -50,6 +67,9 @@ export interface UsersProps {
 
 interface UserListStateProps {
     users: UsersProps[];
+    selectedRows: any;
+    selectedKeys: any;
+    usersToSearch: any;
     userProfileVisible: boolean;
     selectedUser: any;
     isHidden: string;
@@ -64,7 +84,7 @@ interface ReduxStoreProps {
     ID: number;
     CompanyID: number;
     signOut: any;
-    /* From state */
+    refreshToken: any;
     loading: boolean;
 }
 
@@ -72,6 +92,9 @@ export class UserList extends Component<ReduxStoreProps> {
     /* MAKE THIS FROM API CALL */
     state: UserListStateProps = {
         users: [],
+        selectedRows: [],
+        selectedKeys: [],
+        usersToSearch: [],
         userProfileVisible: false,
         selectedUser: null,
         isHidden: "block",
@@ -96,11 +119,10 @@ export class UserList extends Component<ReduxStoreProps> {
                     const filteredUsers = res.data.Users.filter(
                         (user) => user.ID !== this.props.ID
                     );
+                    this.setState({ usersToSearch: [...filteredUsers] });
                     this.setState({ users: [...filteredUsers] });
                 } else {
-                    message
-                        .loading(EXPIRE_TIME, 1.5)
-                        .then(() => this.props.signOut());
+                    this.props.refreshToken(this.props.token);
                 }
             });
     }
@@ -152,9 +174,10 @@ export class UserList extends Component<ReduxStoreProps> {
 
     showConfirmRegistrationModal = (UserID: number) => {
         const Token = this.props.token;
+        const refreshToken = this.props.refreshToken;
         Modal.confirm({
-            title: "User registration confirmation",
-            content: "Press OK if you want us to send a new activation message",
+            title: ACTIVATION_MSG_TITLE,
+            content: ACTIVATION_MSG_CONTENT,
             onOk() {
                 axios
                     .get(`${API_IS_AUTH_SERVICE}/SendActivationCode`, {
@@ -164,19 +187,81 @@ export class UserList extends Component<ReduxStoreProps> {
                         },
                     })
                     .then((res) => {
-                        message.success(REGISTRATION_SUCCESS, 1.5);
                         console.log(res.data);
+                        if (res.data.ErrorCode === 0) {
+                            message.success(EMAIL_CONFIRM_MSG, 1.5);
+                        } else if (res.data.ErrorCode === 118) {
+                            refreshToken(Token);
+                        }
                     });
             },
             onCancel() {},
         });
     };
 
+    rowSelection = {
+        onChange: (key, rows) => {
+            this.setState({ selectedKeys: key });
+            this.setState({ selectedRows: rows });
+        },
+    };
+
+    deleteRow = (row) => {
+        const objKey = "ID";
+        let data = this.state.users;
+        if (this.state.selectedRows.length > 1) {
+            this.state.selectedRows.forEach((elm) => {
+                /* Make API CALL TO DELETE USER */
+                data = utils.deleteArrayRow(data, objKey, elm.ID);
+                this.setState({ users: data });
+                this.setState({ selectedRows: [] });
+            });
+        } else {
+            data = utils.deleteArrayRow(data, objKey, row.ID);
+            /* Make API CALL TO DELETE USER */
+            this.setState({ users: data });
+        }
+    };
+
+    dropdownMenu = (row) => (
+        <Menu>
+            <Menu.Item>
+                <Flex alignItems="center">
+                    <EyeOutlined />
+                    <span className="ml-2">View Details</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.deleteRow(row)}>
+                <Flex alignItems="center">
+                    <DeleteOutlined />
+                    <span className="ml-2">
+                        {this.state.selectedRows.length > 0
+                            ? `Delete (${this.state.selectedRows.length})`
+                            : "Delete"}
+                    </span>
+                </Flex>
+            </Menu.Item>
+        </Menu>
+    );
+
     render() {
-        const { users, userProfileVisible, selectedUser } = this.state;
+        const {
+            users,
+            usersToSearch,
+            userProfileVisible,
+            selectedUser,
+        } = this.state;
         const { token } = this.props;
 
+        const onSearch = (e) => {
+            const value = e.currentTarget.value;
+            const searchArray = value ? users : usersToSearch;
+            const data = utils.wildCardSearch(searchArray, value);
+            this.setState({ users: data });
+        };
+
         const tableColumns: ColumnsType<UsersProps> = [
+            { title: "ID", dataIndex: "ID" },
             {
                 title: "User",
                 dataIndex: "name",
@@ -245,85 +330,65 @@ export class UserList extends Component<ReduxStoreProps> {
                 },
             },
             {
-                title: () => (
-                    <div className="text-right">
-                        <Button onClick={this.showNewUserModal} type="primary">
-                            Register user
-                        </Button>
-                    </div>
-                ),
                 dataIndex: "actions",
                 render: (_, elm: UsersProps) => (
                     <div className="text-right">
-                        {elm.Status === 0 && (
-                            <Tooltip title="Activate">
-                                <Button
-                                    icon={<KeyOutlined />}
-                                    className="mr-2"
-                                    size="small"
-                                    onClick={() =>
-                                        this.showConfirmRegistrationModal(
-                                            elm.ID
-                                        )
-                                    }
-                                />
-                            </Tooltip>
-                        )}
-                        <Tooltip title="Edit">
-                            <Button
-                                type="dashed"
-                                icon={<EditOutlined />}
-                                className="mr-2"
-                                size="small"
-                                onClick={() => this.showEditModal(elm)}
-                            />
-                        </Tooltip>
-                        <Tooltip title="View">
-                            <Button
-                                type="primary"
-                                className="mr-2"
-                                icon={<EyeOutlined />}
-                                onClick={() => {
-                                    this.showUserProfile(elm);
-                                }}
-                                size="small"
-                            />
-                        </Tooltip>
-                        {/* <Tooltip title="Delete">
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  this.deleteUser(elm.id);
-                }}
-                size="small"
-              />
-            </Tooltip> */}
+                        <EllipsisDropdown menu={this.dropdownMenu(elm)} />
                     </div>
                 ),
             },
         ];
         return (
-            <Card bodyStyle={{ padding: "0px", position: "relative" }}>
-                <Table
-                    loading={this.state.loading}
-                    columns={tableColumns}
-                    dataSource={this.state.users}
-                    rowKey="ID"
-                    style={{ position: "relative" }}
-                    /* TODO: Copy locale above into Client Portal App as well */
-                    locale={{
-                        emptyText: !this["state"].loading && (
-                            <PlusOutlined
-                                onClick={this.showNewUserModal}
-                                style={{
-                                    cursor: "pointer",
-                                    fontSize: "36px",
-                                }}
-                            />
-                        ),
-                    }}
-                />
+            <Card>
+                <Flex
+                    className="mb-1"
+                    mobileFlex={false}
+                    justifyContent="between"
+                >
+                    <div className="mr-md-3 mb-3">
+                        <Input
+                            placeholder="Search"
+                            prefix={<SearchOutlined />}
+                            onChange={(e) => onSearch(e)}
+                        />
+                    </div>
+                    <div>
+                        <Button
+                            onClick={this.showNewUserModal}
+                            type="primary"
+                            icon={<PlusCircleOutlined />}
+                            block
+                        >
+                            Invite user
+                        </Button>
+                    </div>
+                </Flex>
+                <div className="table-responsive">
+                    <Table
+                        loading={this.state.loading}
+                        columns={tableColumns}
+                        dataSource={this.state.users}
+                        rowKey="ID"
+                        style={{ position: "relative" }}
+                        rowSelection={{
+                            selectedRowKeys: this.state.selectedKeys,
+                            type: "checkbox",
+                            preserveSelectedRowKeys: false,
+                            ...this.rowSelection,
+                        }}
+                        locale={{
+                            emptyText: !this["state"].loading && (
+                                <PlusOutlined
+                                    onClick={this.showNewUserModal}
+                                    style={{
+                                        cursor: "pointer",
+                                        fontSize: "36px",
+                                    }}
+                                />
+                            ),
+                        }}
+                    />
+                </div>
                 <UserView
                     data={selectedUser}
                     visible={userProfileVisible}
@@ -356,6 +421,7 @@ export class UserList extends Component<ReduxStoreProps> {
 
 const mapDispatchToProps = {
     signOut,
+    refreshToken,
 };
 
 const mapStateToProps = ({ auth, theme, account }) => {

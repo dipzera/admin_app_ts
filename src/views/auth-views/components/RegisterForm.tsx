@@ -31,7 +31,7 @@ import {
 } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
-import { REGISTRATION_SUCCESS } from "../../../constants/Messages";
+import { EMAIL_CONFIRM_MSG } from "../../../constants/Messages";
 
 const rules = {
     JuridicalName: [
@@ -151,7 +151,7 @@ export const RegisterForm = (props) => {
                             console.log(res.data);
                             if (ErrorCode === 108) {
                                 /*  Inform user to go to his/her email  */
-                                message.success(REGISTRATION_SUCCESS, 10);
+                                message.success(EMAIL_CONFIRM_MSG, 10);
                             } else {
                                 message.error(ErrorMessage, 5);
                             }

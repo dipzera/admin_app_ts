@@ -8,9 +8,9 @@ import {
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
 import {
+    EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
     LOADING,
-    REGISTRATION_SUCCESS,
 } from "../../../../constants/Messages";
 import utils from "../../../../utils";
 
@@ -69,7 +69,7 @@ export const UserModalAdd = ({
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
-                    message.success(REGISTRATION_SUCCESS, 1.5);
+                    message.success(EMAIL_CONFIRM_MSG, 1.5);
                 } else {
                     message.error(res.data.ErrorMessage);
                 }
@@ -79,7 +79,7 @@ export const UserModalAdd = ({
     const { Option } = Select;
     return (
         <Modal
-            title={"Register user"}
+            title={"Invite user"}
             visible={visible}
             okText={
                 <>

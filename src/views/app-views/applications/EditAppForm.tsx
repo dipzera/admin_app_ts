@@ -7,13 +7,17 @@ import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import { getMarketApps } from "../../../redux/actions/Applications";
-import TextEditor from "./TextEditor";
+import TextEditor from "./single-app-page/TextEditor";
 const EditAppForm = ({ apps, visible, close, signOut }) => {
     const [form] = Form.useForm();
 
-    const [textEditorValue, setTextEditorValue] = useState("");
-    const handleEditorChange = (content) => {
-        setTextEditorValue(content);
+    const [termsOfUse, setTermsOfUse] = useState("");
+    const [longDesc, setLongDesc] = useState("");
+    const handleTermsOfUse = (content) => {
+        setTermsOfUse(content);
+    };
+    const handleLongDesc = (content) => {
+        setLongDesc(content);
     };
     /*  Destroy initialValues of form after Modal is closed */
     useEffect(() => {
@@ -33,8 +37,8 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                     ...apps,
                     ...values,
                     Status,
-
-                    TermsOfUse: textEditorValue,
+                    LongDescription: longDesc,
+                    TermsOfUse: termsOfUse,
                 },
                 Token,
             });
@@ -45,7 +49,8 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
                         ...apps,
                         ...values,
                         Status,
-                        TermsOfUse: textEditorValue,
+                        LongDescription: longDesc,
+                        TermsOfUse: termsOfUse,
                     },
                     Token,
                 })
@@ -80,85 +85,81 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
         }, 1000);
     };
     return (
-        <Modal
-            destroyOnClose
-            title={"Edit app"}
-            visible={visible}
-            onCancel={close}
-            confirmLoading={isLoading}
-            onOk={onOk}
-        >
-            <Form
-                form={form}
-                name="basicInformation"
-                layout="vertical"
-                initialValues={apps}
-            >
-                <Row gutter={ROW_GUTTER}>
-                    <Col xs={24} sm={24} md={24}>
-                        <Form.Item
-                            label={"App Name"}
-                            name="Name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please input app name!",
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={24}>
-                        <Form.Item
-                            label={"Short description"}
-                            name="ShortDescription"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please input short description!",
-                                },
-                            ]}
-                        >
-                            <Input.TextArea
-                                style={{ resize: "none" }}
-                                maxLength={80}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={24}>
-                        <Form.Item
-                            label={"Long Description"}
-                            name="LongDescription"
-                            rules={[
-                                {
-                                    required: false,
-                                },
-                            ]}
-                        >
-                            <Input.TextArea style={{ resize: "none" }} />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={24}>
-                        <Form.Item label={"Terms of use"}>
-                            <TextEditor
-                                apps={apps}
-                                handleEditorChange={handleEditorChange}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col xs={24} sm={24} md={12}>
-                        <Form.Item
-                            label={"Activate app"}
-                            name="Status"
-                            valuePropName={"checked"}
-                        >
-                            <Switch />
-                        </Form.Item>
-                    </Col>
-                </Row>
-            </Form>
-        </Modal>
+        <div></div>
+        // <Modal
+        //     destroyOnClose
+        //     title={"Edit app"}
+        //     visible={visible}
+        //     onCancel={close}
+        //     confirmLoading={isLoading}
+        //     onOk={onOk}
+        // >
+        //     <Form
+        //         form={form}
+        //         name="basicInformation"
+        //         layout="vertical"
+        //         initialValues={apps}
+        //     >
+        //         <Row gutter={ROW_GUTTER}>
+        //             <Col xs={24} sm={24} md={24}>
+        //                 <Form.Item
+        //                     label={"App Name"}
+        //                     name="Name"
+        //                     rules={[
+        //                         {
+        //                             required: true,
+        //                             message: "Please input app name!",
+        //                         },
+        //                     ]}
+        //                 >
+        //                     <Input />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col xs={24} sm={24} md={24}>
+        //                 <Form.Item
+        //                     label={"Short description"}
+        //                     name="ShortDescription"
+        //                     rules={[
+        //                         {
+        //                             required: true,
+        //                             message: "Please input short description!",
+        //                         },
+        //                     ]}
+        //                 >
+        //                     <Input.TextArea
+        //                         style={{ resize: "none" }}
+        //                         maxLength={80}
+        //                     />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col xs={24} sm={24} md={24}>
+        //                 <Form.Item label={"Long Description"}>
+        //                     <TextEditor
+        //                         apps={apps.LongDescription}
+        //                         handleEditorChange={handleLongDesc}
+        //                     />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col xs={24} sm={24} md={24}>
+        //                 <Form.Item label={"Terms of use"}>
+        //                     <TextEditor
+        //                         apps={apps.TermsOfUse}
+        //                         handleEditorChange={handleTermsOfUse}
+        //                     />
+        //                 </Form.Item>
+        //             </Col>
+        //             <Col xs={24} sm={24} md={12}>
+        //                 <Form.Item
+        //                     label={"Activate app"}
+        //                     name="Status"
+        //                     valuePropName={"checked"}
+        //                 >
+        //                     <Switch />
+        //                 </Form.Item>
+        //             </Col>
+        //         </Row>
+        //     </Form>
+        // </Modal>
     );
 };
 export default EditAppForm;

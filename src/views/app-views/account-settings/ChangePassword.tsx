@@ -10,9 +10,13 @@ import {
 import axios from "axios";
 import AppLocale from "../../../lang";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
-import { signOut } from "../../../redux/actions/Auth";
-
-export class ChangePassword extends Component {
+import { refreshToken } from "../../../redux/actions/Auth";
+interface IChangePassword {
+    token: string;
+    locale: string;
+    refreshToken: any;
+}
+export class ChangePassword extends Component<IChangePassword> {
     private changePasswordFormRef = React.createRef<any>();
     state = {
         loading: false,
@@ -24,6 +28,7 @@ export class ChangePassword extends Component {
             OldPassword: Utils.encryptInput(currentPassword, API_PUBLIC_KEY),
             Token: this.props["token"],
         });
+        const refreshToken = this.props.refreshToken;
         const currentAppLocale = AppLocale[this.props["locale"]];
         this.setState({ loading: true });
         setTimeout(() => {
@@ -45,8 +50,7 @@ export class ChangePassword extends Component {
                     if (errorCode === 0) {
                         message.success(DONE, 1.5);
                     } else if (errorCode === 118) {
-                        /* Token expired */
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
+                        this.props.refreshToken(this.props["token"]);
                     } else {
                         /* Incorrect old password */
                         message.error(errorMessage, 2);
@@ -183,4 +187,4 @@ const mapStateToProps = ({ auth, theme }) => {
     const { locale } = theme;
     return { token, locale };
 };
-export default connect(mapStateToProps, null)(ChangePassword);
+export default connect(mapStateToProps, { refreshToken })(ChangePassword);

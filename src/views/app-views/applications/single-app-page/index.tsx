@@ -16,12 +16,17 @@ import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "../EditPackageForm";
 import { signOut } from "../../../../redux/actions/Auth";
-import { getMarketApps } from "../../../../redux/actions/Applications";
+import { deleteMarketAppPackage } from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
 import moment from "moment";
 import Axios from "axios";
 import { API_APP_URL, APP_PREFIX_PATH } from "../../../../configs/AppConfig";
-import { DONE, EXPIRE_TIME, LOADING } from "../../../../constants/Messages";
+import {
+    DELETE_PACKAGE_MSG,
+    DONE,
+    EXPIRE_TIME,
+    LOADING,
+} from "../../../../constants/Messages";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import Packages from "./Packages";
 import Description from "./Description";
@@ -29,6 +34,7 @@ import TermsOfUse from "./TermsOfUse";
 import InnerAppLayout from "../../../../layouts/inner-app-layout";
 import EditAppForm from "../EditAppForm";
 import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
+import EditApp from "./EditApp";
 
 const ItemAction = ({ data, showEditAppModal }) => (
     <EllipsisDropdown
@@ -62,6 +68,10 @@ const AppOption = ({ match, location }) => {
                 <span>Terms of Use</span>
                 <Link to={"terms-of-use"} />
             </Menu.Item>
+            <Menu.Item key={`${match.url}/edit`}>
+                <span>Edit</span>
+                <Link to={"edit"} />
+            </Menu.Item>
         </Menu>
     );
 };
@@ -72,6 +82,7 @@ const AppRoute = ({
     showEditPackageModal,
     showAddPackageModal,
     deletePackage,
+    app,
 }) => {
     return (
         <Switch>
@@ -94,6 +105,10 @@ const AppRoute = ({
                 )}
             />
             <Route path={`${match.url}/terms-of-use`} component={TermsOfUse} />
+            <Route
+                path={`${match.url}/edit`}
+                render={(props) => <EditApp {...props} app={app} />}
+            />
         </Switch>
     );
 };
@@ -132,20 +147,25 @@ const AboutItem = ({ appData, showEditAppModal }) => {
                             <span className="text-muted ">
                                 {ShortDescription}
                             </span>
-                            <p className="mt-4">{LongDescription}</p>
+                            <p
+                                className="mt-2"
+                                dangerouslySetInnerHTML={{
+                                    __html: LongDescription,
+                                }}
+                            ></p>
                         </div>
                     </Flex>
                 </Flex>
-                <ItemAction
+                {/* <ItemAction
                     data={appData}
                     showEditAppModal={showEditAppModal}
-                />
+                /> */}
             </Flex>
         </Card>
     );
 };
 
-const SingleAppPage = ({ match, location, getMarketApps }) => {
+const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const { appID } = match.params;
     const { confirm } = Modal;
     const app = useSelector((state) =>
@@ -161,6 +181,7 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
     const [addPackageModalVisible, setAddPackageModalVisible] = useState<
         boolean
     >(false);
+    const [isEditAppVisible, setIsEditAppVisible] = useState(false);
     const showEditPackageModal = (selected) => {
         setSelectedPackage({
             ...selected,
@@ -179,7 +200,6 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
     const closeAddPackageModal = () => {
         setAddPackageModalVisible(false);
     };
-    const [isEditAppVisible, setIsEditAppVisible] = useState(false);
     const showEditAppModal = () => {
         setIsEditAppVisible(true);
     };
@@ -190,29 +210,10 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
 
     const deletePackage = (ID) => {
         confirm({
-            title: `Are you sure you want to delete package with ID: ${ID}`,
+            title: DELETE_PACKAGE_MSG(ID),
             onOk: () => {
-                message.loading(LOADING, 1.5).then(() => {
-                    Axios.post(`${API_IS_APP_SERVICE}/DeleteMarketAppPackage`, {
-                        ID,
-                        Token,
-                    }).then((res) => {
-                        console.log(res.data);
-                        if (res.data.ErrorCode === 0) {
-                            getMarketApps(Token);
-                            message.success(
-                                `Deleted package with ID: ${ID}`,
-                                2
-                            );
-                        } else if (res.data.ErrorCode === 118) {
-                            message
-                                .loading(EXPIRE_TIME, 1.5)
-                                .then(() => signOut());
-                        }
-                    });
-                });
+                deleteMarketAppPackage(ID, Token);
             },
-            onCancel: () => {},
         });
     };
 
@@ -248,6 +249,7 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
                         location={location}
                         match={match}
                         packages={app.Packages}
+                        app={app}
                         showEditPackageModal={showEditPackageModal}
                         deletePackage={deletePackage}
                         showAddPackageModal={showAddPackageModal}
@@ -257,4 +259,7 @@ const SingleAppPage = ({ match, location, getMarketApps }) => {
         </>
     );
 };
-export default connect(null, { signOut, getMarketApps })(SingleAppPage);
+export default connect(null, {
+    signOut,
+    deleteMarketAppPackage,
+})(SingleAppPage);

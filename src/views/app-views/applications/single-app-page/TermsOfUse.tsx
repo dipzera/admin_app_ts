@@ -1,6 +1,6 @@
 import React from "react";
 
 const TermsOfUse = () => {
-    return <div>test</div>;
+    return <>terms of use</>;
 };
 export default TermsOfUse;

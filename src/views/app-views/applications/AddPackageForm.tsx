@@ -41,8 +41,8 @@ const AddPackageForm = ({
         form.resetFields();
     }, [visible, form]);
 
-    const loading = useSelector((state) => state["auth"].loading);
     const Token = useSelector((state) => state["auth"].token);
+    const loading = useSelector(state => state["auth"].loading)
     const dispatch = useDispatch();
     const onFinish = (values) => {
         const Status = values.Status ? 1 : 0;
