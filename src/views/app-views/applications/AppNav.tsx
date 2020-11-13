@@ -28,29 +28,12 @@ const AppStoreNav = () => {
     const Token = useSelector((state) => state["auth"].token);
     const loading = useSelector((state) => state["auth"].loading);
     const apps: IApps[] = useSelector((state) => state["apps"]);
+    const [isOpened, setIsOpened] = useState(true);
     // useEffect(() => {
-    //     Axios.get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
-    //         params: { Token },
-    //     }).then((res) => {
-    //         console.log(res.data);
-
-    //         const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
-    //         if (ErrorCode === 0) {
-    //             setApps(MarketAppList);
-    //         } else if (ErrorCode === 118) {
-    //             message.loading(EXPIRE_TIME, 1.5);
-    //             setTimeout(() => {
-    //                 dispatch(signOut());
-    //             }, 1500);
-    //         } else if (ErrorCode === -1) {
-    //             // message.loading(EXPIRE_TIME, 1.5);
-    //             // setTimeout(() => {
-    //             //     dispatch(signOut());
-    //             // }, 1500);
-    //         }
-    //     });
-    // }, []);
-    /* applications/AppList.tsx */
+    //     if (isOpened) {
+    //         dispatch(getMarketApps(Token));
+    //     }
+    // }, [isOpened]);
     const menu = (
         <Menu
             style={{
@@ -63,16 +46,13 @@ const AppStoreNav = () => {
             ) : (
                 <AppNavGrid apps={apps} />
             )}
-            {!apps && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+            {apps.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </Menu>
     );
 
     return (
         <Dropdown overlay={menu} trigger={["click"]} placement={"bottomRight"}>
-            <Menu
-                mode={"horizontal"}
-                onClick={() => dispatch(getMarketApps(Token))}
-            >
+            <Menu mode={"horizontal"}>
                 <Menu.Item>
                     <Tooltip title={<IntlMessage id={"header.applications"} />}>
                         <AppstoreOutlined className={"nav-icon"} />

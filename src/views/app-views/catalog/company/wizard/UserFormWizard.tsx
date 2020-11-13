@@ -9,20 +9,12 @@ class UserFormWizard extends React.Component {
     static contextType = WizardContext;
     render() {
         const onFinish = async (values) => {
-            const key = "updatable";
-            message.loading({
-                content: UPDATING,
-                key,
-                duration: 1,
+            this.context.setWizardData({
+                ...this.context.wizardData,
+                UserData: { ...values },
             });
-            setTimeout(async () => {
-                this.context.setWizardData({
-                    ...this.context.wizardData,
-                    UserData: { ...values },
-                });
 
-                this.context.setCurrent(this.context.current + 1);
-            }, 1000);
+            this.context.setCurrent(this.context.current + 1);
         };
 
         const onFinishFailed = (errorInfo) => {
@@ -39,7 +31,7 @@ class UserFormWizard extends React.Component {
                         onFinishFailed={onFinishFailed}
                     >
                         <Row>
-                            <Col xs={24} sm={24} md={24} lg={16}>
+                            <Col xs={24} sm={24} md={24} lg={10}>
                                 <Row gutter={ROW_GUTTER}>
                                     <Col xs={24} sm={24} md={12}>
                                         <Form.Item
@@ -86,20 +78,23 @@ class UserFormWizard extends React.Component {
                                         >
                                             <Input />
                                         </Form.Item>
+                                        <Button
+                                            htmlType="submit"
+                                            type="primary"
+                                        >
+                                            Next
+                                        </Button>
+                                        <Button
+                                            className="ml-2"
+                                            onClick={() =>
+                                                this.context.setCurrent(
+                                                    this.context.current - 1
+                                                )
+                                            }
+                                        >
+                                            Previous
+                                        </Button>
                                     </Col>
-                                    <Button htmlType="submit" type="primary">
-                                        Next
-                                    </Button>
-                                    <Button
-                                        className="ml-2"
-                                        onClick={() =>
-                                            this.context.setCurrent(
-                                                this.context.current - 1
-                                            )
-                                        }
-                                    >
-                                        Previous
-                                    </Button>
                                 </Row>
                             </Col>
                         </Row>

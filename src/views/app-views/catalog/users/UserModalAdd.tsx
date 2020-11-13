@@ -31,6 +31,7 @@ export const UserModalAdd = ({
     visible,
     token: Token,
     signOut,
+    getUsersInfo,
 }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
@@ -69,7 +70,7 @@ export const UserModalAdd = ({
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
-                    message.success(EMAIL_CONFIRM_MSG, 1.5);
+                    getUsersInfo();
                 } else {
                     message.error(res.data.ErrorMessage);
                 }

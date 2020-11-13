@@ -58,12 +58,17 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
         reader.readAsDataURL(img);
     }
 
+    componentDidMount() {
+        console.log(this.context);
+    }
+
     render() {
         let { updateSettings, removeAvatar, locale, signOut } = this.props;
 
         const onChangeMask = (e) => {
             this.setState({ [e.target.name]: e.target.value });
         };
+
         const currentAppLocale = AppLocale[locale];
         const onFinish = async (values) => {
             this.context.setWizardData({
@@ -160,7 +165,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                         onFinishFailed={onFinishFailed}
                     >
                         <Row>
-                            <Col xs={24} sm={24} md={24} lg={16}>
+                            <Col xs={24} sm={24} md={24} lg={12}>
                                 <Row gutter={ROW_GUTTER}>
                                     <Col xs={24} sm={24} md={12}>
                                         <Form.Item

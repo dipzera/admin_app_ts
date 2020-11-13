@@ -18,6 +18,7 @@ export const UserModalEdit = ({
     onCancel,
     locale,
     token,
+    getUsersInfo,
 }) => {
     const [form] = Form.useForm();
 
@@ -42,7 +43,7 @@ export const UserModalEdit = ({
                 .then((res) => {
                     if (res.data.ErrorCode === 0) {
                         message.success(DONE, 1.5);
-                        window.location.reload();
+                        getUsersInfo();
                     } else if (res.data.ErrorCode === 118) {
                         message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
                     }

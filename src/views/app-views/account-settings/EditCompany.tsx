@@ -112,9 +112,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                         if (res.data.ErrorCode === 0) {
                             message.success(DONE, 2);
                         } else if (res.data.ErrorCode === 118) {
-                            message
-                                .loading(EXPIRE_TIME, 1.5)
-                                .then(() => signOut());
+                            this.props.refreshToken(this.props.token);
                         } else {
                             message.error(ERROR, 2);
                         }
@@ -153,9 +151,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                     },
                                 });
                             } else if (res.data.ErrorCode === 118) {
-                                message
-                                    .loading(EXPIRE_TIME, 1.5)
-                                    .then(() => signOut());
+                                this.props.refreshToken(this.props.token);
                             }
                         });
                 });
@@ -182,7 +178,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                             Company: { ...this.state.Company, Logo: "" },
                         });
                     } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
+                        this.props.refreshToken(this.props.token);
                     }
                 });
         };

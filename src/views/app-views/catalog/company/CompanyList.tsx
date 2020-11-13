@@ -1,7 +1,20 @@
 import React, { Component } from "react";
-import { Card, Table, Tag, Tooltip, message, Button, Modal, Input } from "antd";
+import {
+    Card,
+    Table,
+    Tag,
+    Tooltip,
+    message,
+    Button,
+    Modal,
+    Input,
+    Menu,
+} from "antd";
 import {
     EyeOutlined,
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    PlusCircleOutlined,
     SearchOutlined,
     DeleteOutlined,
     KeyOutlined,
@@ -28,14 +41,28 @@ import { signOut, refreshToken } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
 import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
+import {
+    DONE,
+    EMAIL_CONFIRM_MSG,
+    EXPIRE_TIME,
+    LOADING,
+} from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
+import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+
+enum status {
+    active = 1,
+    inactive = 0,
+    deleted = 2,
+}
 
 interface CompanyStateProps {
     users: CompanyProps[];
+    selectedRows: any;
+    selectedKeys: any;
     companiesToSearch: any;
     userProfileVisible: boolean;
     selectedUser: any;
@@ -77,6 +104,8 @@ export class CompanyList extends Component<ReduxStoreProps> {
     /* MAKE THIS FROM API CALL */
     state: CompanyStateProps = {
         users: [],
+        selectedRows: [],
+        selectedKeys: [],
         companiesToSearch: [],
         userProfileVisible: false,
         selectedUser: null,
@@ -87,7 +116,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
         loading: false,
     };
 
-    componentDidMount() {
+    getCompanyList = () => {
         this.setState({ loading: true });
         axios
             .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
@@ -110,13 +139,34 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     this.props.refreshToken(this.props.token);
                 }
             });
+    };
+
+    componentDidMount() {
+        this.getCompanyList();
     }
 
-    deleteUser = (userId) => {
-        this.setState({
-            users: this.state.users.filter((item) => item["id"] !== userId),
+    handleCompanyStatus = (companyId, status) => {
+        message.loading(LOADING, 1.5).then(() => {
+            axios
+                .get(`${API_IS_APP_SERVICE}/ChangeCompanyStatus`, {
+                    params: {
+                        Token: this.props.token,
+                        ID: companyId,
+                        Status: status,
+                    },
+                })
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data.ErrorCode === 0) {
+                        this.getCompanyList();
+                        message.success(DONE, 1.5);
+                    } else if (res.data.ErrorCode === 110) {
+                        message.error(res.data.ErrorMessage);
+                    } else if (res.data.ErrorCode === 118) {
+                        this.props.refreshToken(this.props.token);
+                    }
+                });
         });
-        message.success({ content: `Deleted user ${userId}`, duration: 2 });
     };
 
     showUserProfile = (userInfo: CompanyProps) => {
@@ -156,34 +206,116 @@ export class CompanyList extends Component<ReduxStoreProps> {
             newUserModalVisible: false,
         });
     };
-    showConfirmRegistrationModal = (UserID: number) => {
-        // TODO: Change this to switch button that changes status of company from 1 to 0 and vice-versa
-        const Token = this.props.token;
-        const refreshToken = this.props.refreshToken;
-        Modal.confirm({
-            title: "Company registration confirmation",
-            content: "Press OK if you want us to send a new activation message",
-            onOk() {
-                axios
-                    .get(`${API_IS_AUTH_SERVICE}/SendActivationCode`, {
-                        params: {
-                            Token,
-                            UserID,
-                        },
-                    })
-                    .then((res) => {
-                        console.log(res.data);
-                        if (res.data.ErrorCode === 0) {
-                            message.success(EMAIL_CONFIRM_MSG, 1.5);
-                        } else if (res.data.ErrorCode === 118) {
-                            refreshToken(Token);
-                        }
-                    });
-            },
-            onCancel() {},
-        });
+    rowSelection = {
+        onChange: (key, rows) => {
+            this.setState({ selectedKeys: key });
+            this.setState({ selectedRows: rows });
+        },
     };
 
+    toggleStatusRow = async (row, statusNumber) => {
+        for (const elm of row) {
+            await this.handleUserStatus(elm.ID, statusNumber);
+        }
+        this.setState({ selectedRows: [], selectedKeys: [] });
+        this.getCompanyList();
+    };
+
+    handleUserStatus = (userId: number, status: number) => {
+        axios
+            .get(`${API_IS_APP_SERVICE}/ChangeCompanyStatus`, {
+                params: {
+                    Token: this.props.token,
+                    ID: userId,
+                    Status: status,
+                },
+            })
+            .then((res) => {
+                console.log(res.data);
+                if (res.data.ErrorCode === 0) {
+                    // this.getUsersInfo();
+                } else if (res.data.ErrorCode === 118) {
+                    this.props.refreshToken(this.props.token);
+                }
+            });
+    };
+
+    deleteRow = (row) => {
+        const objKey = "ID";
+        let data = this.state.users;
+        Modal.confirm({
+            title: `Are you sure you want to delete ${this.state.selectedRows.length} companies?`,
+            onOk: () => {
+                if (this.state.selectedRows.length > 1) {
+                    this.state.selectedRows.forEach((elm) => {
+                        this.handleUserStatus(elm.ID, status.deleted);
+                        data = utils.deleteArrayRow(data, objKey, elm.ID);
+                        this.setState({ users: data });
+                        this.setState({ selectedRows: [] });
+                    });
+                } else {
+                    for (const elm of row) {
+                        data = utils.deleteArrayRow(data, objKey, elm.ID);
+                        this.setState({ selectedRows: [], selectedKeys: [] });
+                        this.setState({ users: data });
+                        this.handleUserStatus(elm.ID, status.deleted);
+                    }
+                }
+            },
+        });
+    };
+    dropdownMenu = (row) => (
+        <Menu>
+            {row.Status === 0 ? (
+                <Menu.Item
+                    onClick={async () => {
+                        await this.handleUserStatus(row.ID, status.active);
+                        this.getCompanyList();
+                    }}
+                >
+                    <Flex alignItems="center">
+                        <CheckCircleOutlined />
+                        <span className="ml-2">Activate</span>
+                    </Flex>
+                </Menu.Item>
+            ) : (
+                <Menu.Item
+                    onClick={async () => {
+                        await this.handleUserStatus(row.ID, status.inactive);
+                        this.getCompanyList();
+                    }}
+                >
+                    <Flex alignItems="center">
+                        <CloseCircleOutlined />
+                        <span className="ml-2">Deactivate</span>
+                    </Flex>
+                </Menu.Item>
+            )}
+            <Menu.Item onClick={() => this.showUserProfile(row)}>
+                <Flex alignItems="center">
+                    <EyeOutlined />
+                    <span className="ml-2">View Details</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.showEditModal(row)}>
+                <Flex alignItems="center">
+                    <EditOutlined />
+                    <span className="ml-2">Edit</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item
+                onClick={async () => {
+                    await this.handleUserStatus(row.ID, status.deleted);
+                    this.getCompanyList();
+                }}
+            >
+                <Flex alignItems="center">
+                    <DeleteOutlined />
+                    <span className="ml-2">Delete</span>
+                </Flex>
+            </Menu.Item>
+        </Menu>
+    );
     onSearch = (e) => {
         const value = e.currentTarget.value;
         const searchArray = value
@@ -197,6 +329,14 @@ export class CompanyList extends Component<ReduxStoreProps> {
         const { users, userProfileVisible, selectedUser } = this.state;
 
         const tableColumns: ColumnsType<CompanyProps> = [
+            {
+                title: "ID",
+                dataIndex: "ID",
+                sorter: {
+                    compare: (a, b) => a.ID - b.ID,
+                },
+                defaultSortOrder: "ascend",
+            },
             {
                 title: "Company",
                 dataIndex: "",
@@ -259,78 +399,91 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 },
             },
             {
-                title: () => (
-                    <div className="text-right">
-                        <Button
-                            /* Turn off disabled when register company api comes */
-                            type="primary"
-                        >
-                            <Link to={`${APP_PREFIX_PATH}/wizard`}>
-                                Register company
-                            </Link>
-                        </Button>
-                    </div>
-                ),
                 dataIndex: "actions",
-                render: (_, elm: CompanyProps) => (
+                render: (_, elm) => (
                     <div className="text-right">
-                        {elm.Status === 0 && (
-                            <Tooltip title="Activate">
-                                <Button
-                                    icon={<KeyOutlined />}
-                                    className="mr-2"
-                                    size="small"
-                                    onClick={() =>
-                                        this.showConfirmRegistrationModal(
-                                            elm.ID
-                                        )
-                                    }
-                                />
-                            </Tooltip>
-                        )}
-                        <Tooltip title="Edit">
-                            <Button
-                                type="dashed"
-                                icon={<EditOutlined />}
-                                className="mr-2"
-                                size="small"
-                                onClick={() => this.showEditModal(elm)}
-                            />
-                        </Tooltip>
-                        <Tooltip title="View">
-                            <Button
-                                type="primary"
-                                className="mr-2"
-                                icon={<EyeOutlined />}
-                                onClick={() => {
-                                    this.showUserProfile(elm);
-                                }}
-                                size="small"
-                            />
-                        </Tooltip>
-                        {/* <Tooltip title="Delete">
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => {
-                  this.deleteUser(elm.id);
-                }}
-                size="small"
-              />
-            </Tooltip> */}
+                        <EllipsisDropdown menu={this.dropdownMenu(elm)} />
                     </div>
                 ),
             },
         ];
         return (
             <Card>
-                <Flex className="mb-1" mobileFlex={false}>
+                <Flex
+                    className="mb-1"
+                    mobileFlex={false}
+                    justifyContent="between"
+                >
                     <div className="mr-md-3 mb-3">
                         <Input
                             placeholder="Search"
                             prefix={<SearchOutlined />}
                             onChange={(e) => this.onSearch(e)}
                         />
+                    </div>
+                    <div>
+                        <Flex>
+                            {this.state.selectedRows.length > 0 && (
+                                <>
+                                    <Button
+                                        type="primary"
+                                        className="mr-3"
+                                        onClick={() =>
+                                            this.toggleStatusRow(
+                                                this.state.selectedRows,
+                                                status.active
+                                            )
+                                        }
+                                    >
+                                        {this.state.selectedRows.length > 1
+                                            ? `Activate (${this.state.selectedRows.length})`
+                                            : "Activate"}
+                                    </Button>
+                                    <Button
+                                        type="ghost"
+                                        className="mr-3"
+                                        onClick={() =>
+                                            this.toggleStatusRow(
+                                                this.state.selectedRows,
+                                                status.inactive
+                                            )
+                                        }
+                                    >
+                                        {this.state.selectedRows.length > 1
+                                            ? `Deactivate (${this.state.selectedRows.length})`
+                                            : "Deactivate"}
+                                    </Button>
+                                    <Tooltip
+                                        title={`${
+                                            this.state.selectedRows.length > 1
+                                                ? `Delete (${this.state.selectedRows.length})`
+                                                : "Delete"
+                                        }`}
+                                    >
+                                        <Button
+                                            className="mr-3"
+                                            danger
+                                            onClick={() =>
+                                                this.deleteRow(
+                                                    this.state.selectedRows
+                                                )
+                                            }
+                                        >
+                                            <DeleteOutlined />
+                                        </Button>
+                                    </Tooltip>
+                                </>
+                            )}
+                            <Link to={`${APP_PREFIX_PATH}/wizard`}>
+                                <Button
+                                    type="primary"
+                                    icon={<PlusCircleOutlined />}
+                                    block
+                                >
+                                    Register company
+                                </Button>
+                            </Link>
+                        </Flex>
                     </div>
                 </Flex>
                 <div className="table-responsive">
@@ -340,16 +493,11 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         dataSource={users}
                         rowKey="ID"
                         style={{ position: "relative" }}
-                        locale={{
-                            emptyText: !this["state"].loading && (
-                                <PlusOutlined
-                                    onClick={this.showNewUserModal}
-                                    style={{
-                                        cursor: "pointer",
-                                        fontSize: "36px",
-                                    }}
-                                />
-                            ),
+                        rowSelection={{
+                            selectedRowKeys: this.state.selectedKeys,
+                            type: "checkbox",
+                            preserveSelectedRowKeys: false,
+                            ...this.rowSelection,
                         }}
                     />
                 </div>

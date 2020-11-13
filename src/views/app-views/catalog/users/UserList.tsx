@@ -13,6 +13,8 @@ import {
 import {
     EyeOutlined,
     SearchOutlined,
+    CloseCircleOutlined,
+    CheckCircleOutlined,
     PlusCircleOutlined,
     DeleteOutlined,
     EditOutlined,
@@ -44,13 +46,20 @@ import Utils from "../../../../utils";
 import {
     ACTIVATION_MSG_CONTENT,
     ACTIVATION_MSG_TITLE,
+    DONE,
     EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
+    LOADING,
 } from "../../../../constants/Messages";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 
+enum status {
+    inactive = 0,
+    active = 1,
+    deleted = 2,
+}
 export interface UsersProps {
     CompanyID: number;
     Email: string;
@@ -77,6 +86,7 @@ interface UserListStateProps {
     newUserModalVisible: boolean;
     registerUserModalVisible: boolean;
     loading: boolean;
+    usersChanged: boolean;
 }
 interface ReduxStoreProps {
     token: string;
@@ -102,12 +112,13 @@ export class UserList extends Component<ReduxStoreProps> {
         newUserModalVisible: false,
         registerUserModalVisible: false,
         loading: false,
+        usersChanged: false,
     };
 
-    componentDidMount() {
+    getUsersInfo = () => {
         this.setState({ loading: true });
         axios
-            .get(`${API_IS_APP_SERVICE}/GetUsersInfo`, {
+            .get(`${API_IS_APP_SERVICE}/GetAllUsersInfo`, {
                 params: {
                     Token: this.props.token,
                 },
@@ -125,14 +136,11 @@ export class UserList extends Component<ReduxStoreProps> {
                     this.props.refreshToken(this.props.token);
                 }
             });
-    }
-
-    deleteUser = (userId) => {
-        this.setState({
-            users: this.state.users.filter((item) => item["id"] !== userId),
-        });
-        message.success({ content: `Deleted user ${userId}`, duration: 2 });
     };
+
+    componentDidMount() {
+        this.getUsersInfo();
+    }
 
     showUserProfile = (userInfo: UsersProps) => {
         this.setState({
@@ -172,73 +180,104 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
 
-    showConfirmRegistrationModal = (UserID: number) => {
-        const Token = this.props.token;
-        const refreshToken = this.props.refreshToken;
-        Modal.confirm({
-            title: ACTIVATION_MSG_TITLE,
-            content: ACTIVATION_MSG_CONTENT,
-            onOk() {
-                axios
-                    .get(`${API_IS_AUTH_SERVICE}/SendActivationCode`, {
-                        params: {
-                            Token,
-                            UserID,
-                        },
-                    })
-                    .then((res) => {
-                        console.log(res.data);
-                        if (res.data.ErrorCode === 0) {
-                            message.success(EMAIL_CONFIRM_MSG, 1.5);
-                        } else if (res.data.ErrorCode === 118) {
-                            refreshToken(Token);
-                        }
-                    });
-            },
-            onCancel() {},
-        });
+    toggleStatusRow = async (row, statusNumber) => {
+        for (const elm of row) {
+            await this.handleUserStatus(elm.ID, statusNumber);
+        }
+        this.setState({ selectedRows: [], selectedKeys: [] });
+        this.getUsersInfo();
     };
-
-    rowSelection = {
-        onChange: (key, rows) => {
-            this.setState({ selectedKeys: key });
-            this.setState({ selectedRows: rows });
-        },
-    };
-
     deleteRow = (row) => {
         const objKey = "ID";
         let data = this.state.users;
-        if (this.state.selectedRows.length > 1) {
-            this.state.selectedRows.forEach((elm) => {
-                /* Make API CALL TO DELETE USER */
-                data = utils.deleteArrayRow(data, objKey, elm.ID);
-                this.setState({ users: data });
-                this.setState({ selectedRows: [] });
+        Modal.confirm({
+            title: `Are you sure you want to delete ${this.state.selectedRows.length} users?`,
+            onOk: () => {
+                if (this.state.selectedRows.length > 1) {
+                    this.state.selectedRows.forEach((elm) => {
+                        this.handleUserStatus(elm.ID, status.deleted);
+                        data = utils.deleteArrayRow(data, objKey, elm.ID);
+                        this.setState({ users: data });
+                        this.setState({ selectedRows: [] });
+                    });
+                } else {
+                    for (const elm of row) {
+                        data = utils.deleteArrayRow(data, objKey, elm.ID);
+                        this.setState({ selectedRows: [], selectedKeys: [] });
+                        this.setState({ users: data });
+                        this.handleUserStatus(elm.ID, status.deleted);
+                    }
+                }
+            },
+        });
+    };
+    handleUserStatus = (userId: number, status: number) => {
+        axios
+            .get(`${API_IS_APP_SERVICE}/ChangeUserStatus`, {
+                params: {
+                    Token: this.props.token,
+                    ID: userId,
+                    Status: status,
+                },
+            })
+            .then((res) => {
+                console.log(res.data);
+                if (res.data.ErrorCode === 0) {
+                    // this.getUsersInfo();
+                } else if (res.data.ErrorCode === 118) {
+                    this.props.refreshToken(this.props.token);
+                }
             });
-        } else {
-            data = utils.deleteArrayRow(data, objKey, row.ID);
-            /* Make API CALL TO DELETE USER */
-            this.setState({ users: data });
-        }
     };
 
     dropdownMenu = (row) => (
         <Menu>
-            <Menu.Item>
+            {row.Status === 0 ? (
+                <Menu.Item
+                    onClick={async () => {
+                        await this.handleUserStatus(row.ID, status.active);
+                        this.getUsersInfo();
+                    }}
+                >
+                    <Flex alignItems="center">
+                        <CheckCircleOutlined />
+                        <span className="ml-2">Activate</span>
+                    </Flex>
+                </Menu.Item>
+            ) : (
+                <Menu.Item
+                    onClick={async () => {
+                        await this.handleUserStatus(row.ID, status.inactive);
+                        this.getUsersInfo();
+                    }}
+                >
+                    <Flex alignItems="center">
+                        <CloseCircleOutlined />
+                        <span className="ml-2">Deactivate</span>
+                    </Flex>
+                </Menu.Item>
+            )}
+            <Menu.Item onClick={() => this.showUserProfile(row)}>
                 <Flex alignItems="center">
                     <EyeOutlined />
                     <span className="ml-2">View Details</span>
                 </Flex>
             </Menu.Item>
-            <Menu.Item onClick={() => this.deleteRow(row)}>
+            <Menu.Item onClick={() => this.showEditModal(row)}>
+                <Flex alignItems="center">
+                    <EditOutlined />
+                    <span className="ml-2">Edit</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item
+                onClick={async () => {
+                    await this.handleUserStatus(row.ID, status.deleted);
+                    this.getUsersInfo();
+                }}
+            >
                 <Flex alignItems="center">
                     <DeleteOutlined />
-                    <span className="ml-2">
-                        {this.state.selectedRows.length > 0
-                            ? `Delete (${this.state.selectedRows.length})`
-                            : "Delete"}
-                    </span>
+                    <span className="ml-2">Delete</span>
                 </Flex>
             </Menu.Item>
         </Menu>
@@ -261,7 +300,12 @@ export class UserList extends Component<ReduxStoreProps> {
         };
 
         const tableColumns: ColumnsType<UsersProps> = [
-            { title: "ID", dataIndex: "ID" },
+            {
+                title: "ID",
+                dataIndex: "ID",
+                sorter: { compare: (a, b) => a.ID - b.ID },
+                defaultSortOrder: "ascend",
+            },
             {
                 title: "User",
                 dataIndex: "name",
@@ -275,21 +319,10 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
-                sorter: {
-                    compare: (a: any, b: any) => {
-                        a = a.FirstName.toLowerCase();
-                        b = b.FirstName.toLowerCase();
-                        return a > b ? -1 : b > a ? 1 : 0;
-                    },
-                },
             },
             {
                 title: "Role",
                 render: () => "User",
-                /*         dataIndex: "role",
-        sorter: {
-          compare: (a, b) => a.role.length - b.role.length,
-        }, */
             },
             {
                 title: "Last online",
@@ -314,7 +347,7 @@ export class UserList extends Component<ReduxStoreProps> {
                             Status === 1
                                 ? "cyan"
                                 : Status === 2
-                                ? "red"
+                                ? "volcano"
                                 : "orange"
                         }
                     >
@@ -353,14 +386,67 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                     <div>
-                        <Button
-                            onClick={this.showNewUserModal}
-                            type="primary"
-                            icon={<PlusCircleOutlined />}
-                            block
-                        >
-                            Invite user
-                        </Button>
+                        <Flex>
+                            {this.state.selectedRows.length > 0 && (
+                                <>
+                                    <Button
+                                        type="primary"
+                                        className="mr-3"
+                                        onClick={() =>
+                                            this.toggleStatusRow(
+                                                this.state.selectedRows,
+                                                status.active
+                                            )
+                                        }
+                                    >
+                                        {this.state.selectedRows.length > 1
+                                            ? `Activate (${this.state.selectedRows.length})`
+                                            : "Activate"}
+                                    </Button>
+                                    <Button
+                                        type="ghost"
+                                        className="mr-3"
+                                        onClick={() =>
+                                            this.toggleStatusRow(
+                                                this.state.selectedRows,
+                                                status.inactive
+                                            )
+                                        }
+                                    >
+                                        {this.state.selectedRows.length > 1
+                                            ? `Deactivate (${this.state.selectedRows.length})`
+                                            : "Deactivate"}
+                                    </Button>
+                                    <Tooltip
+                                        title={`${
+                                            this.state.selectedRows.length > 1
+                                                ? `Delete (${this.state.selectedRows.length})`
+                                                : "Delete"
+                                        }`}
+                                    >
+                                        <Button
+                                            className="mr-3"
+                                            danger
+                                            onClick={() =>
+                                                this.deleteRow(
+                                                    this.state.selectedRows
+                                                )
+                                            }
+                                        >
+                                            <DeleteOutlined />
+                                        </Button>
+                                    </Tooltip>
+                                </>
+                            )}
+                            <Button
+                                onClick={this.showNewUserModal}
+                                type="primary"
+                                icon={<PlusCircleOutlined />}
+                                block
+                            >
+                                Invite user
+                            </Button>
+                        </Flex>
                     </div>
                 </Flex>
                 <div className="table-responsive">
@@ -371,21 +457,13 @@ export class UserList extends Component<ReduxStoreProps> {
                         rowKey="ID"
                         style={{ position: "relative" }}
                         rowSelection={{
+                            onChange: (key, rows) => {
+                                this.setState({ selectedKeys: key });
+                                this.setState({ selectedRows: rows });
+                            },
                             selectedRowKeys: this.state.selectedKeys,
                             type: "checkbox",
                             preserveSelectedRowKeys: false,
-                            ...this.rowSelection,
-                        }}
-                        locale={{
-                            emptyText: !this["state"].loading && (
-                                <PlusOutlined
-                                    onClick={this.showNewUserModal}
-                                    style={{
-                                        cursor: "pointer",
-                                        fontSize: "36px",
-                                    }}
-                                />
-                            ),
                         }}
                     />
                 </div>
@@ -402,9 +480,11 @@ export class UserList extends Component<ReduxStoreProps> {
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
                     token={this.props.token}
+                    getUsersInfo={this.getUsersInfo}
                 />
                 <UserModalEdit
                     signOut={signOut}
+                    getUsersInfo={this.getUsersInfo}
                     locale={this.props.locale}
                     data={selectedUser}
                     visible={this.state.editModalVisible}

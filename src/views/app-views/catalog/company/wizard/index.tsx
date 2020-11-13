@@ -1,10 +1,12 @@
 import { Button, Form, message, Steps } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PageHeaderAlt } from "../../../../../components/layout-components/PageHeaderAlt";
 import Flex from "../../../../../components/shared-components/Flex";
 import CompanyFormWizard from "./CompanyFormWizard";
 import UserFormWizard from "./UserFormWizard";
 import { WizardContext } from "./WizardContext";
+import { useBeforeunload } from "react-beforeunload";
+import LastWizardStep from "./LastWizardStep";
 const steps = [
     {
         title: "Company info",
@@ -16,7 +18,7 @@ const steps = [
     },
     {
         title: "Finish",
-        content: "Last content",
+        content: <LastWizardStep />,
     },
 ];
 const RegisterWizard = () => {
@@ -34,9 +36,7 @@ const RegisterWizard = () => {
         setCurrent(current - 1);
     }
 
-    window.onbeforeunload = function (e) {
-        return e;
-    };
+    useBeforeunload((e) => e.preventDefault());
 
     return (
         <WizardContext.Provider
@@ -60,7 +60,7 @@ const RegisterWizard = () => {
                             <Step key={item.title} title={item.title} />
                         ))}
                     </Steps>
-                    <div className="steps-content mt-4">
+                    <div className="steps-content mt-5">
                         {steps[current]["content"]}
                     </div>
                     <div className="steps-action">
