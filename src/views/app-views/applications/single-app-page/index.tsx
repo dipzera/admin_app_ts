@@ -1,4 +1,15 @@
-import { Button, Card, Col, Menu, message, Modal, Row, Tag } from "antd";
+import {
+    Button,
+    Card,
+    Col,
+    Form,
+    Menu,
+    message,
+    Modal,
+    Row,
+    Tabs,
+    Tag,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import {
     PlusOutlined,
@@ -35,6 +46,7 @@ import InnerAppLayout from "../../../../layouts/inner-app-layout";
 import EditAppForm from "../EditAppForm";
 import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import EditApp from "./EditApp";
+import General from "./General";
 
 const ItemAction = ({ data, showEditAppModal }) => (
     <EllipsisDropdown
@@ -56,10 +68,10 @@ const AppOption = ({ match, location }) => {
             defaultSelectedKeys={[`${match.url}/:appId/`]}
             selectedKeys={[location.pathname]}
         >
-            <Menu.Item key={`${match.url}/description`}>
+            {/* <Menu.Item key={`${match.url}/description`}>
                 <span>Description</span>
                 <Link to={"description"} />
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item key={`${match.url}/packages`}>
                 <span>Packages</span>
                 <Link to={"packages"} />
@@ -71,6 +83,33 @@ const AppOption = ({ match, location }) => {
             <Menu.Item key={`${match.url}/edit`}>
                 <span>Edit</span>
                 <Link to={"edit"} />
+            </Menu.Item>
+        </Menu>
+    );
+};
+
+const AppOption2 = ({ match, location }) => {
+    return (
+        <Menu
+            mode="inline"
+            defaultSelectedKeys={[`${match.url}/:appId/`]}
+            selectedKeys={[location.pathname]}
+        >
+            {/* <Menu.Item key={`${match.url}/description`}>
+                <span>Description</span>
+                <Link to={"description"} />
+            </Menu.Item> */}
+            <Menu.Item key={`${match.url}/general`}>
+                <span>General</span>
+                <Link to={"general"} />
+            </Menu.Item>
+            <Menu.Item key={`${match.url}/packages`}>
+                <span>Packages</span>
+                <Link to={"packages"} />
+            </Menu.Item>
+            <Menu.Item key={`${match.url}/terms-of-use`}>
+                <span>Terms of Use</span>
+                <Link to={"terms-of-use"} />
             </Menu.Item>
         </Menu>
     );
@@ -89,9 +128,9 @@ const AppRoute = ({
             <Redirect
                 exact
                 from={`${match.url}`}
-                to={`${match.url}/description`}
+                to={`${match.url}/packages`}
             />
-            <Route path={`${match.url}/description`} component={Description} />
+            {/* <Route path={`${match.url}/description`} component={Description} /> */}
             <Route
                 path={`${match.url}/packages`}
                 render={(props) => (
@@ -104,7 +143,10 @@ const AppRoute = ({
                     />
                 )}
             />
-            <Route path={`${match.url}/terms-of-use`} component={TermsOfUse} />
+            <Route
+                path={`${match.url}/terms-of-use`}
+                render={(props) => <TermsOfUse {...props} app={app} />}
+            />
             <Route
                 path={`${match.url}/edit`}
                 render={(props) => <EditApp {...props} app={app} />}
@@ -112,6 +154,14 @@ const AppRoute = ({
         </Switch>
     );
 };
+const AppRoute2 = ({
+    match,
+    location,
+    app,
+    showEditPackageModal,
+    showAddPackageModal,
+    deletePackage,
+}) => {};
 const AboutItem = ({ appData, showEditAppModal }) => {
     const { Photo, Status, Name, ShortDescription, LongDescription } = appData;
     return (
@@ -171,7 +221,9 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
+    const [form] = Form.useForm();
     const Token = useSelector((state) => state["auth"].token);
+    const loading = useSelector((state) => state["auth"].loading);
     const [selectedPackage, setSelectedPackage] = useState<{
         [key: string]: any;
     }>();
@@ -241,8 +293,57 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                 close={closeEditAppModal}
                 signOut={signOut}
             />
-            <AboutItem appData={app} showEditAppModal={showEditAppModal} />
-            <InnerAppLayout
+            {/* App Content Card */}
+            {/* <AboutItem appData={app} showEditAppModal={showEditAppModal} /> */}
+            <PageHeaderAlt className="bg-white border-bottom" overlap>
+                <Flex
+                    className="py-5"
+                    mobileFlex={false}
+                    justifyContent="between"
+                    alignItems="center"
+                >
+                    <Flex alignItems="center">
+                        <div className="mr-3">
+                            <Avatar
+                                src={app.Logo}
+                                icon={<ExperimentOutlined />}
+                                shape={"square"}
+                                size={64}
+                            />
+                        </div>
+                        <h2 className="mb-3">{app.Name}</h2>
+                    </Flex>
+                    <div className="mb-3">
+                        <Button className="mr-2">Discard</Button>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={loading}
+                        >
+                            Save
+                        </Button>
+                    </div>
+                </Flex>
+            </PageHeaderAlt>
+
+            {/* Tabs of App Preview */}
+            <Tabs defaultActiveKey="1" style={{ marginTop: 30 }}>
+                <Tabs.TabPane tab="General" key="1">
+                    <General app={app} />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Packages" key="2">
+                    <Packages
+                        packages={app.Packages}
+                        showEditPackageModal={showEditPackageModal}
+                        deletePackage={deletePackage}
+                        showAddPackageModal={showAddPackageModal}
+                    />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Terms of Use" key="3">
+                    <TermsOfUse app={app} />
+                </Tabs.TabPane>
+            </Tabs>
+            {/* <InnerAppLayout
                 sideContent={<AppOption location={location} match={match} />}
                 mainContent={
                     <AppRoute
@@ -255,7 +356,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                         showAddPackageModal={showAddPackageModal}
                     />
                 }
-            />
+            /> */}
         </>
     );
 };

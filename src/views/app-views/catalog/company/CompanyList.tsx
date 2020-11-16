@@ -12,6 +12,7 @@ import {
 } from "antd";
 import {
     EyeOutlined,
+    PlayCircleOutlined,
     CheckCircleOutlined,
     CloseCircleOutlined,
     PlusCircleOutlined,
@@ -48,7 +49,7 @@ import {
     LOADING,
 } from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
-import { APP_PREFIX_PATH } from "../../../../configs/AppConfig";
+import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
@@ -145,30 +146,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
         this.getCompanyList();
     }
 
-    handleCompanyStatus = (companyId, status) => {
-        message.loading(LOADING, 1.5).then(() => {
-            axios
-                .get(`${API_IS_APP_SERVICE}/ChangeCompanyStatus`, {
-                    params: {
-                        Token: this.props.token,
-                        ID: companyId,
-                        Status: status,
-                    },
-                })
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data.ErrorCode === 0) {
-                        this.getCompanyList();
-                        message.success(DONE, 1.5);
-                    } else if (res.data.ErrorCode === 110) {
-                        message.error(res.data.ErrorMessage);
-                    } else if (res.data.ErrorCode === 118) {
-                        this.props.refreshToken(this.props.token);
-                    }
-                });
-        });
-    };
-
     showUserProfile = (userInfo: CompanyProps) => {
         this.setState({
             userProfileVisible: true,
@@ -264,8 +241,36 @@ export class CompanyList extends Component<ReduxStoreProps> {
             },
         });
     };
+    getManagedToken = (CompanyID) => {
+        return axios
+            .get(`${API_IS_AUTH_SERVICE}/GetManagedToken`, {
+                params: {
+                    Token: this.props.token,
+                    CompanyID,
+                },
+            })
+            .then((res) => {
+                if (res.data.ErrorCode === 0) {
+                    return res.data.Token;
+                } else if (res.data.ErrorCode === 118) {
+                    this.props.refreshToken(this.props.token);
+                }
+            });
+    };
+
     dropdownMenu = (row) => (
         <Menu>
+            <Menu.Item
+                onClick={async () => {
+                    const token = await this.getManagedToken(row.ID);
+                    window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
+                }}
+            >
+                <Flex alignItems="center">
+                    <PlayCircleOutlined />
+                    <span className="ml-2">Manage</span>
+                </Flex>
+            </Menu.Item>
             {row.Status === 0 ? (
                 <Menu.Item
                     onClick={async () => {

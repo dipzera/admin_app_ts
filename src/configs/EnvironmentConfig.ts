@@ -1,16 +1,14 @@
-export interface APIProps {
-    API_APP_URL: string;
-    API_AUTH_URL: string;
-}
 const dev = {
     API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
     API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
+    CLIENT_URL: "http://localhost:3001/clientportal",
 };
 
 const prod = {
     /* TODO: complete this when prod ready */
     API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
     API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
+    CLIENT_URL: "http://efactura.md/clientportal",
 };
 
 const test = {
@@ -18,7 +16,7 @@ const test = {
     API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
 };
 
-const getEnv = (): APIProps | undefined => {
+const getEnv = (): any => {
     switch (process.env.NODE_ENV) {
         case "development":
             return dev;

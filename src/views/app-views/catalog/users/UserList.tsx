@@ -54,6 +54,7 @@ import {
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import { SortOrder } from "antd/es/table/interface";
 
 enum status {
     inactive = 0,
@@ -304,7 +305,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 title: "ID",
                 dataIndex: "ID",
                 sorter: { compare: (a, b) => a.ID - b.ID },
-                defaultSortOrder: "ascend",
+                defaultSortOrder: "ascend" as SortOrder,
             },
             {
                 title: "User",

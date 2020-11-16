@@ -108,9 +108,7 @@ export const refreshToken = (Token) => async (dispatch) => {
                 dispatch({ type: SET_TOKEN, token: res.data.Token });
                 window.location.reload();
             } else if (res.data.ErrorCode === 105) {
-                message
-                    .loading(EXPIRE_TIME, 1.5)
-                    .then(() => dispatch(signOut()));
+                message.loading(EXPIRE_TIME, 1).then(() => dispatch(signOut()));
             }
         });
 };
@@ -119,7 +117,7 @@ const sendActivationCode = (Token, UserID = null) => {
         Modal.confirm({
             title: "Confirm registration",
             content: `Your account is not activated. Press the OK button down below if you
-      want us to sent you a new confirmation message`,
+      want us to send you a new confirmation message`,
             onOk() {
                 return new Promise((resolve) => {
                     setTimeout(() => {
