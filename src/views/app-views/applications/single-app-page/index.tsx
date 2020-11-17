@@ -20,14 +20,22 @@ import {
     ClockCircleOutlined,
     DeleteOutlined,
 } from "@ant-design/icons";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "../EditPackageForm";
-import { signOut } from "../../../../redux/actions/Auth";
-import { deleteMarketAppPackage } from "../../../../redux/actions/Applications";
+import {
+    hideLoading,
+    refreshToken,
+    showLoading,
+    signOut,
+} from "../../../../redux/actions/Auth";
+import {
+    deleteMarketAppPackage,
+    updateMarketApp,
+} from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
 import moment from "moment";
 import Axios from "axios";
@@ -46,173 +54,12 @@ import InnerAppLayout from "../../../../layouts/inner-app-layout";
 import EditAppForm from "../EditAppForm";
 import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import EditApp from "./EditApp";
-import General from "./General";
+import General from "./general";
 
-const ItemAction = ({ data, showEditAppModal }) => (
-    <EllipsisDropdown
-        menu={
-            <Menu>
-                <Menu.Item key="2" onClick={() => showEditAppModal(data)}>
-                    <EditOutlined />
-                    <span>Edit</span>
-                </Menu.Item>
-            </Menu>
-        }
-    />
-);
-
-const AppOption = ({ match, location }) => {
-    return (
-        <Menu
-            mode="inline"
-            defaultSelectedKeys={[`${match.url}/:appId/`]}
-            selectedKeys={[location.pathname]}
-        >
-            {/* <Menu.Item key={`${match.url}/description`}>
-                <span>Description</span>
-                <Link to={"description"} />
-            </Menu.Item> */}
-            <Menu.Item key={`${match.url}/packages`}>
-                <span>Packages</span>
-                <Link to={"packages"} />
-            </Menu.Item>
-            <Menu.Item key={`${match.url}/terms-of-use`}>
-                <span>Terms of Use</span>
-                <Link to={"terms-of-use"} />
-            </Menu.Item>
-            <Menu.Item key={`${match.url}/edit`}>
-                <span>Edit</span>
-                <Link to={"edit"} />
-            </Menu.Item>
-        </Menu>
-    );
-};
-
-const AppOption2 = ({ match, location }) => {
-    return (
-        <Menu
-            mode="inline"
-            defaultSelectedKeys={[`${match.url}/:appId/`]}
-            selectedKeys={[location.pathname]}
-        >
-            {/* <Menu.Item key={`${match.url}/description`}>
-                <span>Description</span>
-                <Link to={"description"} />
-            </Menu.Item> */}
-            <Menu.Item key={`${match.url}/general`}>
-                <span>General</span>
-                <Link to={"general"} />
-            </Menu.Item>
-            <Menu.Item key={`${match.url}/packages`}>
-                <span>Packages</span>
-                <Link to={"packages"} />
-            </Menu.Item>
-            <Menu.Item key={`${match.url}/terms-of-use`}>
-                <span>Terms of Use</span>
-                <Link to={"terms-of-use"} />
-            </Menu.Item>
-        </Menu>
-    );
-};
-const AppRoute = ({
-    match,
-    location,
-    packages,
-    showEditPackageModal,
-    showAddPackageModal,
-    deletePackage,
-    app,
-}) => {
-    return (
-        <Switch>
-            <Redirect
-                exact
-                from={`${match.url}`}
-                to={`${match.url}/packages`}
-            />
-            {/* <Route path={`${match.url}/description`} component={Description} /> */}
-            <Route
-                path={`${match.url}/packages`}
-                render={(props) => (
-                    <Packages
-                        {...props}
-                        packages={packages}
-                        showEditPackageModal={showEditPackageModal}
-                        deletePackage={deletePackage}
-                        showAddPackageModal={showAddPackageModal}
-                    />
-                )}
-            />
-            <Route
-                path={`${match.url}/terms-of-use`}
-                render={(props) => <TermsOfUse {...props} app={app} />}
-            />
-            <Route
-                path={`${match.url}/edit`}
-                render={(props) => <EditApp {...props} app={app} />}
-            />
-        </Switch>
-    );
-};
-const AppRoute2 = ({
-    match,
-    location,
-    app,
-    showEditPackageModal,
-    showAddPackageModal,
-    deletePackage,
-}) => {};
-const AboutItem = ({ appData, showEditAppModal }) => {
-    const { Photo, Status, Name, ShortDescription, LongDescription } = appData;
-    return (
-        <Card className="mb-5">
-            <Flex justifyContent="between" alignItems="center">
-                <Flex>
-                    <div className="mr-3">
-                        <Avatar
-                            src={Photo}
-                            icon={<ExperimentOutlined />}
-                            shape="square"
-                            size={80}
-                        />
-                    </div>
-                    <Flex flexDirection="column">
-                        <Flex flexDirection="row">
-                            <h2 className="mr-3">{Name} </h2>
-                            <Tag
-                                className="text-capitalize"
-                                color={Status === 1 ? "cyan" : "red"}
-                            >
-                                {Status === 1 ? (
-                                    <CheckCircleOutlined />
-                                ) : (
-                                    <ClockCircleOutlined />
-                                )}
-                                <span className="ml-2 font-weight-semibold">
-                                    {Status === 1 ? "Active" : "Not Active"}
-                                </span>
-                            </Tag>
-                        </Flex>
-                        <div>
-                            <span className="text-muted ">
-                                {ShortDescription}
-                            </span>
-                            <p
-                                className="mt-2"
-                                dangerouslySetInnerHTML={{
-                                    __html: LongDescription,
-                                }}
-                            ></p>
-                        </div>
-                    </Flex>
-                </Flex>
-                {/* <ItemAction
-                    data={appData}
-                    showEditAppModal={showEditAppModal}
-                /> */}
-            </Flex>
-        </Card>
-    );
+const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result));
+    reader.readAsDataURL(img);
 };
 
 const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
@@ -221,9 +68,10 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
-    const [form] = Form.useForm();
     const Token = useSelector((state) => state["auth"].token);
     const loading = useSelector((state) => state["auth"].loading);
+    const dispatch = useDispatch();
+    const [edit, setEdit] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<{
         [key: string]: any;
     }>();
@@ -268,6 +116,63 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             },
         });
     };
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const [form] = Form.useForm();
+    const [uploadedImg, setImage] = useState("");
+    const [longDesc, setLongDesc] = useState(app.LongDescription);
+    const [status, setStatus] = useState<number>(app.Status);
+    const [submitLoading, setSubmitLoading] = useState(false);
+    useEffect(() => {
+        setImage(app.Logo);
+        if (edit) {
+            form.setFieldsValue(app);
+        }
+    }, [edit, setEdit]);
+    const handleUploadChange = (info) => {
+        if (info.file.status === "uploading") {
+            setUploadLoading(true);
+            return;
+        }
+        if (info.file.status === "done") {
+            getBase64(info.file.originFileObj, (imageUrl) => {
+                setImage(imageUrl);
+                setUploadLoading(false);
+            });
+        }
+    };
+    const changeMarketAppStatus = (status) => {
+        dispatch(showLoading());
+        setTimeout(() => {
+            dispatch(hideLoading());
+            Axios.get(`${API_IS_APP_SERVICE}/ChangeMarketAppStatus`, {
+                params: { Token, ID: appID, Status: status },
+            }).then((res) => {
+                console.log(res.data);
+                if (res.data.ErrorCode === 0) {
+                    message.success(DONE, 1);
+                } else if (res.data.ErrorCode === 118) {
+                    dispatch(refreshToken(Token));
+                }
+            });
+        }, 1000);
+    };
+
+    const onFinish = (values) => {
+        const App = {
+            ID: appID,
+            TermsOfUse: app.TermsOfUse,
+            ...values,
+            LongDescription: longDesc,
+            Photo: uploadedImg ? uploadedImg : app.Photo,
+        };
+        message
+            .loading(LOADING, 1.5)
+            .then(() => {
+                dispatch(updateMarketApp(App, Token));
+                setEdit(false);
+            })
+            .then(() => message.success(DONE, 1.5));
+    };
 
     if (!app) {
         return <div>No app found</div>;
@@ -295,54 +200,80 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             />
             {/* App Content Card */}
             {/* <AboutItem appData={app} showEditAppModal={showEditAppModal} /> */}
-            <PageHeaderAlt className="bg-white border-bottom" overlap>
-                <Flex
-                    className="py-5"
-                    mobileFlex={false}
-                    justifyContent="between"
-                    alignItems="center"
-                >
-                    <Flex alignItems="center">
-                        <div className="mr-3">
-                            <Avatar
-                                src={app.Logo}
-                                icon={<ExperimentOutlined />}
-                                shape={"square"}
-                                size={64}
-                            />
-                        </div>
-                        <h2 className="mb-3">{app.Name}</h2>
-                    </Flex>
-                    <div className="mb-3">
-                        <Button className="mr-2">Discard</Button>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            loading={loading}
+            <Form
+                form={form}
+                layout="vertical"
+                name="advanced_search"
+                className="ant-advanced-search-form"
+                onFinish={onFinish}
+            >
+                <PageHeaderAlt className="bg-white border-bottom" overlap>
+                    <div className="container">
+                        <Flex
+                            className="py-1 mb-4"
+                            mobileFlex={false}
+                            justifyContent="between"
+                            alignItems="center"
                         >
-                            Save
-                        </Button>
+                            <Flex alignItems="center">
+                                <div className="mr-3">
+                                    <Avatar
+                                        src={app.Photo}
+                                        icon={<ExperimentOutlined />}
+                                        shape={"square"}
+                                        size={64}
+                                    />
+                                </div>
+                                <h2 className="mb-1">{app.Name}</h2>
+                            </Flex>
+                            {edit && (
+                                <div className="mb-3">
+                                    <Button
+                                        className="mr-2"
+                                        onClick={() => setEdit(false)}
+                                    >
+                                        Discard
+                                    </Button>
+                                    <Button type="primary" htmlType="submit">
+                                        Save
+                                    </Button>
+                                </div>
+                            )}
+                        </Flex>
                     </div>
-                </Flex>
-            </PageHeaderAlt>
+                </PageHeaderAlt>
 
-            {/* Tabs of App Preview */}
-            <Tabs defaultActiveKey="1" style={{ marginTop: 30 }}>
-                <Tabs.TabPane tab="General" key="1">
-                    <General app={app} />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Packages" key="2">
-                    <Packages
-                        packages={app.Packages}
-                        showEditPackageModal={showEditPackageModal}
-                        deletePackage={deletePackage}
-                        showAddPackageModal={showAddPackageModal}
-                    />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Terms of Use" key="3">
-                    <TermsOfUse app={app} />
-                </Tabs.TabPane>
-            </Tabs>
+                {/* Tabs of App Preview */}
+                <div className="container">
+                    <Tabs defaultActiveKey="1" style={{ marginTop: 30 }}>
+                        <Tabs.TabPane tab="General" key="1">
+                            <General
+                                changeMarketAppStatus={changeMarketAppStatus}
+                                app={app}
+                                status={status}
+                                setStatus={setStatus}
+                                setLongDesc={setLongDesc}
+                                edit={edit}
+                                setEdit={setEdit}
+                                uploadedImg={uploadedImg}
+                                uploadLoading={uploadLoading}
+                                handleUploadChange={handleUploadChange}
+                            />
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Packages" key="2">
+                            <Packages
+                                packages={app.Packages}
+                                showEditPackageModal={showEditPackageModal}
+                                deletePackage={deletePackage}
+                                showAddPackageModal={showAddPackageModal}
+                            />
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Terms of Use" key="3">
+                            <TermsOfUse app={app} />
+                        </Tabs.TabPane>
+                    </Tabs>
+                </div>
+            </Form>
             {/* <InnerAppLayout
                 sideContent={<AppOption location={location} match={match} />}
                 mainContent={

@@ -1,5 +1,6 @@
 import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
+import Loading from "../../../../components/shared-components/Loading";
 
 const TextEditor = ({ apps, handleEditorChange }) => {
     return (

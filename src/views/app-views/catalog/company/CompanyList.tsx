@@ -334,14 +334,14 @@ export class CompanyList extends Component<ReduxStoreProps> {
         const { users, userProfileVisible, selectedUser } = this.state;
 
         const tableColumns: ColumnsType<CompanyProps> = [
-            {
-                title: "ID",
-                dataIndex: "ID",
-                sorter: {
-                    compare: (a, b) => a.ID - b.ID,
-                },
-                defaultSortOrder: "ascend",
-            },
+            // {
+            //     title: "ID",
+            //     dataIndex: "ID",
+            //     sorter: {
+            //         compare: (a, b) => a.ID - b.ID,
+            //     },
+            //     defaultSortOrder: "ascend",
+            // },
             {
                 title: "Company",
                 dataIndex: "",
@@ -396,7 +396,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                             ? "Active"
                             : Status === 2
                             ? "Disabled"
-                            : "Not Activated"}
+                            : "Inactive"}
                     </Tag>
                 ),
                 sorter: {

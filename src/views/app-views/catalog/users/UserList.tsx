@@ -301,12 +301,12 @@ export class UserList extends Component<ReduxStoreProps> {
         };
 
         const tableColumns: ColumnsType<UsersProps> = [
-            {
-                title: "ID",
-                dataIndex: "ID",
-                sorter: { compare: (a, b) => a.ID - b.ID },
-                defaultSortOrder: "ascend" as SortOrder,
-            },
+            // {
+            //     title: "ID",
+            //     dataIndex: "ID",
+            //     sorter: { compare: (a, b) => a.ID - b.ID },
+            //     defaultSortOrder: "ascend" as SortOrder,
+            // },
             {
                 title: "User",
                 dataIndex: "name",
@@ -356,7 +356,7 @@ export class UserList extends Component<ReduxStoreProps> {
                             ? "Active"
                             : Status === 2
                             ? "Disabled"
-                            : "Not Activated"}
+                            : "Inactive"}
                     </Tag>
                 ),
                 sorter: {

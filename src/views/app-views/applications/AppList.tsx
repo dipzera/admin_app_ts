@@ -76,7 +76,7 @@ const GridItem = ({ showEditAppModal, data }) => {
                 <p className="text-muted">By IntelectSoft</p>
                 <div style={{ minHeight: "70px" }}>{data.ShortDescription}</div>
             </div>
-            <div>
+            {/* <div>
                 <Link
                     to={`${APP_PREFIX_PATH}/applications/${data.ID}`}
                     className="mr-3"
@@ -84,11 +84,11 @@ const GridItem = ({ showEditAppModal, data }) => {
                     View
                 </Link>
                 <Link
-                    to={`${APP_PREFIX_PATH}/applications/${data.ID}/edit`} /* onClick={() => showEditAppModal(data)} */
+                    to={`${APP_PREFIX_PATH}/applications/${data.ID}/edit`} 
                 >
                     Edit
                 </Link>
-            </div>
+            </div> */}
         </Card>
     );
 };
