@@ -191,11 +191,18 @@ export class CompanyList extends Component<ReduxStoreProps> {
     };
 
     toggleStatusRow = async (row, statusNumber) => {
-        for (const elm of row) {
-            await this.handleUserStatus(elm.ID, statusNumber);
-        }
-        this.setState({ selectedRows: [], selectedKeys: [] });
-        this.getCompanyList();
+        Modal.confirm({
+            title: `Are you sure you want to ${
+                statusNumber === 0 ? "deactivate" : "activate"
+            } ${row.length} ${row.length > 1 ? "companies" : "company"}?`,
+            onOk: async () => {
+                for (const elm of row) {
+                    await this.handleUserStatus(elm.ID, statusNumber);
+                }
+                this.setState({ selectedRows: [], selectedKeys: [] });
+                this.getCompanyList();
+            },
+        });
     };
 
     handleUserStatus = (userId: number, status: number) => {
@@ -221,7 +228,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
         const objKey = "ID";
         let data = this.state.users;
         Modal.confirm({
-            title: `Are you sure you want to delete ${this.state.selectedRows.length} companies?`,
+            title: `Are you sure you want to delete ${
+                this.state.selectedRows.length
+            } ${this.state.selectedRows.length > 1 ? "companies" : "company"}?`,
             onOk: () => {
                 if (this.state.selectedRows.length > 1) {
                     this.state.selectedRows.forEach((elm) => {
@@ -241,6 +250,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
             },
         });
     };
+
     getManagedToken = (CompanyID) => {
         return axios
             .get(`${API_IS_AUTH_SERVICE}/GetManagedToken`, {
@@ -274,8 +284,16 @@ export class CompanyList extends Component<ReduxStoreProps> {
             {row.Status === 0 ? (
                 <Menu.Item
                     onClick={async () => {
-                        await this.handleUserStatus(row.ID, status.active);
-                        this.getCompanyList();
+                        Modal.confirm({
+                            title: `Are you sure you want to activate this company?`,
+                            onOk: async () => {
+                                await this.handleUserStatus(
+                                    row.ID,
+                                    status.active
+                                );
+                                this.getCompanyList();
+                            },
+                        });
                     }}
                 >
                     <Flex alignItems="center">
@@ -286,8 +304,16 @@ export class CompanyList extends Component<ReduxStoreProps> {
             ) : (
                 <Menu.Item
                     onClick={async () => {
-                        await this.handleUserStatus(row.ID, status.inactive);
-                        this.getCompanyList();
+                        Modal.confirm({
+                            title: `Are you sure you want to deactivate this company?`,
+                            onOk: async () => {
+                                await this.handleUserStatus(
+                                    row.ID,
+                                    status.inactive
+                                );
+                                this.getCompanyList();
+                            },
+                        });
                     }}
                 >
                     <Flex alignItems="center">
@@ -310,8 +336,16 @@ export class CompanyList extends Component<ReduxStoreProps> {
             </Menu.Item>
             <Menu.Item
                 onClick={async () => {
-                    await this.handleUserStatus(row.ID, status.deleted);
-                    this.getCompanyList();
+                    Modal.confirm({
+                        title: `Are you sure you want to delete this company?`,
+                        onOk: async () => {
+                            await this.handleUserStatus(
+                                row.ID,
+                                status.inactive
+                            );
+                            this.getCompanyList();
+                        },
+                    });
                 }}
             >
                 <Flex alignItems="center">

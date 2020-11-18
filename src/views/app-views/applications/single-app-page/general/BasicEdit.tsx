@@ -1,9 +1,17 @@
-import { Form, Input } from "antd";
+import { Form, Input, Select } from "antd";
+import { isEmpty } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
 
-const BasicEdit = ({ app, setLongDesc, setShortDesc, rules, shortDesc }) => {
+const BasicEdit = ({
+    app,
+    longDesc,
+    setLongDesc,
+    setShortDesc,
+    rules,
+    shortDesc,
+}) => {
     const fields = [
         {
             title: "English",
@@ -19,43 +27,12 @@ const BasicEdit = ({ app, setLongDesc, setShortDesc, rules, shortDesc }) => {
         },
     ];
 
-    // const locale = useSelector((state) => state["theme"].locale);
-
-    const [inputValues, setInputValues] = useState<any>();
-
     const onChange: any = (name, value) => {
-        // setShortDesc((values) => [{ ...values }, { text: value, lang: name }]);
-        // setShortDesc((values) => [{ ...values }, { text: value, lang: name }]);
-        // setShortDesc((prevState) => ({ ...prevState, [name]: value }));
-        // setShortDesc((prevState) => [{ lang: name, text: value }]);
-        // setShortDesc((prevState) => ({
-        //     ...prevState,
-        //     [name]: { lang: name, text: value },
-        // }));
-        // setShortDesc({ [name]: [{ lang: name, text: value }] });
-        // setShortDesc((prevState) => [
-        //     prevState.map((desc) => {
-        //         if (desc.lang !== name) {
-        //             return desc;
-        //         }
-        //         return { lang: name, text: value };
-        //     }),
-        //     { lang: name, text: value },
-        // ]);
-        setShortDesc((prevState) => [
+        setShortDesc((prevState) => ({
             ...prevState,
-            { lang: name, text: value },
-        ]);
+            [name]: { lang: name, text: value },
+        }));
     };
-
-    useEffect(() => {
-        console.log(shortDesc);
-        // console.log(
-        //     ...shortDesc
-        //         .filter((desc) => desc.lang == locale)
-        //         .map((desc) => desc.text)
-        // );
-    }, []);
 
     return (
         <>
@@ -64,49 +41,45 @@ const BasicEdit = ({ app, setLongDesc, setShortDesc, rules, shortDesc }) => {
             </Form.Item>
 
             <Form.Item label="Short Description">
+                {/* <Select defaultValue={"English"}>
+                    {fields.map((field) => (
+                        <Select.Option value={field.locale}>
+                            {field.title}
+                        </Select.Option>
+                    ))}
+                </Select> */}
                 {fields.map(({ title, locale }) => (
                     <div key={locale}>
                         <h6>{title}</h6>
                         <Input.TextArea
                             rows={4}
                             name={locale}
-                            // value={shortDesc
-                            //     .filter((desc) => desc.lang == locale)
-                            //     .map((desc) => desc.text)
-                            //     .toString()}
+                            value={shortDesc ? shortDesc[locale].text : null}
                             onChange={(e) =>
                                 onChange(e.target.name, e.target.value)
                             }
                         />
                     </div>
                 ))}
-                {/* {inputs.map(({ locale, title }) => (
-                    <div key={locale}>
-                        <h6>{title}</h6>
-                        <Input.TextArea rows={4} value={app.ShortDescription} />
-                    </div>
-                ))} */}
             </Form.Item>
-            {/* <h6>Russian</h6>
-                <Input.TextArea
-                    rows={4}
-                    value={app.ShortDescription}
-                    onChange={(content) => {
-                        setShortDesc({
-                            lang: "ru",
-                            text: content.target.value,
-                        });
-                    }}
-                /> */}
-            <Form.Item
-                // name="LongDescription"
-                label="Long description"
-                rules={rules.LongDescription}
-            >
-                <TextEditor
-                    apps={app.LongDescription}
-                    handleEditorChange={(content) => setLongDesc(content)}
-                />
+            <Form.Item label="Long description" rules={rules.LongDescription}>
+                {fields.map(({ title, locale }) => (
+                    <div key={locale} className="mb-3">
+                        <h4>{title}</h4>
+                        <TextEditor
+                            apps={longDesc ? longDesc[locale].text : null}
+                            handleEditorChange={(e) =>
+                                setLongDesc((prevState) => ({
+                                    ...prevState,
+                                    [locale]: {
+                                        lang: locale,
+                                        text: e,
+                                    },
+                                }))
+                            }
+                        />
+                    </div>
+                ))}
             </Form.Item>
         </>
     );

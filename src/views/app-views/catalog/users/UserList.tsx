@@ -182,17 +182,27 @@ export class UserList extends Component<ReduxStoreProps> {
     };
 
     toggleStatusRow = async (row, statusNumber) => {
-        for (const elm of row) {
-            await this.handleUserStatus(elm.ID, statusNumber);
-        }
-        this.setState({ selectedRows: [], selectedKeys: [] });
-        this.getUsersInfo();
+        Modal.confirm({
+            title: `Are you sure you want to ${
+                statusNumber === 0 ? "deactivate" : "activate"
+            } ${row.length} ${row.length > 1 ? "users" : "user"}?`,
+            onOk: async () => {
+                for (const elm of row) {
+                    await this.handleUserStatus(elm.ID, statusNumber);
+                }
+                this.setState({ selectedRows: [], selectedKeys: [] });
+                this.getUsersInfo();
+            },
+        });
     };
+
     deleteRow = (row) => {
         const objKey = "ID";
         let data = this.state.users;
         Modal.confirm({
-            title: `Are you sure you want to delete ${this.state.selectedRows.length} users?`,
+            title: `Are you sure you want to delete ${
+                this.state.selectedRows.length
+            } ${this.state.selectedRows.length > 1 ? "users" : "user"}?`,
             onOk: () => {
                 if (this.state.selectedRows.length > 1) {
                     this.state.selectedRows.forEach((elm) => {
@@ -213,9 +223,6 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
     handleUserStatus = (userId: number, status: number) => {
-        // Modal.confirm({
-        //     title: `Are you sure you want to `
-        // })
         axios
             .get(`${API_IS_APP_SERVICE}/ChangeUserStatus`, {
                 params: {
@@ -251,8 +258,16 @@ export class UserList extends Component<ReduxStoreProps> {
             {row.Status === 0 ? (
                 <Menu.Item
                     onClick={async () => {
-                        await this.handleUserStatus(row.ID, status.active);
-                        this.getUsersInfo();
+                        Modal.confirm({
+                            title: `Are you sure you want to activate/deactivate this user?`,
+                            onOk: async () => {
+                                await this.handleUserStatus(
+                                    row.ID,
+                                    status.active
+                                );
+                                this.getUsersInfo();
+                            },
+                        });
                     }}
                 >
                     <Flex alignItems="center">
@@ -263,8 +278,16 @@ export class UserList extends Component<ReduxStoreProps> {
             ) : (
                 <Menu.Item
                     onClick={async () => {
-                        await this.handleUserStatus(row.ID, status.inactive);
-                        this.getUsersInfo();
+                        Modal.confirm({
+                            title: `Are you sure you want to deactivate this user?`,
+                            onOk: async () => {
+                                await this.handleUserStatus(
+                                    row.ID,
+                                    status.inactive
+                                );
+                                this.getUsersInfo();
+                            },
+                        });
                     }}
                 >
                     <Flex alignItems="center">
@@ -275,8 +298,13 @@ export class UserList extends Component<ReduxStoreProps> {
             )}
             <Menu.Item
                 onClick={async () => {
-                    await this.handleUserStatus(row.ID, status.deleted);
-                    this.getUsersInfo();
+                    Modal.confirm({
+                        title: `Are you sure you want to delete this user?`,
+                        onOk: async () => {
+                            await this.handleUserStatus(row.ID, status.deleted);
+                            this.getUsersInfo();
+                        },
+                    });
                 }}
             >
                 <Flex alignItems="center">

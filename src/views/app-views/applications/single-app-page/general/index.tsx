@@ -76,6 +76,7 @@ const General = ({
     status,
     shortDesc,
     setShortDesc,
+    longDesc,
 }) => {
     /* I'd rather enter edit mode only for LongDescription Component,
     which means making a Edit Button only for Long Description, and switching between edit/view only for this input
@@ -105,10 +106,15 @@ const General = ({
                                 shortDesc={shortDesc}
                                 app={app}
                                 setLongDesc={setLongDesc}
+                                longDesc={longDesc}
                                 rules={rules}
                             />
                         ) : (
-                            <BasicView app={app} />
+                            <BasicView
+                                app={app}
+                                shortDesc={shortDesc}
+                                longDesc={longDesc}
+                            />
                         )}
                     </Card>
                 </Col>
@@ -163,19 +169,15 @@ const General = ({
                             className="w-100"
                             placeholder="Status"
                             defaultValue={status}
-                            onChange={(value) => setStatus(value)}
+                            loading={loading}
+                            disabled={loading}
+                            onChange={(value) => {
+                                changeMarketAppStatus(value);
+                            }}
                         >
-                            <Select.Option value={0}>Disable</Select.Option>
+                            <Select.Option value={0}>Disabled</Select.Option>
                             <Select.Option value={1}>Active</Select.Option>
                         </Select>
-                        <Button
-                            type="primary"
-                            className="mt-3"
-                            loading={loading}
-                            onClick={() => changeMarketAppStatus(status)}
-                        >
-                            Save
-                        </Button>
                     </Card>
                 </Col>
             </Row>

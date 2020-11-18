@@ -121,11 +121,24 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [form] = Form.useForm();
     const [uploadedImg, setImage] = useState();
-    const [shortDesc, setShortDesc] = useState<any>([]);
-    // JSON.parse(atob(app.ShortDescription))
-    const [longDesc, setLongDesc] = useState(app.LongDescription);
+    const [shortDesc, setShortDesc] = useState<any>();
+    const [longDesc, setLongDesc] = useState<any>();
     const [status, setStatus] = useState<number>(app.Status);
     const [submitLoading, setSubmitLoading] = useState(false);
+    useEffect(() => {
+        try {
+            setShortDesc(JSON.parse(window.atob(app.ShortDescription)));
+        } catch {
+            setShortDesc({ en: {}, ru: {}, ro: {} });
+        }
+    }, []);
+    useEffect(() => {
+        try {
+            setLongDesc(JSON.parse(window.atob(app.LongDescription)));
+        } catch {
+            setLongDesc({ en: {}, ru: {}, ro: {} });
+        }
+    }, []);
     useEffect(() => {
         setImage(app.Photo);
         if (edit) {
@@ -190,25 +203,26 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     };
 
     const onFinish = (values) => {
-        /* Do the same with LongDescription */
-        // const shortDescToSend = [shortDesc.en, shortDesc.ro, shortDesc.ru];
-        console.log(shortDesc);
-        // const App = {
-        //     ID: appID,
-        //     TermsOfUse: app.TermsOfUse,
-        //     ...values,
-        //     ShortDescription: Buffer.from(shortDesc).toString("base64"),
-        //     LongDescription: longDesc,
-        //     Photo: uploadedImg ? uploadedImg : app.Photo,
-        // };
-        // console.log(App);
-        // message
-        //     .loading(LOADING, 1.5)
-        //     .then(() => {
-        //         dispatch(updateMarketApp(App, Token));
-        //         setEdit(false);
-        //     })
-        //     .then(() => message.success(DONE, 1.5));
+        const App = {
+            ID: appID,
+            TermsOfUse: app.TermsOfUse,
+            ...values,
+            ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
+                "base64"
+            ),
+            LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
+                "base64"
+            ),
+            Photo: uploadedImg ? uploadedImg : app.Photo,
+        };
+        console.log(App);
+        message
+            .loading(LOADING, 1.5)
+            .then(() => {
+                dispatch(updateMarketApp(App, Token));
+                setEdit(false);
+            })
+            .then(() => message.success(DONE, 1.5));
     };
 
     if (!app) {
@@ -301,6 +315,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                                 uploadedImg={uploadedImg}
                                 uploadLoading={uploadLoading}
                                 handleUploadChange={handleUploadChange}
+                                longDesc={longDesc}
                             />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab="Packages" key="2">

@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 const BasicValuesStyles = {
     paddingLeft: "10px",
 };
-const BasicView = ({ app }) => {
+const BasicView = ({ app, shortDesc, longDesc }) => {
     const locale = useSelector((state) => state["theme"].locale);
     return (
         <>
@@ -13,6 +13,7 @@ const BasicView = ({ app }) => {
             </Form.Item>
             <Form.Item label="Short description">
                 <div style={BasicValuesStyles}>
+                    {shortDesc ? shortDesc[locale].text : null}
                     {/* {JSON.parse(atob(app.ShortDescription))} */}
                 </div>
             </Form.Item>
@@ -21,7 +22,7 @@ const BasicView = ({ app }) => {
                     style={BasicValuesStyles}
                     className="mt-2"
                     dangerouslySetInnerHTML={{
-                        __html: app.LongDescription,
+                        __html: longDesc ? longDesc[locale].text : null,
                     }}
                 ></div>
             </Form.Item>

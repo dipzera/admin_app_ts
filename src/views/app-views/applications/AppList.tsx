@@ -37,6 +37,15 @@ import { signOut } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
 
 const GridItem = ({ showEditAppModal, data }) => {
+    const [shortDescription, setShortDescription] = useState<any>();
+    const locale = useSelector((state) => state["theme"].locale);
+    useEffect(() => {
+        try {
+            setShortDescription(JSON.parse(window.atob(data.ShortDescription)));
+        } catch {
+            setShortDescription({ en: {}, ru: {}, ro: {} });
+        }
+    }, []);
     return (
         <Card>
             <Flex className="mb-3 " justifyContent="between">
@@ -74,7 +83,9 @@ const GridItem = ({ showEditAppModal, data }) => {
                     <h3 className="mb-0 cursor-pointer ">{data.Name}</h3>
                 </Link>
                 <p className="text-muted">By IntelectSoft</p>
-                <div style={{ minHeight: "70px" }}>{data.ShortDescription}</div>
+                <div style={{ minHeight: "70px" }}>
+                    {shortDescription ? shortDescription[locale].text : null}
+                </div>
             </div>
             {/* <div>
                 <Link

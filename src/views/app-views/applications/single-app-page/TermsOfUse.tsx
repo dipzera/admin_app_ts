@@ -9,35 +9,34 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
 import utils from "../../../../utils";
 
+const textarea = [
+    {
+        title: "English",
+        locale: "en",
+    },
+    {
+        title: "Romanian",
+        locale: "ro",
+    },
+    {
+        title: "Russian",
+        locale: "ru",
+    },
+];
 const TermsOfUse = ({ app }) => {
     const [edit, setEdit] = useState(false);
-    const [termsOfUse, setTermsOfUse] = useState<
-        any
-    >(); /* Further this will be an Array of {text, locale} and I will show the one based on the chosen language  */
-    const [ruTerms, setRuTerms] = useState<any>();
-    const [roTerms, setRoTerms] = useState<any>();
-    const [enTerms, setEnTerms] = useState<any>();
-    const [terms, setTerms] = useState<any>([ruTerms, roTerms, enTerms]);
+    const [terms, setTerms] = useState<any>();
     const Token = useSelector((state) => state["auth"].token);
     const locale = useSelector((state) => state["theme"].locale);
     const dispatch = useDispatch();
-    const textarea = [
-        {
-            title: "English",
-            locale: "en",
-            setter: setEnTerms,
-        },
-        {
-            title: "Romanian",
-            locale: "ro",
-            setter: setRoTerms,
-        },
-        {
-            title: "Russian",
-            locale: "ru",
-            setter: setRuTerms,
-        },
-    ];
+    useEffect(() => {
+        try {
+            setTerms(JSON.parse(window.atob(app.TermsOfUse)));
+        } catch {
+            setTerms({ en: {}, ru: {}, ro: {} });
+        }
+    }, []);
+
     const onFinish = () => {
         const {
             ID,
@@ -47,7 +46,6 @@ const TermsOfUse = ({ app }) => {
             Status,
             Photo,
         } = app;
-        const termsToSend = JSON.stringify([enTerms, ruTerms, roTerms]);
         const App = {
             ID,
             LongDescription,
@@ -55,18 +53,12 @@ const TermsOfUse = ({ app }) => {
             ShortDescription,
             Status,
             Photo,
-            TermsOfUse: Buffer.from(termsToSend).toString("base64"),
+            TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
         };
-        setTerms([enTerms, ruTerms, roTerms]);
+        console.log(App);
         dispatch(updateMarketApp(App, Token));
         setEdit(false);
     };
-    useEffect(() => {
-        console.log(JSON.parse(atob(app.TermsOfUse)));
-        // console.log(
-        //     JSON.parse(atob(app.TermsOfUse)).filter((elm) => elm.lang == locale)
-        // );
-    }, []);
     return (
         <>
             <Flex justifyContent="between" alignItems="center" className="py-2">
@@ -82,19 +74,19 @@ const TermsOfUse = ({ app }) => {
             </Flex>
             {edit ? (
                 <>
-                    {textarea.map(({ title, locale, setter }) => (
+                    {textarea.map(({ title, locale }) => (
                         <div key={locale} className="mb-3">
                             <h4>{title}</h4>
                             <TextEditor
-                                apps={JSON.parse(atob(app.TermsOfUse))
-                                    .filter((term) => term.lang == locale)
-                                    .map((elm) => elm.text)
-                                    .toString()}
+                                apps={terms ? terms[locale].text : null}
                                 handleEditorChange={(content) => {
-                                    setter({
-                                        lang: locale,
-                                        text: content,
-                                    });
+                                    setTerms((prevState) => ({
+                                        ...prevState,
+                                        [locale]: {
+                                            lang: locale,
+                                            text: content,
+                                        },
+                                    }));
                                 }}
                             />
                         </div>
@@ -115,10 +107,7 @@ const TermsOfUse = ({ app }) => {
                     <p
                         dangerouslySetInnerHTML={{
                             /* Filter from API */
-                            __html:
-                                "string" /* JSON.parse(atob(app.TermsOfUse))
-                                .filter((term) => term.lang == locale)
-                                .map((elm) => elm.text) */,
+                            __html: terms ? terms[locale].text : null,
                         }}
                     ></p>
                 </>
