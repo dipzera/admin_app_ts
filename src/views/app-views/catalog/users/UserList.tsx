@@ -213,6 +213,9 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
     handleUserStatus = (userId: number, status: number) => {
+        // Modal.confirm({
+        //     title: `Are you sure you want to `
+        // })
         axios
             .get(`${API_IS_APP_SERVICE}/ChangeUserStatus`, {
                 params: {
@@ -233,6 +236,18 @@ export class UserList extends Component<ReduxStoreProps> {
 
     dropdownMenu = (row) => (
         <Menu>
+            <Menu.Item onClick={() => this.showUserProfile(row)}>
+                <Flex alignItems="center">
+                    <EyeOutlined />
+                    <span className="ml-2">View Details</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.showEditModal(row)}>
+                <Flex alignItems="center">
+                    <EditOutlined />
+                    <span className="ml-2">Edit</span>
+                </Flex>
+            </Menu.Item>
             {row.Status === 0 ? (
                 <Menu.Item
                     onClick={async () => {
@@ -258,18 +273,6 @@ export class UserList extends Component<ReduxStoreProps> {
                     </Flex>
                 </Menu.Item>
             )}
-            <Menu.Item onClick={() => this.showUserProfile(row)}>
-                <Flex alignItems="center">
-                    <EyeOutlined />
-                    <span className="ml-2">View Details</span>
-                </Flex>
-            </Menu.Item>
-            <Menu.Item onClick={() => this.showEditModal(row)}>
-                <Flex alignItems="center">
-                    <EditOutlined />
-                    <span className="ml-2">Edit</span>
-                </Flex>
-            </Menu.Item>
             <Menu.Item
                 onClick={async () => {
                     await this.handleUserStatus(row.ID, status.deleted);
@@ -337,6 +340,11 @@ export class UserList extends Component<ReduxStoreProps> {
                             : " "}{" "}
                     </span>
                 ),
+            },
+            {
+                title: "Last Authorize IP",
+                dataIndex: "LastAuthorizeIP",
+                render: (LastAuthorizeIP) => <span>{LastAuthorizeIP}</span>,
             },
             {
                 title: "Status",

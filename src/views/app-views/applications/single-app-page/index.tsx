@@ -34,6 +34,7 @@ import {
 } from "../../../../redux/actions/Auth";
 import {
     deleteMarketAppPackage,
+    getMarketApps,
     updateMarketApp,
 } from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
@@ -43,6 +44,7 @@ import { API_APP_URL, APP_PREFIX_PATH } from "../../../../configs/AppConfig";
 import {
     DELETE_PACKAGE_MSG,
     DONE,
+    ERROR,
     EXPIRE_TIME,
     LOADING,
 } from "../../../../constants/Messages";
@@ -118,34 +120,64 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     };
     const [uploadLoading, setUploadLoading] = useState(false);
     const [form] = Form.useForm();
-    const [uploadedImg, setImage] = useState("");
+    const [uploadedImg, setImage] = useState();
+    const [shortDesc, setShortDesc] = useState<any>([]);
+    // JSON.parse(atob(app.ShortDescription))
     const [longDesc, setLongDesc] = useState(app.LongDescription);
     const [status, setStatus] = useState<number>(app.Status);
     const [submitLoading, setSubmitLoading] = useState(false);
     useEffect(() => {
-        setImage(app.Logo);
+        setImage(app.Photo);
         if (edit) {
             form.setFieldsValue(app);
         }
     }, [edit, setEdit]);
+
     const handleUploadChange = (info) => {
         if (info.file.status === "uploading") {
             setUploadLoading(true);
             return;
         }
         if (info.file.status === "done") {
-            getBase64(info.file.originFileObj, (imageUrl) => {
-                setImage(imageUrl);
+            getBase64(info.file.originFileObj, (Photo) => {
+                const {
+                    Name,
+                    ShortDescription,
+                    TermsOfUse,
+                    LongDescription,
+                } = app;
+                Axios.post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
+                    App: {
+                        ID: appID,
+                        LongDescription,
+                        ShortDescription,
+                        TermsOfUse,
+                        Name,
+                        Photo,
+                    },
+                    Token,
+                }).then((res) => {
+                    if (res.data.ErrorCode === 0) {
+                        dispatch(getMarketApps(Token));
+                    } else if (res.data.ErrorCode === 118) {
+                        dispatch(refreshToken(Token));
+                    }
+                });
+                setImage(Photo);
                 setUploadLoading(false);
+                message.success(DONE, 1.5);
             });
         }
+        if (info.file.status === "failed") {
+            message.error(ERROR, 1.5);
+        }
     };
-    const changeMarketAppStatus = (status) => {
+    const changeMarketAppStatus = (Status) => {
         dispatch(showLoading());
         setTimeout(() => {
             dispatch(hideLoading());
             Axios.get(`${API_IS_APP_SERVICE}/ChangeMarketAppStatus`, {
-                params: { Token, ID: appID, Status: status },
+                params: { Token, ID: appID, Status },
             }).then((res) => {
                 console.log(res.data);
                 if (res.data.ErrorCode === 0) {
@@ -158,20 +190,25 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     };
 
     const onFinish = (values) => {
-        const App = {
-            ID: appID,
-            TermsOfUse: app.TermsOfUse,
-            ...values,
-            LongDescription: longDesc,
-            Photo: uploadedImg ? uploadedImg : app.Photo,
-        };
-        message
-            .loading(LOADING, 1.5)
-            .then(() => {
-                dispatch(updateMarketApp(App, Token));
-                setEdit(false);
-            })
-            .then(() => message.success(DONE, 1.5));
+        /* Do the same with LongDescription */
+        // const shortDescToSend = [shortDesc.en, shortDesc.ro, shortDesc.ru];
+        console.log(shortDesc);
+        // const App = {
+        //     ID: appID,
+        //     TermsOfUse: app.TermsOfUse,
+        //     ...values,
+        //     ShortDescription: Buffer.from(shortDesc).toString("base64"),
+        //     LongDescription: longDesc,
+        //     Photo: uploadedImg ? uploadedImg : app.Photo,
+        // };
+        // console.log(App);
+        // message
+        //     .loading(LOADING, 1.5)
+        //     .then(() => {
+        //         dispatch(updateMarketApp(App, Token));
+        //         setEdit(false);
+        //     })
+        //     .then(() => message.success(DONE, 1.5));
     };
 
     if (!app) {
@@ -245,7 +282,11 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
 
                 {/* Tabs of App Preview */}
                 <div className="container">
-                    <Tabs defaultActiveKey="1" style={{ marginTop: 30 }}>
+                    <Tabs
+                        defaultActiveKey="1"
+                        style={{ marginTop: 30 }}
+                        onChange={() => setEdit(false)}
+                    >
                         <Tabs.TabPane tab="General" key="1">
                             <General
                                 changeMarketAppStatus={changeMarketAppStatus}
@@ -254,6 +295,8 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                                 setStatus={setStatus}
                                 setLongDesc={setLongDesc}
                                 edit={edit}
+                                setShortDesc={setShortDesc}
+                                shortDesc={shortDesc}
                                 setEdit={setEdit}
                                 uploadedImg={uploadedImg}
                                 uploadLoading={uploadLoading}

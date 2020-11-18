@@ -8,6 +8,7 @@ const TextEditor = ({ apps, handleEditorChange }) => {
             apiKey="n212ulx8ltmzy5gkpquyp9dx6gf2ui0xvzzuod2h2r6iwygg"
             initialValue={apps}
             init={{
+                mode: "textareas",
                 height: 200,
                 menubar: false,
                 plugins: [

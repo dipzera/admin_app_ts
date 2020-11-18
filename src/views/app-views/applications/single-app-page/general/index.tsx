@@ -50,25 +50,6 @@ const rules = {
             message: "Please enter long description",
         },
     ],
-    price: [
-        {
-            required: true,
-            message: "Please enter product price",
-        },
-    ],
-    comparePrice: [],
-    taxRate: [
-        {
-            required: true,
-            message: "Please enter tax rate",
-        },
-    ],
-    cost: [
-        {
-            required: true,
-            message: "Please enter item cost",
-        },
-    ],
 };
 
 const beforeUpload = (file) => {
@@ -93,6 +74,8 @@ const General = ({
     setStatus,
     changeMarketAppStatus,
     status,
+    shortDesc,
+    setShortDesc,
 }) => {
     /* I'd rather enter edit mode only for LongDescription Component,
     which means making a Edit Button only for Long Description, and switching between edit/view only for this input
@@ -118,6 +101,8 @@ const General = ({
                         </Flex>
                         {edit ? (
                             <BasicEdit
+                                setShortDesc={setShortDesc}
+                                shortDesc={shortDesc}
                                 app={app}
                                 setLongDesc={setLongDesc}
                                 rules={rules}
@@ -128,7 +113,41 @@ const General = ({
                     </Card>
                 </Col>
                 <Col xs={24} sm={24} md={7}>
-                    {edit ? (
+                    <Card title="Media">
+                        <Dragger
+                            {...imageUploadProps}
+                            beforeUpload={beforeUpload}
+                            onChange={(e) => handleUploadChange(e)}
+                        >
+                            {uploadedImg ? (
+                                <img
+                                    src={uploadedImg}
+                                    alt="avatar"
+                                    className="img-fluid"
+                                />
+                            ) : (
+                                <div>
+                                    {uploadLoading ? (
+                                        <div>
+                                            <LoadingOutlined className="font-size-xxl text-primary" />
+                                            <div className="mt-3">
+                                                Uploading
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <CustomIcon
+                                                className="display-3"
+                                                svg={ImageSvg}
+                                            />
+                                            <p>Click or drag file to upload</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </Dragger>
+                    </Card>
+                    {/* {edit ? (
                         <MediaEdit
                             imageUploadProps={imageUploadProps}
                             beforeUpload={beforeUpload}
@@ -138,7 +157,7 @@ const General = ({
                         />
                     ) : (
                         <MediaView app={app} />
-                    )}
+                    )} */}
                     <Card title="Status">
                         <Select
                             className="w-100"
