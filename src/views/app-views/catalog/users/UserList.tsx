@@ -41,7 +41,7 @@ import { refreshToken, signOut } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { useApiRequest } from "../../../../api";
+import { api, useApiRequest } from "../../../../api";
 import Utils from "../../../../utils";
 import {
     ACTIVATION_MSG_CONTENT,

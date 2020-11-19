@@ -13,7 +13,6 @@ export const saveState = (state) => {
 };
 /* Loads the state and returns an object that can be provided as the
  *  preloadedState parameter of store.js's call to configureStore */
-/* Test */
 export const loadState = () => {
     try {
         localStorage.getItem("client") && localStorage.removeItem("client");
