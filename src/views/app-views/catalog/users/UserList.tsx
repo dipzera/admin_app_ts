@@ -136,6 +136,11 @@ export class UserList extends Component<ReduxStoreProps> {
                 } else {
                     this.props.refreshToken(this.props.token);
                 }
+            })
+            .catch((error) => {
+                this.setState({ loading: false });
+                const key = "updatable";
+                message.error({ content: error.toString(), key });
             });
     };
 

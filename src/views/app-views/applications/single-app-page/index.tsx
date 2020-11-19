@@ -177,7 +177,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     }
                 });
                 setImage(Photo);
-                setUploadLoading(false);
+                // setUploadLoading(false);
                 message.success(DONE, 1.5);
             });
         }

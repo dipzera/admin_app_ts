@@ -37,6 +37,10 @@ export const getProfileInfo = (Token) => {
                 } else {
                     dispatch(refreshToken(Token));
                 }
+            })
+            .catch((error) => {
+                const key = "updatable";
+                message.error({ content: error.toString(), key });
             });
     };
 };
@@ -51,6 +55,10 @@ export const setProfileInfo = (accountInfo, Token) => {
                 } else if (res.data.ErrorCode === 118) {
                     dispatch(refreshToken(Token));
                 }
+            })
+            .catch((error) => {
+                const key = "updatable";
+                message.error({ content: error.toString(), key });
             });
     };
 };

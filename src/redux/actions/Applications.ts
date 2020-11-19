@@ -29,8 +29,10 @@ export const getMarketApps = (Token) => async (dispatch) => {
             }
         })
         .catch((error) => {
-            console.log(error);
             dispatch(hideLoading());
+
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
         });
 };
 export const updateMarketApp = (App, Token) => async (dispatch) => {
@@ -48,7 +50,8 @@ export const updateMarketApp = (App, Token) => async (dispatch) => {
             }
         })
         .catch((error) => {
-            console.log(error);
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
         });
 };
 
@@ -76,7 +79,8 @@ export const createMarketAppPackage = (
             }
         })
         .catch((error) => {
-            console.log(error);
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
             dispatch(hideLoading());
         });
 };
@@ -99,7 +103,8 @@ export const updateMarketAppPackage = (AppPackage, Token) => async (
             }
         })
         .catch((error) => {
-            console.log(error);
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
             dispatch(hideLoading());
         });
 };
@@ -127,7 +132,8 @@ export const deleteMarketAppPackage = (ID, Token) => async (
             }
         })
         .catch((error) => {
-            console.log(error);
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
             dispatch(hideLoading());
         });
 };

@@ -139,6 +139,11 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 } else {
                     this.props.refreshToken(this.props.token);
                 }
+            })
+            .catch((error) => {
+                const key = "updatable";
+                this.setState({ loading: false });
+                message.error({ content: error.toString(), key });
             });
     };
 

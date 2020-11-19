@@ -108,8 +108,15 @@ export const refreshToken = (Token) => async (dispatch) => {
                 dispatch({ type: SET_TOKEN, token: res.data.Token });
                 window.location.reload();
             } else if (res.data.ErrorCode === 105) {
-                message.loading(EXPIRE_TIME, 1).then(() => dispatch(signOut()));
+                const key = "updatable";
+                message
+                    .loading({ content: EXPIRE_TIME, key })
+                    .then(() => dispatch(signOut()));
             }
+        })
+        .catch((error) => {
+            const key = "updatable";
+            message.error({ content: error.toString(), key });
         });
 };
 const sendActivationCode = (Token, UserID = null) => {
@@ -144,6 +151,13 @@ const sendActivationCode = (Token, UserID = null) => {
                                         );
                                     }
                                 })
+                                .catch((error) => {
+                                    const key = "updatable";
+                                    message.error({
+                                        content: error.toString(),
+                                        key,
+                                    });
+                                })
                         );
                     }, 2000);
                 });
@@ -173,6 +187,13 @@ export const authorizeUser = (userData) => {
                     /* Tell user that his account is not activated, and ask him if he wants a new email code. If yes - send the code, if not, cancel. */
                 }
             })
-            .catch((e) => dispatch(hideLoading()));
+            .catch((error) => {
+                dispatch(hideLoading());
+                const key = "updatable";
+                message.error({
+                    content: error.toString(),
+                    key,
+                });
+            });
     };
 };
