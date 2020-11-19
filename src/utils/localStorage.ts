@@ -1,9 +1,12 @@
+import { APP_NAME } from "../configs/AppConfig";
+
 // Pass in Redux store's state to save it to the user's browser local storage
 export const saveState = (state) => {
     try {
         localStorage.getItem("client") && localStorage.removeItem("client");
+        localStorage.getItem("state") && localStorage.removeItem("state");
         const serializedState = JSON.stringify(state);
-        localStorage.setItem("state", serializedState);
+        localStorage.setItem(`${APP_NAME}`, serializedState);
     } catch {
         // We'll just ignore the errors
     }
@@ -13,7 +16,8 @@ export const saveState = (state) => {
 export const loadState = () => {
     try {
         localStorage.getItem("client") && localStorage.removeItem("client");
-        const serializedState = localStorage.getItem("state");
+        localStorage.getItem("state") && localStorage.removeItem("state");
+        const serializedState = localStorage.getItem(`${APP_NAME}`);
         if (serializedState === null) {
             return undefined;
         }
