@@ -118,7 +118,7 @@ export class UserList extends Component<ReduxStoreProps> {
 
     getUsersInfo = () => {
         this.setState({ loading: true });
-        axios
+        return axios
             .get(`${API_IS_APP_SERVICE}/GetAllUsersInfo`, {
                 params: {
                     Token: this.props.token,
@@ -196,7 +196,7 @@ export class UserList extends Component<ReduxStoreProps> {
                     await this.handleUserStatus(elm.ID, statusNumber);
                 }
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                this.getUsersInfo();
+                await this.getUsersInfo();
             },
         });
     };
@@ -243,6 +243,10 @@ export class UserList extends Component<ReduxStoreProps> {
                 } else if (res.data.ErrorCode === 118) {
                     this.props.refreshToken(this.props.token);
                 }
+            })
+            .catch((error) => {
+                const key = "updatable";
+                message.error({ content: error.toString(), key });
             });
     };
 
@@ -264,13 +268,13 @@ export class UserList extends Component<ReduxStoreProps> {
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: `Are you sure you want to activate/deactivate this user?`,
+                            title: `Are you sure you want to activate this user?`,
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.active
                                 );
-                                this.getUsersInfo();
+                                await this.getUsersInfo();
                             },
                         });
                     }}
@@ -290,7 +294,7 @@ export class UserList extends Component<ReduxStoreProps> {
                                     row.ID,
                                     status.inactive
                                 );
-                                this.getUsersInfo();
+                                await this.getUsersInfo();
                             },
                         });
                     }}
@@ -307,7 +311,7 @@ export class UserList extends Component<ReduxStoreProps> {
                         title: `Are you sure you want to delete this user?`,
                         onOk: async () => {
                             await this.handleUserStatus(row.ID, status.deleted);
-                            this.getUsersInfo();
+                            await this.getUsersInfo();
                         },
                     });
                 }}

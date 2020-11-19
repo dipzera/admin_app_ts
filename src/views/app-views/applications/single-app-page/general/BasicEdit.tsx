@@ -30,7 +30,7 @@ const BasicEdit = ({
     const onChange: any = (name, value) => {
         setShortDesc((prevState) => ({
             ...prevState,
-            [name]: { lang: name, text: value },
+            [name]: value,
         }));
     };
 
@@ -54,7 +54,7 @@ const BasicEdit = ({
                         <Input.TextArea
                             rows={4}
                             name={locale}
-                            value={shortDesc ? shortDesc[locale].text : null}
+                            value={shortDesc ? shortDesc[locale] : null}
                             onChange={(e) =>
                                 onChange(e.target.name, e.target.value)
                             }
@@ -67,14 +67,11 @@ const BasicEdit = ({
                     <div key={locale} className="mb-3">
                         <h4>{title}</h4>
                         <TextEditor
-                            apps={longDesc ? longDesc[locale].text : null}
+                            apps={longDesc ? longDesc[locale] : null}
                             handleEditorChange={(e) =>
                                 setLongDesc((prevState) => ({
                                     ...prevState,
-                                    [locale]: {
-                                        lang: locale,
-                                        text: e,
-                                    },
+                                    [locale]: e,
                                 }))
                             }
                         />

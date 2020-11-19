@@ -33,7 +33,7 @@ const TermsOfUse = ({ app }) => {
         try {
             setTerms(JSON.parse(window.atob(app.TermsOfUse)));
         } catch {
-            setTerms({ en: {}, ru: {}, ro: {} });
+            setTerms({ en: "", ru: "", ro: "" });
         }
     }, []);
 
@@ -78,14 +78,11 @@ const TermsOfUse = ({ app }) => {
                         <div key={locale} className="mb-3">
                             <h4>{title}</h4>
                             <TextEditor
-                                apps={terms ? terms[locale].text : null}
+                                apps={terms ? terms[locale] : null}
                                 handleEditorChange={(content) => {
                                     setTerms((prevState) => ({
                                         ...prevState,
-                                        [locale]: {
-                                            lang: locale,
-                                            text: content,
-                                        },
+                                        [locale]: content,
                                     }));
                                 }}
                             />
@@ -107,7 +104,7 @@ const TermsOfUse = ({ app }) => {
                     <p
                         dangerouslySetInnerHTML={{
                             /* Filter from API */
-                            __html: terms ? terms[locale].text : null,
+                            __html: terms ? terms[locale] : null,
                         }}
                     ></p>
                 </>

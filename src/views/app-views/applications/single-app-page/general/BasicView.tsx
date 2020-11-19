@@ -13,8 +13,7 @@ const BasicView = ({ app, shortDesc, longDesc }) => {
             </Form.Item>
             <Form.Item label="Short description">
                 <div style={BasicValuesStyles}>
-                    {shortDesc ? shortDesc[locale].text : null}
-                    {/* {JSON.parse(atob(app.ShortDescription))} */}
+                    {shortDesc ? shortDesc[locale] : null}
                 </div>
             </Form.Item>
             <Form.Item label="Long description">
@@ -22,7 +21,7 @@ const BasicView = ({ app, shortDesc, longDesc }) => {
                     style={BasicValuesStyles}
                     className="mt-2"
                     dangerouslySetInnerHTML={{
-                        __html: longDesc ? longDesc[locale].text : null,
+                        __html: longDesc ? longDesc[locale] : null,
                     }}
                 ></div>
             </Form.Item>

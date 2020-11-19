@@ -129,14 +129,14 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         try {
             setShortDesc(JSON.parse(window.atob(app.ShortDescription)));
         } catch {
-            setShortDesc({ en: {}, ru: {}, ro: {} });
+            setShortDesc({ en: "", ru: "", ro: "" });
         }
     }, []);
     useEffect(() => {
         try {
             setLongDesc(JSON.parse(window.atob(app.LongDescription)));
         } catch {
-            setLongDesc({ en: {}, ru: {}, ro: {} });
+            setLongDesc({ en: "", ru: "", ro: "" });
         }
     }, []);
     useEffect(() => {
@@ -206,7 +206,8 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         const App = {
             ID: appID,
             TermsOfUse: app.TermsOfUse,
-            ...values,
+            Status: app.Status,
+            Name: values.Name,
             ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
                 "base64"
             ),

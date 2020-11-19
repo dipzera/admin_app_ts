@@ -43,7 +43,7 @@ const GridItem = ({ showEditAppModal, data }) => {
         try {
             setShortDescription(JSON.parse(window.atob(data.ShortDescription)));
         } catch {
-            setShortDescription({ en: {}, ru: {}, ro: {} });
+            setShortDescription({ en: "", ru: "", ro: "" });
         }
     }, []);
     return (
@@ -84,7 +84,7 @@ const GridItem = ({ showEditAppModal, data }) => {
                 </Link>
                 <p className="text-muted">By IntelectSoft</p>
                 <div style={{ minHeight: "70px" }}>
-                    {shortDescription ? shortDescription[locale].text : null}
+                    {shortDescription ? shortDescription[locale] : null}
                 </div>
             </div>
             {/* <div>
