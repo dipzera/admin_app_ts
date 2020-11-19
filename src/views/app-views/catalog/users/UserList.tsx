@@ -41,7 +41,7 @@ import { refreshToken, signOut } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { api, useApiRequest } from "../../../../api";
+import HttpClient from "../../../../api";
 import Utils from "../../../../utils";
 import {
     ACTIVATION_MSG_CONTENT,
@@ -55,6 +55,7 @@ import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import { SortOrder } from "antd/es/table/interface";
+import { ApiResponse, IUsers } from "../../../../types";
 
 enum status {
     inactive = 0,
@@ -124,17 +125,18 @@ export class UserList extends Component<ReduxStoreProps> {
                     Token: this.props.token,
                 },
             })
-            .then((res) => {
+            .then(({ data }) => {
                 this.setState({ loading: false });
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    const filteredUsers = res.data.Users.filter(
+                if (data.ErrorCode === 0) {
+                    const filteredUsers = data.Users.filter(
                         (user) => user.ID !== this.props.ID
                     );
                     this.setState({ usersToSearch: [...filteredUsers] });
                     this.setState({ users: [...filteredUsers] });
-                } else {
+                } else if (data.ErrorCOde === 118) {
                     this.props.refreshToken(this.props.token);
+                } else {
+                    throw new Error(data.ErrorMessage);
                 }
             })
             .catch((error) => {

@@ -94,7 +94,7 @@ export interface CompanyProps {
     WebSite: string;
 }
 
-interface ReduxStoreProps {
+export interface ReduxStoreProps {
     token: string;
     locale: string;
     CompanyID: number;
@@ -518,15 +518,16 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                     </Tooltip>
                                 </>
                             )}
-                            <Link to={`${APP_PREFIX_PATH}/wizard`}>
-                                <Button
-                                    type="primary"
-                                    icon={<PlusCircleOutlined />}
-                                    block
-                                >
-                                    Register company
-                                </Button>
-                            </Link>
+                            {/*                             <Link to={`${APP_PREFIX_PATH}/wizard`}> */}
+                            <Button
+                                type="primary"
+                                icon={<PlusCircleOutlined />}
+                                block
+                                onClick={() => this.showNewUserModal()}
+                            >
+                                Register company
+                            </Button>
+                            {/*                             </Link> */}
                         </Flex>
                     </div>
                 </Flex>
@@ -559,6 +560,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
                     token={this.props.token}
+                    getCompanyList={this.getCompanyList}
                 />
                 <CompanyModalEdit
                     signOut={signOut}

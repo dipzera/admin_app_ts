@@ -1,12 +1,18 @@
 import { Row, Col, Input, Modal, Form, message } from "antd";
 import React, { useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
+import {
+    API_IS_APP_SERVICE,
+    API_IS_AUTH_SERVICE,
+} from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
 import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
 import { MaskedInput } from "antd-mask-input";
 import utils from "../../../../utils";
+import { useDispatch } from "react-redux";
+import { refreshToken } from "../../../../redux/actions/Auth";
+import { CompanyList, ReduxStoreProps } from "./CompanyList";
 const publicIp = require("react-public-ip");
 export const CompanyModalAdd = ({
     onCreate,
@@ -15,6 +21,7 @@ export const CompanyModalAdd = ({
     token: Token,
     CompanyID,
     signOut,
+    getCompanyList,
 }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
@@ -22,6 +29,7 @@ export const CompanyModalAdd = ({
     const onChangeMask = (e) => {
         setMask({ [e.target.name]: e.target.value });
     };
+    const dispatch = useDispatch();
     const onFinish = async (values) => {
         // const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
         /*  EDIT ABOVE WHEN REGISTER COMPANY FUNCTION IS READY */
@@ -31,7 +39,7 @@ export const CompanyModalAdd = ({
             info: await publicIp.v4(),
         });
         axios
-            .post(`${API_IS_AUTH_SERVICE}/RegisterClientCompany`, {
+            .post(`${API_IS_APP_SERVICE}/RegisterClientCompany`, {
                 /* Get the companyID, token and uilanguage from redux store */
                 Company: {
                     ...values,
@@ -43,12 +51,16 @@ export const CompanyModalAdd = ({
                 console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
-                    message.success(EMAIL_CONFIRM_MSG, 2);
+                    getCompanyList();
                 } else if (res.data.ErrorCode === 118) {
-                    message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
+                    dispatch(refreshToken(Token));
                 } else {
-                    message.error(res.data.ErrorMessage);
+                    throw new Error(res.data.ErrorMessage);
                 }
+            })
+            .catch((error) => {
+                const key = "updatable";
+                message.error({ content: error, key });
             });
     };
     return (

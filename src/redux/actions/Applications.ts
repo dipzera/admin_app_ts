@@ -1,8 +1,9 @@
 import { message } from "antd";
-import Axios from "axios";
+import Axios, { AxiosResponse } from "axios";
 import { API_APP_URL } from "../../configs/AppConfig";
 import { API_IS_APP_SERVICE } from "../../constants/ApiConstant";
 import { EXPIRE_TIME } from "../../constants/Messages";
+import { ApiResponse, IMarketAppList } from "../../types";
 import { SET_APPS } from "../constants/Applications";
 import { hideLoading, refreshToken, showLoading, signOut } from "./Auth";
 
@@ -20,17 +21,22 @@ export const getMarketApps = (Token) => async (dispatch) => {
     })
         .then((res) => {
             dispatch(hideLoading());
-            const { ErrorCode, ErrorMessage, MarketAppList } = res.data;
             console.log(res.data);
+            const {
+                ErrorCode,
+                ErrorMessage,
+                MarketAppList,
+            } = res.data as ApiResponse<IMarketAppList>;
             if (ErrorCode === 0) {
                 dispatch(setApps(MarketAppList));
             } else if (ErrorCode === 118) {
                 dispatch(refreshToken(Token));
+            } else {
+                throw new Error(ErrorMessage);
             }
         })
         .catch((error) => {
             dispatch(hideLoading());
-
             const key = "updatable";
             message.error({ content: error.toString(), key });
         });
@@ -42,11 +48,13 @@ export const updateMarketApp = (App, Token) => async (dispatch) => {
     })
         .then((res) => {
             console.log(res.data);
-            const { ErrorCode, ErrorMessage } = res.data;
+            const { ErrorCode, ErrorMessage } = res.data as ApiResponse<null>;
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
                 dispatch(refreshToken(Token));
+            } else {
+                throw new Error(ErrorMessage);
             }
         })
         .catch((error) => {
@@ -71,11 +79,13 @@ export const createMarketAppPackage = (
         .then((res) => {
             dispatch(hideLoading());
             console.log(res.data);
-            const { ErrorCode, ErrorMessage } = res.data;
+            const { ErrorCode, ErrorMessage } = res.data as ApiResponse<null>;
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
                 dispatch(refreshToken(Token));
+            } else {
+                throw new Error(ErrorMessage);
             }
         })
         .catch((error) => {
@@ -95,11 +105,13 @@ export const updateMarketAppPackage = (AppPackage, Token) => async (
         .then((res) => {
             dispatch(hideLoading());
             console.log(res.data);
-            const { ErrorCode, ErrorMessage } = res.data;
+            const { ErrorCode, ErrorMessage } = res.data as ApiResponse<null>;
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
                 dispatch(refreshToken(Token));
+            } else {
+                throw new Error(ErrorMessage);
             }
         })
         .catch((error) => {
@@ -121,7 +133,7 @@ export const deleteMarketAppPackage = (ID, Token) => async (
         .then((res) => {
             dispatch(hideLoading());
             console.log(res.data);
-            const { ErrorCode, ErrorMessage } = res.data;
+            const { ErrorCode, ErrorMessage } = res.data as ApiResponse<null>;
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(getState()["auth"].token));
             } else if (ErrorCode === 118) {
@@ -129,6 +141,8 @@ export const deleteMarketAppPackage = (ID, Token) => async (
                 message
                     .loading(EXPIRE_TIME, 1.5)
                     .then(() => dispatch(signOut()));
+            } else {
+                throw new Error(ErrorMessage);
             }
         })
         .catch((error) => {
