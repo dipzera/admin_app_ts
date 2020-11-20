@@ -20,7 +20,6 @@ import { IntlProvider } from "react-intl";
 import AppLocale from "../../../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { API_IS_APP_SERVICE } from "../../../../../constants/ApiConstant";
 import { signOut, refreshToken } from "../../../../../redux/actions/Auth";
 import {
     DONE,

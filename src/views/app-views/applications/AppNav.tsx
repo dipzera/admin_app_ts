@@ -6,7 +6,6 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import { AppNavGrid } from "./AppNavGrid";
 import Axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import { EXPIRE_TIME } from "../../../constants/Messages";
 import { signOut } from "../../../redux/actions/Auth";
 import { getMarketApps } from "../../../redux/actions/Applications";

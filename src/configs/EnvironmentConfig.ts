@@ -5,7 +5,6 @@ const dev = {
 };
 
 const prod = {
-    /* TODO: complete this when prod ready */
     API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
     API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
     CLIENT_URL: "http://efactura.md/clientportal",

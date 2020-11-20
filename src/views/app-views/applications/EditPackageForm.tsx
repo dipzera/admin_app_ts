@@ -12,7 +12,6 @@ import {
     DatePicker,
 } from "antd";
 import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";

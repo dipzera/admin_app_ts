@@ -3,14 +3,12 @@ import { Form, Button, Input, Row, Col, message } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { connect } from "react-redux";
 import Utils from "../../../utils";
-import {
-    API_IS_AUTH_SERVICE,
-    API_PUBLIC_KEY,
-} from "../../../constants/ApiConstant";
+import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import axios from "axios";
 import AppLocale from "../../../lang";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { refreshToken } from "../../../redux/actions/Auth";
+import { API_AUTH_URL } from "../../../configs/AppConfig";
 interface IChangePassword {
     token: string;
     locale: string;
@@ -34,7 +32,7 @@ export class ChangePassword extends Component<IChangePassword> {
         setTimeout(() => {
             this.setState({ loading: false });
             axios
-                .post(`${API_IS_AUTH_SERVICE}/ChangePassword`, {
+                .post(`${API_AUTH_URL}/ChangePassword`, {
                     NewPassword: Utils.encryptInput(
                         newPassword,
                         API_PUBLIC_KEY

@@ -1,7 +1,6 @@
 import { message } from "antd";
 import Axios, { AxiosResponse } from "axios";
 import { API_APP_URL } from "../../configs/AppConfig";
-import { API_IS_APP_SERVICE } from "../../constants/ApiConstant";
 import { EXPIRE_TIME } from "../../constants/Messages";
 import { ApiResponse, IMarketAppList } from "../../types";
 import { SET_APPS } from "../constants/Applications";
@@ -14,19 +13,19 @@ const setApps = (payload) => ({
 
 export const getMarketApps = (Token) => async (dispatch) => {
     dispatch(showLoading());
-    Axios.get(`${API_IS_APP_SERVICE}/GetMarketAppList`, {
+    Axios.get(`${API_APP_URL}/GetMarketAppList`, {
         params: {
             Token,
         },
     })
-        .then((res) => {
+        .then(({ data }) => {
             dispatch(hideLoading());
-            console.log(res.data);
             const {
                 ErrorCode,
                 ErrorMessage,
                 MarketAppList,
-            } = res.data as ApiResponse<IMarketAppList>;
+            } = data as ApiResponse<IMarketAppList[]>;
+
             if (ErrorCode === 0) {
                 dispatch(setApps(MarketAppList));
             } else if (ErrorCode === 118) {
@@ -42,7 +41,7 @@ export const getMarketApps = (Token) => async (dispatch) => {
         });
 };
 export const updateMarketApp = (App, Token) => async (dispatch) => {
-    Axios.post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
+    Axios.post(`${API_APP_URL}/UpdateMarketApp`, {
         App,
         Token,
     })
@@ -69,7 +68,7 @@ export const createMarketAppPackage = (
     Token
 ) => async (dispatch) => {
     dispatch(showLoading());
-    Axios.post(`${API_IS_APP_SERVICE}/CreateMarketAppPackage`, {
+    Axios.post(`${API_APP_URL}/CreateMarketAppPackage`, {
         AppPackage: {
             ...middlewareData,
         },
@@ -98,7 +97,7 @@ export const updateMarketAppPackage = (AppPackage, Token) => async (
     dispatch
 ) => {
     dispatch(showLoading());
-    Axios.post(`${API_IS_APP_SERVICE}/UpdateMarketAppPackage`, {
+    Axios.post(`${API_APP_URL}/UpdateMarketAppPackage`, {
         AppPackage,
         Token,
     })
@@ -126,7 +125,7 @@ export const deleteMarketAppPackage = (ID, Token) => async (
     getState
 ) => {
     dispatch(showLoading());
-    Axios.post(`${API_IS_APP_SERVICE}/DeleteMarketAppPackage`, {
+    Axios.post(`${API_APP_URL}/DeleteMarketAppPackage`, {
         ID,
         Token,
     })

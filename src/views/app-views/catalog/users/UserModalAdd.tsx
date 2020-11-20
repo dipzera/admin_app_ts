@@ -1,10 +1,6 @@
 import { Row, Col, Input, Modal, Form, message, Select, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
 import {
@@ -13,6 +9,7 @@ import {
     LOADING,
 } from "../../../../constants/Messages";
 import utils from "../../../../utils";
+import { API_APP_URL, API_AUTH_URL } from "../../../../configs/AppConfig";
 
 const renderItem = (id, title, idno) => ({
     value: id,
@@ -39,7 +36,7 @@ export const UserModalAdd = ({
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
         axios
-            .get(`${API_IS_APP_SERVICE}/GetBasicCompaniesList`, {
+            .get(`${API_APP_URL}/GetBasicCompaniesList`, {
                 params: { Token },
             })
             .then((res) => {
@@ -61,7 +58,7 @@ export const UserModalAdd = ({
     };
     const onFinish = (values) => {
         axios
-            .post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
+            .post(`${API_AUTH_URL}/RegisterUser`, {
                 ...values,
                 Token,
                 UiLanguage: 0,

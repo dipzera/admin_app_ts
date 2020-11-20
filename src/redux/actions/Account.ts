@@ -1,13 +1,10 @@
-import {
-    API_IS_AUTH_SERVICE,
-    API_IS_APP_SERVICE,
-} from "../../constants/ApiConstant";
 import { REMOVE_AVATAR, UPDATE_SETTINGS } from "../constants/Account";
 import axios from "axios";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
 import { hideLoading, refreshToken, showLoading, signOut } from "./Auth";
 import { DONE, EXPIRE_TIME, LOADING } from "../../constants/Messages";
+import { API_APP_URL } from "../../configs/AppConfig";
 
 export const updateSettings = (payload) => ({
     type: UPDATE_SETTINGS,
@@ -17,7 +14,7 @@ export const updateSettings = (payload) => ({
 export const getProfileInfo = (Token) => {
     return async (dispatch) => {
         axios
-            .get(`${API_IS_APP_SERVICE}/GetProfileInfo`, {
+            .get(`${API_APP_URL}/GetProfileInfo`, {
                 params: {
                     Token,
                 },
@@ -47,7 +44,7 @@ export const getProfileInfo = (Token) => {
 export const setProfileInfo = (accountInfo, Token) => {
     return async (dispatch) => {
         axios
-            .post(`${API_IS_APP_SERVICE}/UpdateUser`, accountInfo)
+            .post(`${API_APP_URL}/UpdateUser`, accountInfo)
             .then((res) => {
                 if (res.data.ErrorCode === 0) {
                     const { User } = accountInfo;

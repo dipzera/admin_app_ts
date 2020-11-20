@@ -4,7 +4,6 @@ import Flex from "../../../../components/shared-components/Flex";
 import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
 import Axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
 import utils from "../../../../utils";

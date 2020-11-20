@@ -20,7 +20,6 @@ import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import { refreshToken, signOut } from "../../../redux/actions/Auth";
 import {
     DONE,
@@ -31,6 +30,7 @@ import {
     UPLOADED,
     UPLOADING,
 } from "../../../constants/Messages";
+import { API_APP_URL } from "../../../configs/AppConfig";
 const publicIp = require("react-public-ip");
 
 function beforeUpload(file) {
@@ -53,7 +53,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
 
     componentDidMount() {
         axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyInfo`, {
+            .get(`${API_APP_URL}/GetCompanyInfo`, {
                 params: {
                     Token: this.props.token,
                 },
@@ -99,7 +99,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     info: await publicIp.v4(),
                 });
                 axios
-                    .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+                    .post(`${API_APP_URL}/UpdateCompany`, {
                         Company: {
                             ...this.state.Company,
                             ...values,
@@ -133,7 +133,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, async (imageUrl) => {
                     axios
-                        .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+                        .post(`${API_APP_URL}/UpdateCompany`, {
                             Company: {
                                 ...this.state.Company,
                                 Logo: imageUrl,
@@ -163,7 +163,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
 
         const onRemoveAvater = async () => {
             axios
-                .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+                .post(`${API_APP_URL}/UpdateCompany`, {
                     Company: {
                         ...this.state.Company,
                         Logo: "",

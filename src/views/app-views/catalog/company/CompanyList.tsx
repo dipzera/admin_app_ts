@@ -32,10 +32,6 @@ import UserView from "./CompanyView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
 import { signOut, refreshToken } from "../../../../redux/actions/Auth";
@@ -49,7 +45,11 @@ import {
     LOADING,
 } from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
-import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
+import {
+    API_APP_URL,
+    APP_PREFIX_PATH,
+    CLIENT_URL,
+} from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
@@ -120,7 +120,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
     getCompanyList = () => {
         this.setState({ loading: true });
         axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
+            .get(`${API_APP_URL}/GetCompanyList`, {
                 params: {
                     Token: this.props.token,
                 },
@@ -212,7 +212,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
 
     handleUserStatus = (userId: number, status: number) => {
         axios
-            .get(`${API_IS_APP_SERVICE}/ChangeCompanyStatus`, {
+            .get(`${API_APP_URL}/ChangeCompanyStatus`, {
                 params: {
                     Token: this.props.token,
                     ID: userId,
@@ -258,7 +258,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
 
     getManagedToken = (CompanyID) => {
         return axios
-            .get(`${API_IS_AUTH_SERVICE}/GetManagedToken`, {
+            .get(`${API_APP_URL}/GetManagedToken`, {
                 params: {
                     Token: this.props.token,
                     CompanyID,

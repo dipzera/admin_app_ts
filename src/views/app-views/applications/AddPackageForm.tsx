@@ -12,7 +12,6 @@ import {
     Slider,
 } from "antd";
 import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME, LOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
@@ -42,7 +41,7 @@ const AddPackageForm = ({
     }, [visible, form]);
 
     const Token = useSelector((state) => state["auth"].token);
-    const loading = useSelector(state => state["auth"].loading)
+    const loading = useSelector((state) => state["auth"].loading);
     const dispatch = useDispatch();
     const onFinish = (values) => {
         const Status = values.Status ? 1 : 0;

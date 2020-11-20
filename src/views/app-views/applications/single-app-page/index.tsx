@@ -54,7 +54,6 @@ import Description from "./Description";
 import TermsOfUse from "./TermsOfUse";
 import InnerAppLayout from "../../../../layouts/inner-app-layout";
 import EditAppForm from "../EditAppForm";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import EditApp from "./EditApp";
 import General from "./general";
 
@@ -159,7 +158,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     TermsOfUse,
                     LongDescription,
                 } = app;
-                Axios.post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
+                Axios.post(`${API_APP_URL}/UpdateMarketApp`, {
                     App: {
                         ID: appID,
                         LongDescription,
@@ -189,7 +188,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         dispatch(showLoading());
         setTimeout(() => {
             dispatch(hideLoading());
-            Axios.get(`${API_IS_APP_SERVICE}/ChangeMarketAppStatus`, {
+            Axios.get(`${API_APP_URL}/ChangeMarketAppStatus`, {
                 params: { Token, ID: appID, Status },
             }).then((res) => {
                 console.log(res.data);

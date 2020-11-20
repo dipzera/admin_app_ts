@@ -9,8 +9,8 @@ import {
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import AppLocale from "../../../../lang";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import { DONE, EXPIRE_TIME } from "../../../../constants/Messages";
+import { API_APP_URL } from "../../../../configs/AppConfig";
 export const UserModalEdit = ({
     signOut,
     data,
@@ -36,7 +36,7 @@ export const UserModalEdit = ({
         setTimeout(() => {
             setIsLoading(false);
             axios
-                .post(`${API_IS_APP_SERVICE}/UpdateUser`, {
+                .post(`${API_APP_URL}/UpdateUser`, {
                     User: { ...data, ...values },
                     Token: token,
                 })

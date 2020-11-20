@@ -42,6 +42,5 @@ export interface IUsers {
 export interface ApiResponse<T> {
     ErrorCode: number;
     ErrorMessage: string;
-    MarketAppList?: T;
-    Users?: T;
+    [extra: string]: T | number | string;
 }

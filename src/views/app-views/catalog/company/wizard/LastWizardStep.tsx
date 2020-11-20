@@ -2,10 +2,7 @@ import { message } from "antd";
 import Axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../../constants/ApiConstant";
+import { API_APP_URL, API_AUTH_URL } from "../../../../../configs/AppConfig";
 import { refreshToken } from "../../../../../redux/actions/Auth";
 import { WizardContext } from "./WizardContext";
 
@@ -17,12 +14,12 @@ const LastWizardStep = () => {
     const [companyApiSuccess, setCompanyApiSuccess] = useState(false);
 
     const handleCompanyRegister = (): any => {
-        return Axios.post(`${API_IS_APP_SERVICE}/RegisterClientCompany`, {
+        return Axios.post(`${API_APP_URL}/RegisterClientCompany`, {
             ...context.wizardData.CompanyData,
         }).then((response) => response.data);
     };
     const handleUserRegister = (CompanyID) => {
-        return Axios.post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
+        return Axios.post(`${API_AUTH_URL}/RegisterUser`, {
             ...context.wizardData.UserData,
             Token,
             CompanyID,

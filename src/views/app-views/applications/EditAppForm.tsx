@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, Form, Input, message, Modal, Row, Switch } from "antd";
 import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import Utils from "../../../utils";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import { getMarketApps } from "../../../redux/actions/Applications";
 import TextEditor from "./single-app-page/TextEditor";
+import { API_APP_URL } from "../../../configs/AppConfig";
 const EditAppForm = ({ apps, visible, close, signOut }) => {
     const [form] = Form.useForm();
 
@@ -44,7 +44,7 @@ const EditAppForm = ({ apps, visible, close, signOut }) => {
             });
             setIsLoading(false);
             axios
-                .post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
+                .post(`${API_APP_URL}/UpdateMarketApp`, {
                     App: {
                         ...apps,
                         ...values,

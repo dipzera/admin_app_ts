@@ -31,10 +31,6 @@ import UserView from "./UserView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
 import { refreshToken, signOut } from "../../../../redux/actions/Auth";
@@ -56,6 +52,7 @@ import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import { SortOrder } from "antd/es/table/interface";
 import { ApiResponse, IUsers } from "../../../../types";
+import { API_APP_URL } from "../../../../configs/AppConfig";
 
 enum status {
     inactive = 0,
@@ -120,12 +117,13 @@ export class UserList extends Component<ReduxStoreProps> {
     getUsersInfo = () => {
         this.setState({ loading: true });
         return axios
-            .get(`${API_IS_APP_SERVICE}/GetAllUsersInfo`, {
+            .get(`${API_APP_URL}/GetAllUsersInfo`, {
                 params: {
                     Token: this.props.token,
                 },
             })
             .then(({ data }) => {
+                console.log(data);
                 this.setState({ loading: false });
                 if (data.ErrorCode === 0) {
                     const filteredUsers = data.Users.filter(
@@ -231,7 +229,7 @@ export class UserList extends Component<ReduxStoreProps> {
     };
     handleUserStatus = (userId: number, status: number) => {
         axios
-            .get(`${API_IS_APP_SERVICE}/ChangeUserStatus`, {
+            .get(`${API_APP_URL}/ChangeUserStatus`, {
                 params: {
                     Token: this.props.token,
                     ID: userId,
@@ -362,6 +360,11 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
+            },
+            {
+                title: "Company",
+                dataIndex: "Company",
+                render: (Company) => <span>{Company}</span>,
             },
             {
                 title: "Role",

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Form, Input, Button, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
-import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { PASSWORD_SENT } from "../../../../constants/Messages";
+import { API_AUTH_URL } from "../../../../configs/AppConfig";
 const publicIp = require("react-public-ip");
 
 const backgroundStyle = {
@@ -24,7 +24,7 @@ const ForgotPassword = () => {
         setTimeout(async () => {
             setLoading(false);
             axios
-                .post(`${API_IS_AUTH_SERVICE}/ResetPassword`, {
+                .post(`${API_AUTH_URL}/ResetPassword`, {
                     Email: email,
                     info: (await publicIp.v4()) || "",
                 })

@@ -1,10 +1,6 @@
 import { Row, Col, Input, Modal, Form, message } from "antd";
 import React, { useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
 import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
@@ -13,6 +9,7 @@ import utils from "../../../../utils";
 import { useDispatch } from "react-redux";
 import { refreshToken } from "../../../../redux/actions/Auth";
 import { CompanyList, ReduxStoreProps } from "./CompanyList";
+import { API_APP_URL } from "../../../../configs/AppConfig";
 const publicIp = require("react-public-ip");
 export const CompanyModalAdd = ({
     onCreate,
@@ -39,7 +36,7 @@ export const CompanyModalAdd = ({
             info: await publicIp.v4(),
         });
         axios
-            .post(`${API_IS_APP_SERVICE}/RegisterClientCompany`, {
+            .post(`${API_APP_URL}/RegisterClientCompany`, {
                 /* Get the companyID, token and uilanguage from redux store */
                 Company: {
                     ...values,

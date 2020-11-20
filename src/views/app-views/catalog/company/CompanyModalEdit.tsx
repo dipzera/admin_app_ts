@@ -13,8 +13,8 @@ import { IntlProvider } from "react-intl";
 import { useDispatch } from "react-redux";
 import { setProfileInfo } from "../../../../redux/actions/Account";
 import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import { DONE, ERROR, EXPIRE_TIME } from "../../../../constants/Messages";
+import { API_APP_URL } from "../../../../configs/AppConfig";
 const publicIp = require("react-public-ip");
 
 export const CompanyModalEdit = ({
@@ -61,7 +61,7 @@ export const CompanyModalEdit = ({
                 info: await publicIp.v4(),
             });
             axios
-                .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
+                .post(`${API_APP_URL}/UpdateCompany`, {
                     Company: {
                         ...data,
                         ...values,
