@@ -38,9 +38,12 @@ export interface IUsers {
     Status: string;
     UiLanguage: number;
 }
-
-export interface ApiResponse<T> {
+export interface ServerResponse {
+    data: ServerData;
+}
+export interface ServerData {
     ErrorCode: number;
     ErrorMessage: string;
-    [extra: string]: T | number | string;
+    MarketAppList?: IMarketAppList[];
+    Users?: IUsers[];
 }

@@ -47,13 +47,12 @@ const LoginForm = ({
 }) => {
     const history = useHistory();
     const onLogin = ({ email, password }) => {
-        const onLoginSettingsObject = {
-            Email: email,
-            Password: Utils.encryptInput(password, API_PUBLIC_KEY),
-        };
         showLoading();
         setTimeout(() => {
-            authorizeUser(onLoginSettingsObject);
+            authorizeUser({
+                Email: email,
+                Password: Utils.encryptInput(password, API_PUBLIC_KEY),
+            });
         }, 1000);
     };
     const onGoogleLogin = () => {

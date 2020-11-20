@@ -27,6 +27,7 @@ import {
     PASSWORD_SENT,
 } from "../../constants/Messages";
 import { API_AUTH_URL } from "../../configs/AppConfig";
+import { AuthApi } from "../../api";
 const publicIp = require("react-public-ip");
 
 export const signIn = (user) => ({
@@ -164,33 +165,45 @@ const sendActivationCode = (Token, UserID = null) => {
     };
 };
 
-export const authorizeUser = (userData) => {
-    return async (dispatch, getState) => {
-        axios
-            .post(`${API_AUTH_URL}/AuthorizeUser`, {
-                ...userData,
-                info: (await publicIp.v4()) || "",
-            })
-            .then((response) => {
-                dispatch(hideLoading());
-                const { ErrorCode, ErrorMessage, Token } = response.data;
-                if (ErrorCode === 0) {
-                    dispatch(authenticated(Token));
-                    dispatch(getProfileInfo(Token));
-                } else if (ErrorCode === 102) {
-                    dispatch(showAuthMessage(ErrorMessage));
-                } else if (ErrorCode === 108) {
-                    dispatch(sendActivationCode(Token));
-                    /* Tell user that his account is not activated, and ask him if he wants a new email code. If yes - send the code, if not, cancel. */
-                }
-            })
-            .catch((error) => {
-                dispatch(hideLoading());
-                const key = "updatable";
-                message.error({
-                    content: error.toString(),
-                    key,
-                });
-            });
-    };
+export const authorizeUser = (data) => async (dispatch) => {
+    return new AuthApi().Login(data).then((data) => {
+        const { ErrorCode, ErrorMessage, Token } = data;
+        dispatch(authenticated(Token));
+        dispatch(getProfileInfo(Token));
+        if (ErrorCode === 102) {
+            dispatch(showAuthMessage(ErrorMessage));
+        } else if (ErrorCode === 108) {
+            dispatch(sendActivationCode(Token));
+        }
+    });
 };
+// export const authorizeUser = (userData) => {
+//     return async (dispatch, getState) => {
+//         axios
+//             .post(`${API_AUTH_URL}/AuthorizeUser`, {
+//                 ...userData,
+//                 info: (await publicIp.v4()) || "",
+//             })
+//             .then((response) => {
+//                 dispatch(hideLoading());
+//                 const { ErrorCode, ErrorMessage, Token } = response.data;
+//                 if (ErrorCode === 0) {
+//                     dispatch(authenticated(Token));
+//                     dispatch(getProfileInfo(Token));
+//                 } else if (ErrorCode === 102) {
+//                     dispatch(showAuthMessage(ErrorMessage));
+//                 } else if (ErrorCode === 108) {
+//                     dispatch(sendActivationCode(Token));
+//                     /* Tell user that his account is not activated, and ask him if he wants a new email code. If yes - send the code, if not, cancel. */
+//                 }
+//             })
+//             .catch((error) => {
+//                 dispatch(hideLoading());
+//                 const key = "updatable";
+//                 message.error({
+//                     content: error.toString(),
+//                     key,
+//                 });
+//             });
+//     };
+// };

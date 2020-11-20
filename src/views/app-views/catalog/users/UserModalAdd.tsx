@@ -40,12 +40,9 @@ export const UserModalAdd = ({
                 params: { Token },
             })
             .then((res) => {
-                console.log(res.data);
-
                 const { ErrorCode, ErrorMessage, CompanyList } = res.data;
                 if (ErrorCode === 0) {
                     setCompanies(CompanyList);
-                } else if (ErrorCode === 118) {
                 }
             });
     }, []);
@@ -64,7 +61,6 @@ export const UserModalAdd = ({
                 UiLanguage: 0,
             })
             .then((res) => {
-                console.log(res.data);
                 form.resetFields();
                 if (res.data.ErrorCode === 0) {
                     getUsersInfo();

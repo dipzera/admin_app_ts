@@ -31,13 +31,13 @@ import UserView from "./UserView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { connect } from "react-redux";
 import { refreshToken, signOut } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import HttpClient from "../../../../api";
+import { AdminApi } from "../../../../api";
 import Utils from "../../../../utils";
 import {
     ACTIVATION_MSG_CONTENT,
@@ -45,13 +45,14 @@ import {
     DONE,
     EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
+    INTERNAL_ERROR,
     LOADING,
 } from "../../../../constants/Messages";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import { SortOrder } from "antd/es/table/interface";
-import { ApiResponse, IUsers } from "../../../../types";
+import { IUsers, ServerData } from "../../../../types";
 import { API_APP_URL } from "../../../../configs/AppConfig";
 
 enum status {
@@ -114,34 +115,14 @@ export class UserList extends Component<ReduxStoreProps> {
         usersChanged: false,
     };
 
-    getUsersInfo = () => {
-        this.setState({ loading: true });
-        return axios
-            .get(`${API_APP_URL}/GetAllUsersInfo`, {
-                params: {
-                    Token: this.props.token,
-                },
-            })
-            .then(({ data }) => {
-                console.log(data);
-                this.setState({ loading: false });
-                if (data.ErrorCode === 0) {
-                    const filteredUsers = data.Users.filter(
-                        (user) => user.ID !== this.props.ID
-                    );
-                    this.setState({ usersToSearch: [...filteredUsers] });
-                    this.setState({ users: [...filteredUsers] });
-                } else if (data.ErrorCOde === 118) {
-                    this.props.refreshToken(this.props.token);
-                } else {
-                    throw new Error(data.ErrorMessage);
-                }
-            })
-            .catch((error) => {
-                this.setState({ loading: false });
-                const key = "updatable";
-                message.error({ content: error.toString(), key });
-            });
+    private getUsersInfo = () => {
+        return new AdminApi().getAllUsers().then((data: any) => {
+            const filteredUsers = data.Users.filter(
+                (user) => user.ID !== this.props.ID
+            );
+            this.setState({ usersToSearch: [...filteredUsers] });
+            this.setState({ users: [...filteredUsers] });
+        });
     };
 
     componentDidMount() {

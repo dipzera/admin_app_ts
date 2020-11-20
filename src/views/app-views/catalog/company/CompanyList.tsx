@@ -42,6 +42,7 @@ import {
     DONE,
     EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
+    INTERNAL_ERROR,
     LOADING,
 } from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
@@ -125,19 +126,21 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     Token: this.props.token,
                 },
             })
-            .then((res) => {
+            .then(({ data }) => {
                 this.setState({ loading: false });
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    const filteredCompanies = res.data.CompanyList.filter(
+                if (data.ErrorCode === 0) {
+                    const filteredCompanies = data.CompanyList.filter(
                         (company) => company.ID !== this.props.CompanyID
                     );
                     this.setState({ users: [...filteredCompanies] });
                     this.setState({
                         companiesToSearch: [...filteredCompanies],
                     });
-                } else {
+                } else if (data.ErrorCode === 118) {
                     this.props.refreshToken(this.props.token);
+                } else if (data.ErrorCode === -1) {
+                    console.log(data.ErrorMessage);
+                    throw new Error(INTERNAL_ERROR);
                 }
             })
             .catch((error) => {
