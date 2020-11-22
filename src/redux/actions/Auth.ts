@@ -98,112 +98,46 @@ export const isUserActivated = (boolean, Token) => ({
 });
 
 export const refreshToken = (Token) => async (dispatch) => {
-    axios
-        .get(`${API_AUTH_URL}/RefreshToken`, {
-            params: { Token },
-        })
-        .then((res) => {
-            console.log(res.data);
-            console.log(Token);
-            if (res.data.ErrorCode === 0) {
-                dispatch({ type: SET_TOKEN, token: res.data.Token });
-                window.location.reload();
-            } else if (res.data.ErrorCode === 105) {
-                const key = "updatable";
-                message
-                    .loading({ content: EXPIRE_TIME, key })
-                    .then(() => dispatch(signOut()));
-            }
-        })
-        .catch((error) => {
-            const key = "updatable";
-            message.error({ content: error.toString(), key });
-        });
-};
-const sendActivationCode = (Token, UserID = null) => {
-    return async (dispatch) => {
-        Modal.confirm({
-            title: "Confirm registration",
-            content: `Your account is not activated. Press the OK button down below if you
-      want us to send you a new confirmation message`,
-            onOk() {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(
-                            axios
-                                .get(`${API_AUTH_URL}/SendActivationCode`, {
-                                    params: {
-                                        Token,
-                                        UserID,
-                                    },
-                                })
-                                .then((res) => {
-                                    console.log(res.data);
-                                    if (res.data.ErrorCode === 0) {
-                                        message.success(EMAIL_CONFIRM_MSG);
-                                    } else {
-                                        dispatch(
-                                            showAuthMessage(
-                                                res.data.ErrorMessage
-                                            )
-                                        );
-                                    }
-                                })
-                                .catch((error) => {
-                                    const key = "updatable";
-                                    message.error({
-                                        content: error.toString(),
-                                        key,
-                                    });
-                                })
-                        );
-                    }, 2000);
-                });
-            },
-            onCancel() {},
-        });
-    };
-};
-
-export const authorizeUser = (data) => async (dispatch) => {
-    return new AuthApi().Login(data).then((data) => {
+    return new AuthApi().RefreshToken(Token).then((data: any) => {
         const { ErrorCode, ErrorMessage, Token } = data;
-        dispatch(authenticated(Token));
-        dispatch(getProfileInfo(Token));
-        if (ErrorCode === 102) {
-            dispatch(showAuthMessage(ErrorMessage));
-        } else if (ErrorCode === 108) {
-            dispatch(sendActivationCode(Token));
+        if (ErrorCode === 0) {
+            dispatch({ type: SET_TOKEN, token: Token });
+            window.location.reload();
+        } else if (ErrorCode === 105) {
+            const key = "updatable";
+            message
+                .loading({ content: EXPIRE_TIME, key })
+                .then(() => dispatch(signOut()));
         }
     });
 };
-// export const authorizeUser = (userData) => {
-//     return async (dispatch, getState) => {
-//         axios
-//             .post(`${API_AUTH_URL}/AuthorizeUser`, {
-//                 ...userData,
-//                 info: (await publicIp.v4()) || "",
-//             })
-//             .then((response) => {
-//                 dispatch(hideLoading());
-//                 const { ErrorCode, ErrorMessage, Token } = response.data;
-//                 if (ErrorCode === 0) {
-//                     dispatch(authenticated(Token));
-//                     dispatch(getProfileInfo(Token));
-//                 } else if (ErrorCode === 102) {
-//                     dispatch(showAuthMessage(ErrorMessage));
-//                 } else if (ErrorCode === 108) {
-//                     dispatch(sendActivationCode(Token));
-//                     /* Tell user that his account is not activated, and ask him if he wants a new email code. If yes - send the code, if not, cancel. */
-//                 }
-//             })
-//             .catch((error) => {
-//                 dispatch(hideLoading());
-//                 const key = "updatable";
-//                 message.error({
-//                     content: error.toString(),
-//                     key,
-//                 });
-//             });
-//     };
-// };
+const sendActivationCode = (Token) => async (dispatch) => {
+    return new AuthApi().SendActivationCode(Token).then((data: any) => {
+        debugger;
+        const { ErrorMessage, ErrorCode } = data;
+        if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
+        else dispatch(showAuthMessage(ErrorMessage));
+    });
+};
+export const authorizeUser = (data) => async (dispatch) => {
+    return new AuthApi().Login(data).then((data) => {
+        const { ErrorCode, ErrorMessage, Token } = data;
+        if (ErrorCode === 0) {
+            dispatch(authenticated(Token));
+            dispatch(getProfileInfo(Token));
+        }
+        if (ErrorCode === 102) {
+            dispatch(showAuthMessage(ErrorMessage));
+        } else if (ErrorCode === 108) {
+            dispatch(hideLoading());
+            Modal.confirm({
+                title: "Confirm registration",
+                content:
+                    "Press the OK button down below if you want us to send you a new activation code!",
+                onOk: () => {
+                    dispatch(sendActivationCode(Token));
+                },
+            });
+        }
+    });
+};

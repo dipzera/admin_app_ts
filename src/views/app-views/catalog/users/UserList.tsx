@@ -117,11 +117,14 @@ export class UserList extends Component<ReduxStoreProps> {
 
     private getUsersInfo = () => {
         return new AdminApi().getAllUsers().then((data: any) => {
-            const filteredUsers = data.Users.filter(
-                (user) => user.ID !== this.props.ID
-            );
-            this.setState({ usersToSearch: [...filteredUsers] });
-            this.setState({ users: [...filteredUsers] });
+            const { ErrorCode } = data;
+            if (ErrorCode === 0) {
+                const filteredUsers = data.Users.filter(
+                    (user) => user.ID !== this.props.ID
+                );
+                this.setState({ usersToSearch: [...filteredUsers] });
+                this.setState({ users: [...filteredUsers] });
+            }
         });
     };
 

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import axios from "axios";
-import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
 import { MaskedInput } from "antd-mask-input";
 import utils from "../../../../utils";
 import { useDispatch } from "react-redux";

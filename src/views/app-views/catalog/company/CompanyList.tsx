@@ -54,6 +54,7 @@ import {
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import { AuthApi } from "../../../../api";
 
 enum status {
     active = 1,
@@ -208,7 +209,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     await this.handleUserStatus(elm.ID, statusNumber);
                 }
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                this.getCompanyList();
+                await this.getCompanyList();
             },
         });
     };
@@ -260,19 +261,10 @@ export class CompanyList extends Component<ReduxStoreProps> {
     };
 
     getManagedToken = (CompanyID) => {
-        return axios
-            .get(`${API_APP_URL}/GetManagedToken`, {
-                params: {
-                    Token: this.props.token,
-                    CompanyID,
-                },
-            })
-            .then((res) => {
-                if (res.data.ErrorCode === 0) {
-                    return res.data.Token;
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
-                }
+        return new AuthApi()
+            .GetManagedToken({ Token: this.props.token, CompanyID })
+            .then((data: any) => {
+                if (data.ErrorCode === 0) return data.Token;
             });
     };
 

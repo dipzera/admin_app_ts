@@ -1,8 +1,8 @@
-import { REMOVE_AVATAR, UPDATE_SETTINGS } from "../constants/Account";
+import { UPDATE_SETTINGS } from "../constants/Account";
 import axios from "axios";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { hideLoading, refreshToken, showLoading, signOut } from "./Auth";
+import { refreshToken, signOut } from "./Auth";
 import { DONE, EXPIRE_TIME, LOADING } from "../../constants/Messages";
 import { API_APP_URL } from "../../configs/AppConfig";
 

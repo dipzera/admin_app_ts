@@ -10,6 +10,7 @@ import {
 } from "../../../../constants/Messages";
 import utils from "../../../../utils";
 import { API_APP_URL, API_AUTH_URL } from "../../../../configs/AppConfig";
+import { AuthApi } from "../../../../api";
 
 const renderItem = (id, title, idno) => ({
     value: id,
@@ -54,19 +55,13 @@ export const UserModalAdd = ({
         }
     };
     const onFinish = (values) => {
-        axios
-            .post(`${API_AUTH_URL}/RegisterUser`, {
-                ...values,
-                Token,
-                UiLanguage: 0,
-            })
-            .then((res) => {
-                form.resetFields();
-                if (res.data.ErrorCode === 0) {
-                    getUsersInfo();
-                } else {
-                    message.error(res.data.ErrorMessage);
-                }
+        form.resetFields();
+        new AuthApi()
+            .RegisterUser({ ...values, Token, UiLanguage: 0 })
+            .then((data: any) => {
+                const { ErrorCode, ErrorMessage } = data;
+                if (ErrorCode === 0) getUsersInfo();
+                else message.error(ErrorMessage);
             });
     };
 

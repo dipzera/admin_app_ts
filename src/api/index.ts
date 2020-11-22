@@ -1,11 +1,9 @@
 import { message } from "antd";
-import axios, { Method, AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
-import { INTERNAL_ERROR } from "../constants/Messages";
-import { getProfileInfo } from "../redux/actions/Account";
-import { refreshToken } from "../redux/actions/Auth";
+import { EMAIL_CONFIRM_MSG, INTERNAL_ERROR } from "../constants/Messages";
+import { hideLoading, refreshToken } from "../redux/actions/Auth";
 import store from "../redux/store";
-import { ServerData } from "../types";
 const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T> extends Promise<T> {}
@@ -29,7 +27,10 @@ class HttpClient {
     };
     public _initializeRequestInterceptor = () => {
         this.instance.interceptors.request.use((config) => {
-            if (config.method === "get") {
+            if (
+                config.method === "get" &&
+                config.baseURL === `${API_APP_URL}`
+            ) {
                 config.params = {
                     Token: store.getState().auth.token,
                 };
@@ -39,19 +40,15 @@ class HttpClient {
     };
 
     public _handleResponse = ({ data }: AxiosResponse) => {
-        if (data.ErrorCode === 0) {
-            return data;
-        } else if (data.ErrorCode === 118) {
-            const token = store.getState().auth.token;
-            store.dispatch(refreshToken(token));
-        } else {
-            throw new Error(INTERNAL_ERROR);
+        if (data.ErrorCode === 118) {
+            store.dispatch(refreshToken(store.getState().auth.token));
         }
+        return data;
     };
     public _handleError = (error: any) => {
+        store.dispatch(hideLoading());
         const key = "updatable";
         message.error({ content: error.toString(), key });
-        // return Promise.reject(error);
     };
 }
 
@@ -74,19 +71,29 @@ export class AuthApi extends HttpClient {
             info: (await publicIp.v4()) || ("" as string),
         });
 
-    public RefreshToken = () => this.instance.get("/RefreshToken");
-}
+    public RefreshToken = (Token) =>
+        this.instance.get("/RefreshToken", {
+            params: { Token },
+        });
 
-export const refreshToken = () => async (dispatch) => {
-    return new AuthApi().RefreshToken().then((data) => {
-        const { ErrorCode, ErrorMessage, Token } = data;
-        dispatch({ type: SET_TOKEN, token: Token });
-        window.location.reload();
-        if (ErrorCode === 105) {
-            const key = "updatable";
-            message
-                .loading({ content: EXPIRE_TIME, key })
-                .then(() => dispatch(signOut()));
-        }
-    });
-};
+    public SendActivationCode = (Token) =>
+        this.instance.get("/SendActivationCode", {
+            params: { Token },
+        });
+
+    public ResetPassword = async (Email) =>
+        this.instance.post("/ResetPassword", {
+            Email,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public RegisterUser = (data) => this.instance.post("/RegisterUser", data);
+
+    public GetManagedToken = (params) =>
+        this.instance.get("/GetManagedToken", {
+            params,
+        });
+
+    public ChangePassword = (data) =>
+        this.instance.post("/ChangePassword", data);
+}
