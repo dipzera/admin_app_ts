@@ -1,27 +1,7 @@
-import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Menu,
-    message,
-    Modal,
-    Row,
-    Tabs,
-    Tag,
-} from "antd";
+import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
-import {
-    PlusOutlined,
-    ExperimentOutlined,
-    EyeOutlined,
-    EditOutlined,
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-    DeleteOutlined,
-} from "@ant-design/icons";
+import { ExperimentOutlined } from "@ant-design/icons";
 import { connect, useDispatch, useSelector } from "react-redux";
-import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
@@ -45,16 +25,10 @@ import {
     DELETE_PACKAGE_MSG,
     DONE,
     ERROR,
-    EXPIRE_TIME,
     LOADING,
 } from "../../../../constants/Messages";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
 import Packages from "./Packages";
-import Description from "./Description";
 import TermsOfUse from "./TermsOfUse";
-import InnerAppLayout from "../../../../layouts/inner-app-layout";
-import EditAppForm from "../EditAppForm";
-import EditApp from "./EditApp";
 import General from "./general";
 
 const getBase64 = (img, callback) => {
@@ -70,7 +44,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         state["apps"].find((data) => data.ID == appID)
     );
     const Token = useSelector((state) => state["auth"].token);
-    const loading = useSelector((state) => state["auth"].loading);
     const dispatch = useDispatch();
     const [edit, setEdit] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<{
@@ -82,7 +55,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const [addPackageModalVisible, setAddPackageModalVisible] = useState<
         boolean
     >(false);
-    const [isEditAppVisible, setIsEditAppVisible] = useState(false);
     const showEditPackageModal = (selected) => {
         setSelectedPackage({
             ...selected,
@@ -100,13 +72,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     };
     const closeAddPackageModal = () => {
         setAddPackageModalVisible(false);
-    };
-    const showEditAppModal = () => {
-        setIsEditAppVisible(true);
-    };
-
-    const closeEditAppModal = () => {
-        setIsEditAppVisible(false);
     };
 
     const deletePackage = (ID) => {
@@ -172,7 +137,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     if (res.data.ErrorCode === 0) {
                         dispatch(getMarketApps(Token));
                     } else if (res.data.ErrorCode === 118) {
-                        dispatch(refreshToken(Token));
+                        dispatch(refreshToken());
                     }
                 });
                 setImage(Photo);
@@ -195,7 +160,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                 if (res.data.ErrorCode === 0) {
                     message.success(DONE, 1);
                 } else if (res.data.ErrorCode === 118) {
-                    dispatch(refreshToken(Token));
+                    dispatch(refreshToken());
                 }
             });
         }, 1000);
@@ -215,7 +180,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             ),
             Photo: uploadedImg ? uploadedImg : app.Photo,
         };
-        console.log(App);
         message
             .loading(LOADING, 1.5)
             .then(() => {
@@ -243,14 +207,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                 packages={selectedPackage}
                 visible={editPackageModalVisible}
             />
-            <EditAppForm
-                apps={app}
-                visible={isEditAppVisible}
-                close={closeEditAppModal}
-                signOut={signOut}
-            />
-            {/* App Content Card */}
-            {/* <AboutItem appData={app} showEditAppModal={showEditAppModal} /> */}
             <Form
                 form={form}
                 layout="vertical"
@@ -306,7 +262,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                                 changeMarketAppStatus={changeMarketAppStatus}
                                 app={app}
                                 status={status}
-                                setStatus={setStatus}
                                 setLongDesc={setLongDesc}
                                 edit={edit}
                                 setShortDesc={setShortDesc}
@@ -332,20 +287,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     </Tabs>
                 </div>
             </Form>
-            {/* <InnerAppLayout
-                sideContent={<AppOption location={location} match={match} />}
-                mainContent={
-                    <AppRoute
-                        location={location}
-                        match={match}
-                        packages={app.Packages}
-                        app={app}
-                        showEditPackageModal={showEditPackageModal}
-                        deletePackage={deletePackage}
-                        showAddPackageModal={showAddPackageModal}
-                    />
-                }
-            /> */}
         </>
     );
 };

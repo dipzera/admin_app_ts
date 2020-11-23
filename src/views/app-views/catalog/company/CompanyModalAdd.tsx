@@ -2,65 +2,25 @@ import { Row, Col, Input, Modal, Form, message } from "antd";
 import React, { useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import axios from "axios";
 import { MaskedInput } from "antd-mask-input";
-import utils from "../../../../utils";
-import { useDispatch } from "react-redux";
-import { refreshToken } from "../../../../redux/actions/Auth";
-import { CompanyList, ReduxStoreProps } from "./CompanyList";
-import { API_APP_URL } from "../../../../configs/AppConfig";
-const publicIp = require("react-public-ip");
-export const CompanyModalAdd = ({
-    onCreate,
-    onCancel,
-    visible,
-    token: Token,
-    CompanyID,
-    signOut,
-    getCompanyList,
-}) => {
+import { AdminApi } from "../../../../api";
+export const CompanyModalAdd = ({ onCancel, visible, getCompanyList }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [mask, setMask] = useState<any>();
     const onChangeMask = (e) => {
         setMask({ [e.target.name]: e.target.value });
     };
-    const dispatch = useDispatch();
     const onFinish = async (values) => {
-        // const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
-        /*  EDIT ABOVE WHEN REGISTER COMPANY FUNCTION IS READY */
-        console.log({
-            Company: { ...values },
-            Token,
-            info: await publicIp.v4(),
-        });
-        axios
-            .post(`${API_APP_URL}/RegisterClientCompany`, {
-                /* Get the companyID, token and uilanguage from redux store */
-                Company: {
-                    ...values,
-                },
-                Token,
-                info: (await publicIp.v4()) || "",
-            })
-            .then((res) => {
-                console.log(res.data);
-                form.resetFields();
-                if (res.data.ErrorCode === 0) {
-                    getCompanyList();
-                } else if (res.data.ErrorCode === 118) {
-                    dispatch(refreshToken(Token));
-                } else {
-                    throw new Error(res.data.ErrorMessage);
-                }
-            })
-            .catch((error) => {
-                const key = "updatable";
-                message.error({ content: error, key });
+        new AdminApi()
+            .RegisterClientCompany({ Company: { ...values } })
+            .then((data: any) => {
+                data.ErrorCode === 0
+                    ? getCompanyList()
+                    : message.error(data.ErrorMessage);
             });
     };
     return (
-        /* The component above doesn't work just yet */
         <Modal
             title={"Register company"}
             visible={visible}

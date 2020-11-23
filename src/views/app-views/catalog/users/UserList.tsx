@@ -115,8 +115,8 @@ export class UserList extends Component<ReduxStoreProps> {
         usersChanged: false,
     };
 
-    private getUsersInfo = () => {
-        return new AdminApi().getAllUsers().then((data: any) => {
+    getUsersInfo = () => {
+        return new AdminApi().GetAllUsers().then((data: any) => {
             const { ErrorCode } = data;
             if (ErrorCode === 0) {
                 const filteredUsers = data.Users.filter(
@@ -212,26 +212,7 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
     handleUserStatus = (userId: number, status: number) => {
-        axios
-            .get(`${API_APP_URL}/ChangeUserStatus`, {
-                params: {
-                    Token: this.props.token,
-                    ID: userId,
-                    Status: status,
-                },
-            })
-            .then((res) => {
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    // this.getUsersInfo();
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
-                }
-            })
-            .catch((error) => {
-                const key = "updatable";
-                message.error({ content: error.toString(), key });
-            });
+        return new AdminApi().ChangeUserStatus(userId, status);
     };
 
     dropdownMenu = (row) => (
@@ -510,8 +491,6 @@ export class UserList extends Component<ReduxStoreProps> {
                     }}
                 />
                 <UserModalAdd
-                    signOut={signOut}
-                    onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
                     token={this.props.token}

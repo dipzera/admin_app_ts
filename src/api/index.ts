@@ -10,11 +10,13 @@ declare module "axios" {
 }
 class HttpClient {
     public readonly instance: AxiosInstance;
+    public _token: string;
 
     public constructor(baseURL: string) {
         this.instance = axios.create({
             baseURL,
         });
+        this._token = store.getState().auth.token;
         this._initializeResponseInterceptor();
         this._initializeRequestInterceptor();
     }
@@ -27,12 +29,10 @@ class HttpClient {
     };
     public _initializeRequestInterceptor = () => {
         this.instance.interceptors.request.use((config) => {
-            if (
-                config.method === "get" &&
-                config.baseURL === `${API_APP_URL}`
-            ) {
+            if (config.method === "get") {
                 config.params = {
-                    Token: store.getState().auth.token,
+                    Token: this._token,
+                    ...config.params,
                 };
             }
             return config;
@@ -41,7 +41,7 @@ class HttpClient {
 
     public _handleResponse = ({ data }: AxiosResponse) => {
         if (data.ErrorCode === 118) {
-            store.dispatch(refreshToken(store.getState().auth.token));
+            store.dispatch(refreshToken());
         }
         return data;
     };
@@ -57,7 +57,43 @@ export class AdminApi extends HttpClient {
         super(`${API_APP_URL}`);
     }
 
-    public getAllUsers = () => this.instance.get("/GetAllUsersInfo");
+    public GetAllUsers = () => this.instance.get("/GetAllUsersInfo");
+
+    public GetCompanyList = () => this.instance.get("/GetCompanyList");
+
+    public GetBasicCompanyList = () =>
+        this.instance.get("/GetBasicCompaniesList");
+
+    public ChangeCompanyStatus = (ID, Status) =>
+        this.instance.get("/ChangeCompanyStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+
+    public ChangeUserStatus = (ID, Status) =>
+        this.instance.get("/ChangeUserStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+    public UpdateUser = (data) => this.instance.post("/UpdateUser", data);
+
+    public RegisterClientCompany = async (data) =>
+        this.instance.post("/RegisterClientCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public UpdateCompany = async (data) =>
+        this.instance.post("/UpdateCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
 }
 
 export class AuthApi extends HttpClient {
@@ -71,15 +107,9 @@ export class AuthApi extends HttpClient {
             info: (await publicIp.v4()) || ("" as string),
         });
 
-    public RefreshToken = (Token) =>
-        this.instance.get("/RefreshToken", {
-            params: { Token },
-        });
+    public RefreshToken = () => this.instance.get("/RefreshToken");
 
-    public SendActivationCode = (Token) =>
-        this.instance.get("/SendActivationCode", {
-            params: { Token },
-        });
+    public SendActivationCode = () => this.instance.get("/SendActivationCode");
 
     public ResetPassword = async (Email) =>
         this.instance.post("/ResetPassword", {
@@ -89,11 +119,16 @@ export class AuthApi extends HttpClient {
 
     public RegisterUser = (data) => this.instance.post("/RegisterUser", data);
 
-    public GetManagedToken = (params) =>
+    public GetManagedToken = (CompanyID) =>
         this.instance.get("/GetManagedToken", {
-            params,
+            params: { CompanyID },
         });
 
     public ChangePassword = (data) =>
         this.instance.post("/ChangePassword", data);
+
+    public ActivateUser = (params) =>
+        this.instance.get("/ActivateUser", {
+            params,
+        });
 }

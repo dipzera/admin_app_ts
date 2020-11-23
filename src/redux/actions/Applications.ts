@@ -24,7 +24,7 @@ export const getMarketApps = (Token) => async (dispatch) => {
             if (ErrorCode === 0) {
                 dispatch(setApps(MarketAppList));
             } else if (ErrorCode === 118) {
-                dispatch(refreshToken(Token));
+                dispatch(refreshToken());
             } else if (ErrorCode === -1) {
                 console.log(ErrorMessage);
                 throw new Error("Internal Error");
@@ -47,7 +47,7 @@ export const updateMarketApp = (App, Token) => async (dispatch) => {
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
-                dispatch(refreshToken(Token));
+                dispatch(refreshToken());
             } else {
                 throw new Error(ErrorMessage);
             }
@@ -78,7 +78,7 @@ export const createMarketAppPackage = (
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
-                dispatch(refreshToken(Token));
+                dispatch(refreshToken());
             } else {
                 throw new Error(ErrorMessage);
             }
@@ -104,7 +104,7 @@ export const updateMarketAppPackage = (AppPackage, Token) => async (
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(Token));
             } else if (ErrorCode === 118) {
-                dispatch(refreshToken(Token));
+                dispatch(refreshToken());
             } else {
                 throw new Error(ErrorMessage);
             }
@@ -132,7 +132,7 @@ export const deleteMarketAppPackage = (ID, Token) => async (
             if (ErrorCode === 0) {
                 dispatch(getMarketApps(getState()["auth"].token));
             } else if (ErrorCode === 118) {
-                dispatch(refreshToken(Token));
+                dispatch(refreshToken());
                 message
                     .loading(EXPIRE_TIME, 1.5)
                     .then(() => dispatch(signOut()));

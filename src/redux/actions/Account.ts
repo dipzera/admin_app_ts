@@ -32,7 +32,7 @@ export const getProfileInfo = (Token) => {
                         dispatch(onLocaleChange("en"));
                     }
                 } else {
-                    dispatch(refreshToken(Token));
+                    dispatch(refreshToken());
                 }
             })
             .catch((error) => {
@@ -50,7 +50,7 @@ export const setProfileInfo = (accountInfo, Token) => {
                     const { User } = accountInfo;
                     dispatch(updateSettings(User));
                 } else if (res.data.ErrorCode === 118) {
-                    dispatch(refreshToken(Token));
+                    dispatch(refreshToken());
                 }
             })
             .catch((error) => {

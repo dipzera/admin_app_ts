@@ -11,6 +11,7 @@ import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import AppLocale from "../../../../lang";
 import { DONE, EXPIRE_TIME } from "../../../../constants/Messages";
 import { API_APP_URL } from "../../../../configs/AppConfig";
+import { AdminApi } from "../../../../api";
 export const UserModalEdit = ({
     signOut,
     data,
@@ -35,18 +36,13 @@ export const UserModalEdit = ({
         setIsLoading(true);
         setTimeout(() => {
             setIsLoading(false);
-            axios
-                .post(`${API_APP_URL}/UpdateUser`, {
+            new AdminApi()
+                .UpdateUser({
                     User: { ...data, ...values },
                     Token: token,
                 })
-                .then((res) => {
-                    if (res.data.ErrorCode === 0) {
-                        message.success(DONE, 1.5);
-                        getUsersInfo();
-                    } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                    }
+                .then((data: any) => {
+                    data.ErrorCode === 0 && getUsersInfo();
                 });
         }, 1000);
     };

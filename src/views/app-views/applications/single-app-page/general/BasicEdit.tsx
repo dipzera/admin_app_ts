@@ -3,15 +3,27 @@ import { isEmpty } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
-
-const BasicEdit = ({
-    app,
-    longDesc,
-    setLongDesc,
-    setShortDesc,
-    rules,
-    shortDesc,
-}) => {
+const rules = {
+    name: [
+        {
+            required: true,
+            message: "Please enter product name",
+        },
+    ],
+    ShortDescription: [
+        {
+            required: true,
+            message: "Please enter short description",
+        },
+    ],
+    LongDescription: [
+        {
+            required: false,
+            message: "Please enter long description",
+        },
+    ],
+};
+const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
     const fields = [
         {
             title: "English",
@@ -41,13 +53,6 @@ const BasicEdit = ({
             </Form.Item>
 
             <Form.Item label="Short Description">
-                {/* <Select defaultValue={"English"}>
-                    {fields.map((field) => (
-                        <Select.Option value={field.locale}>
-                            {field.title}
-                        </Select.Option>
-                    ))}
-                </Select> */}
                 {fields.map(({ title, locale }) => (
                     <div key={locale}>
                         <h6>{title}</h6>

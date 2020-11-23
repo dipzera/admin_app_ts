@@ -1,28 +1,12 @@
-import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Input,
-    InputNumber,
-    message,
-    Row,
-    Select,
-    Switch,
-    Tag,
-    Tooltip,
-} from "antd";
+import { Button, Card, Col, message, Row, Select, Tooltip } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { LoadingOutlined, EditOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ImageSvg } from "../../../../../assets/svg/icon";
 import CustomIcon from "../../../../../components/util-components/CustomIcon";
-import TextEditor from "../TextEditor";
 import Flex from "../../../../../components/shared-components/Flex";
 import BasicView from "./BasicView";
 import BasicEdit from "./BasicEdit";
-import MediaEdit from "./MediaEdit";
-import MediaView from "./MediaView";
 import { useSelector } from "react-redux";
 const imageUploadProps: any = {
     name: "file",
@@ -30,26 +14,6 @@ const imageUploadProps: any = {
     listType: "picture-card",
     showUploadList: false,
     action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-};
-const rules = {
-    name: [
-        {
-            required: true,
-            message: "Please enter product name",
-        },
-    ],
-    ShortDescription: [
-        {
-            required: true,
-            message: "Please enter short description",
-        },
-    ],
-    LongDescription: [
-        {
-            required: false,
-            message: "Please enter long description",
-        },
-    ],
 };
 
 const beforeUpload = (file) => {
@@ -71,16 +35,12 @@ const General = ({
     uploadLoading,
     handleUploadChange,
     setLongDesc,
-    setStatus,
     changeMarketAppStatus,
     status,
     shortDesc,
     setShortDesc,
     longDesc,
 }) => {
-    /* I'd rather enter edit mode only for LongDescription Component,
-    which means making a Edit Button only for Long Description, and switching between edit/view only for this input
-     */
     const loading = useSelector((state) => state["auth"].loading);
     return (
         <>
@@ -107,7 +67,6 @@ const General = ({
                                 app={app}
                                 setLongDesc={setLongDesc}
                                 longDesc={longDesc}
-                                rules={rules}
                             />
                         ) : (
                             <BasicView
@@ -153,17 +112,6 @@ const General = ({
                             )}
                         </Dragger>
                     </Card>
-                    {/* {edit ? (
-                        <MediaEdit
-                            imageUploadProps={imageUploadProps}
-                            beforeUpload={beforeUpload}
-                            handleUploadChange={handleUploadChange}
-                            uploadedImg={uploadedImg}
-                            uploadLoading={uploadLoading}
-                        />
-                    ) : (
-                        <MediaView app={app} />
-                    )} */}
                     <Card title="Status">
                         <Select
                             className="w-100"

@@ -97,8 +97,9 @@ export const isUserActivated = (boolean, Token) => ({
     activationToken: Token,
 });
 
-export const refreshToken = (Token) => async (dispatch) => {
-    return new AuthApi().RefreshToken(Token).then((data: any) => {
+export const refreshToken = () => async (dispatch) => {
+    return new AuthApi().RefreshToken().then((data: any) => {
+        console.log(data);
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
             dispatch({ type: SET_TOKEN, token: Token });
@@ -111,9 +112,8 @@ export const refreshToken = (Token) => async (dispatch) => {
         }
     });
 };
-const sendActivationCode = (Token) => async (dispatch) => {
-    return new AuthApi().SendActivationCode(Token).then((data: any) => {
-        debugger;
+const sendActivationCode = () => async (dispatch) => {
+    return new AuthApi().SendActivationCode().then((data: any) => {
         const { ErrorMessage, ErrorCode } = data;
         if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
         else dispatch(showAuthMessage(ErrorMessage));
@@ -135,7 +135,7 @@ export const authorizeUser = (data) => async (dispatch) => {
                 content:
                     "Press the OK button down below if you want us to send you a new activation code!",
                 onOk: () => {
-                    dispatch(sendActivationCode(Token));
+                    dispatch(sendActivationCode());
                 },
             });
         }
