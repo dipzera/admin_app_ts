@@ -98,11 +98,11 @@ export const isUserActivated = (boolean, Token) => ({
 });
 
 export const refreshToken = () => async (dispatch) => {
-    return new AuthApi().RefreshToken().then((data: any) => {
+    return new AuthApi().RefreshToken().then(async (data: any) => {
         console.log(data);
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
-            dispatch({ type: SET_TOKEN, token: Token });
+            await dispatch({ type: SET_TOKEN, token: Token });
             window.location.reload();
         } else if (ErrorCode === 105) {
             const key = "updatable";
@@ -121,12 +121,14 @@ const sendActivationCode = () => async (dispatch) => {
 };
 export const authorizeUser = (data) => async (dispatch) => {
     return new AuthApi().Login(data).then((data) => {
+        dispatch(hideLoading());
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
             dispatch(authenticated(Token));
             dispatch(getProfileInfo(Token));
         }
         if (ErrorCode === 102) {
+            dispatch(hideLoading());
             dispatch(showAuthMessage(ErrorMessage));
         } else if (ErrorCode === 108) {
             dispatch(hideLoading());

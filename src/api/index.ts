@@ -51,51 +51,6 @@ class HttpClient {
         message.error({ content: error.toString(), key });
     };
 }
-
-export class AdminApi extends HttpClient {
-    public constructor() {
-        super(`${API_APP_URL}`);
-    }
-
-    public GetAllUsers = () => this.instance.get("/GetAllUsersInfo");
-
-    public GetCompanyList = () => this.instance.get("/GetCompanyList");
-
-    public GetBasicCompanyList = () =>
-        this.instance.get("/GetBasicCompaniesList");
-
-    public ChangeCompanyStatus = (ID, Status) =>
-        this.instance.get("/ChangeCompanyStatus", {
-            params: {
-                ID,
-                Status,
-            },
-        });
-
-    public ChangeUserStatus = (ID, Status) =>
-        this.instance.get("/ChangeUserStatus", {
-            params: {
-                ID,
-                Status,
-            },
-        });
-    public UpdateUser = (data) => this.instance.post("/UpdateUser", data);
-
-    public RegisterClientCompany = async (data) =>
-        this.instance.post("/RegisterClientCompany", {
-            ...data,
-            Token: this._token,
-            info: (await publicIp.v4()) || "",
-        });
-
-    public UpdateCompany = async (data) =>
-        this.instance.post("/UpdateCompany", {
-            ...data,
-            Token: this._token,
-            info: (await publicIp.v4()) || "",
-        });
-}
-
 export class AuthApi extends HttpClient {
     public constructor() {
         super(`${API_AUTH_URL}`);
@@ -130,5 +85,86 @@ export class AuthApi extends HttpClient {
     public ActivateUser = (params) =>
         this.instance.get("/ActivateUser", {
             params,
+        });
+}
+
+export class AdminApi extends HttpClient {
+    public constructor() {
+        super(`${API_APP_URL}`);
+    }
+
+    public GetAllUsers = () => this.instance.get("/GetAllUsersInfo");
+
+    public GetCompanyList = () => this.instance.get("/GetCompanyList");
+
+    public GetBasicCompanyList = () =>
+        this.instance.get("/GetBasicCompaniesList");
+
+    public ChangeCompanyStatus = (ID, Status) =>
+        this.instance.get("/ChangeCompanyStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+
+    public ChangeUserStatus = (ID, Status) =>
+        this.instance.get("/ChangeUserStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+    public UpdateUser = async (data) => this.instance.post("/UpdateUser", data);
+
+    public RegisterClientCompany = async (data) =>
+        this.instance.post("/RegisterClientCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public UpdateCompany = async (data) =>
+        this.instance.post("/UpdateCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public GetProfileInfo = () => this.instance.get("/GetProfileInfo");
+
+    public GetCompanyInfo = () => this.instance.get("/GetCompanyInfo");
+
+    public GetMarketAppList = () => this.instance.get("/GetMarketAppList");
+
+    public UpdateMarketApp = (App) =>
+        this.instance.post("/UpdateMarketApp", {
+            App,
+            Token: this._token,
+        });
+
+    public CreateMarketAppPackage = (data, MarketAppID) =>
+        this.instance.post("/CreateMarketAppPackage", {
+            AppPackage: {
+                ...data,
+            },
+            MarketAppID,
+            Token: this._token,
+        });
+
+    public UpdateMarketAppPackage = (AppPackage) =>
+        this.instance.post("/UpdateMarketAppPackage", {
+            AppPackage,
+            Token: this._token,
+        });
+
+    public DeleteMarketAppPackage = (ID) =>
+        this.instance.post("/DeleteMarketAppPackage", {
+            ID,
+        });
+
+    public ChangeMarketAppStatus = (ID, Status) =>
+        this.instance.get("/ChangeMarketAppStatus", {
+            params: { ID, Status },
         });
 }

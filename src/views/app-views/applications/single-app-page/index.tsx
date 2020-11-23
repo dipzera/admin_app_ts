@@ -1,26 +1,18 @@
 import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { ExperimentOutlined } from "@ant-design/icons";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "../EditPackageForm";
-import {
-    hideLoading,
-    refreshToken,
-    showLoading,
-    signOut,
-} from "../../../../redux/actions/Auth";
+import { hideLoading, showLoading } from "../../../../redux/actions/Auth";
 import {
     deleteMarketAppPackage,
-    getMarketApps,
     updateMarketApp,
 } from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
 import moment from "moment";
-import Axios from "axios";
-import { API_APP_URL, APP_PREFIX_PATH } from "../../../../configs/AppConfig";
 import {
     DELETE_PACKAGE_MSG,
     DONE,
@@ -30,6 +22,7 @@ import {
 import Packages from "./Packages";
 import TermsOfUse from "./TermsOfUse";
 import General from "./general";
+import { AdminApi } from "../../../../api";
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -37,13 +30,12 @@ const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 };
 
-const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
+const SingleAppPage = ({ match }) => {
     const { appID } = match.params;
     const { confirm } = Modal;
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
-    const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
     const [edit, setEdit] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<{
@@ -78,7 +70,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         confirm({
             title: DELETE_PACKAGE_MSG(ID),
             onOk: () => {
-                deleteMarketAppPackage(ID, Token);
+                dispatch(deleteMarketAppPackage(ID));
             },
         });
     };
@@ -88,7 +80,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const [shortDesc, setShortDesc] = useState<any>();
     const [longDesc, setLongDesc] = useState<any>();
     const [status, setStatus] = useState<number>(app.Status);
-    const [submitLoading, setSubmitLoading] = useState(false);
     useEffect(() => {
         try {
             setShortDesc(JSON.parse(window.atob(app.ShortDescription)));
@@ -123,47 +114,23 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     TermsOfUse,
                     LongDescription,
                 } = app;
-                Axios.post(`${API_APP_URL}/UpdateMarketApp`, {
-                    App: {
+                dispatch(
+                    updateMarketApp({
                         ID: appID,
                         LongDescription,
                         ShortDescription,
                         TermsOfUse,
                         Name,
                         Photo,
-                    },
-                    Token,
-                }).then((res) => {
-                    if (res.data.ErrorCode === 0) {
-                        dispatch(getMarketApps(Token));
-                    } else if (res.data.ErrorCode === 118) {
-                        dispatch(refreshToken());
-                    }
-                });
+                    })
+                );
                 setImage(Photo);
-                // setUploadLoading(false);
                 message.success(DONE, 1.5);
             });
         }
         if (info.file.status === "failed") {
             message.error(ERROR, 1.5);
         }
-    };
-    const changeMarketAppStatus = (Status) => {
-        dispatch(showLoading());
-        setTimeout(() => {
-            dispatch(hideLoading());
-            Axios.get(`${API_APP_URL}/ChangeMarketAppStatus`, {
-                params: { Token, ID: appID, Status },
-            }).then((res) => {
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    message.success(DONE, 1);
-                } else if (res.data.ErrorCode === 118) {
-                    dispatch(refreshToken());
-                }
-            });
-        }, 1000);
     };
 
     const onFinish = (values) => {
@@ -183,7 +150,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         message
             .loading(LOADING, 1.5)
             .then(() => {
-                dispatch(updateMarketApp(App, Token));
+                dispatch(updateMarketApp(App));
                 setEdit(false);
             })
             .then(() => message.success(DONE, 1.5));
@@ -198,12 +165,10 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             <AddPackageForm
                 appID={appID}
                 close={closeAddPackageModal}
-                signOut={signOut}
                 visible={addPackageModalVisible}
             />
             <EditPackageForm
                 close={closeEditPackageModal}
-                signOut={signOut}
                 packages={selectedPackage}
                 visible={editPackageModalVisible}
             />
@@ -259,7 +224,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     >
                         <Tabs.TabPane tab="General" key="1">
                             <General
-                                changeMarketAppStatus={changeMarketAppStatus}
                                 app={app}
                                 status={status}
                                 setLongDesc={setLongDesc}
@@ -290,7 +254,4 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
         </>
     );
 };
-export default connect(null, {
-    signOut,
-    deleteMarketAppPackage,
-})(SingleAppPage);
+export default SingleAppPage;

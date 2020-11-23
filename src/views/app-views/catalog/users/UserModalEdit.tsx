@@ -38,8 +38,8 @@ export const UserModalEdit = ({
             setIsLoading(false);
             new AdminApi()
                 .UpdateUser({
-                    User: { ...data, ...values },
                     Token: token,
+                    User: { ...data, ...values },
                 })
                 .then((data: any) => {
                     data.ErrorCode === 0 && getUsersInfo();

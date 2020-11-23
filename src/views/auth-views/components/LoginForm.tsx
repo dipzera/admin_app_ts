@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Button, Form, Input, Divider, Alert, Modal } from "antd";
+import { Button, Form, Input, Divider, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { GoogleSVG, FacebookSVG } from "../../../assets/svg/icon";
 import CustomIcon from "../../../components/util-components/CustomIcon";
@@ -20,7 +20,7 @@ import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 const LoginForm = ({
-    otherSignIn,
+    authorizeUser,
     showForgetPassword,
     hideAuthMessage,
     onForgetPasswordClick,
@@ -29,21 +29,8 @@ const LoginForm = ({
     loading,
     showMessage,
     message,
-    hideLoading,
-    authenticated,
-    showAuthMessage,
     token,
     redirect,
-    allowRedirect,
-    avatar,
-    name,
-    userName,
-    email,
-    dateOfBirth,
-    phoneNumber,
-    updateSettings,
-    authorizeUser,
-    getProfileInfo,
 }) => {
     const history = useHistory();
     const onLogin = ({ email, password }) => {
@@ -54,13 +41,6 @@ const LoginForm = ({
                 Password: Utils.encryptInput(password, API_PUBLIC_KEY),
             });
         }, 1000);
-    };
-    const onGoogleLogin = () => {
-        showLoading();
-    };
-
-    const onFacebookLogin = () => {
-        showLoading();
     };
 
     useEffect(() => {
@@ -73,33 +53,6 @@ const LoginForm = ({
             }, 3000);
         }
     }, [token, showMessage]);
-
-    const renderOtherSignIn = (
-        <div>
-            <Divider>
-                <span className="text-muted font-size-base font-weight-normal">
-                    or connect with
-                </span>
-            </Divider>
-            <div className="d-flex justify-content-center">
-                <Button
-                    onClick={() => onGoogleLogin()}
-                    className="mr-2"
-                    disabled={loading}
-                    icon={<CustomIcon svg={GoogleSVG} />}
-                >
-                    Google
-                </Button>
-                <Button
-                    onClick={() => onFacebookLogin()}
-                    icon={<CustomIcon svg={FacebookSVG} />}
-                    disabled={loading}
-                >
-                    Facebook
-                </Button>
-            </div>
-        </div>
-    );
 
     return (
         <>
@@ -193,8 +146,6 @@ const LoginForm = ({
                 <NavLink to={"/auth/forgot-password"} className={"text-right"}>
                     <IntlMessage id={"auth.ForgotPassword"} />
                 </NavLink>
-                {/*{otherSignIn ? renderOtherSignIn : null}*/}
-                {otherSignIn || renderOtherSignIn}
                 {extra}
             </Form>
         </>
@@ -220,9 +171,7 @@ const mapStateToProps = ({ auth, account }) => {
         token,
         redirect,
         userActivated,
-        activationToken,
     } = auth;
-    // const { avatar, name, userName, email, dateOfBirth, phoneNumber } = account;
     return {
         loading,
         message,

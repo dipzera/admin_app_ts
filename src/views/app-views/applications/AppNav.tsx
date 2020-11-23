@@ -1,14 +1,10 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Menu, Dropdown, Empty, Tooltip, message } from "antd";
+import { Menu, Dropdown, Empty, Tooltip } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { AppNavGrid } from "./AppNavGrid";
-import Axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { EXPIRE_TIME } from "../../../constants/Messages";
-import { signOut } from "../../../redux/actions/Auth";
-import { getMarketApps } from "../../../redux/actions/Applications";
 import Loading from "../../../components/shared-components/Loading";
 export interface IApps {
     CustomerPrice: number;
@@ -22,17 +18,8 @@ export interface IApps {
     ReferalPercent: number;
 }
 const AppStoreNav = () => {
-    // const [apps, setApps] = useState<IApps[]>([]);
-    const dispatch = useDispatch();
-    const Token = useSelector((state) => state["auth"].token);
     const loading = useSelector((state) => state["auth"].loading);
     const apps: IApps[] = useSelector((state) => state["apps"]);
-    const [isOpened, setIsOpened] = useState(true);
-    // useEffect(() => {
-    //     if (isOpened) {
-    //         dispatch(getMarketApps(Token));
-    //     }
-    // }, [isOpened]);
     const menu = (
         <Menu
             style={{

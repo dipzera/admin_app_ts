@@ -7,7 +7,8 @@ import CustomIcon from "../../../../../components/util-components/CustomIcon";
 import Flex from "../../../../../components/shared-components/Flex";
 import BasicView from "./BasicView";
 import BasicEdit from "./BasicEdit";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { changeMarketAppStatus } from "../../../../../redux/actions/Applications";
 const imageUploadProps: any = {
     name: "file",
     multiple: false,
@@ -35,13 +36,13 @@ const General = ({
     uploadLoading,
     handleUploadChange,
     setLongDesc,
-    changeMarketAppStatus,
     status,
     shortDesc,
     setShortDesc,
     longDesc,
 }) => {
     const loading = useSelector((state) => state["auth"].loading);
+    const dispatch = useDispatch();
     return (
         <>
             <Row gutter={16}>
@@ -120,7 +121,7 @@ const General = ({
                             loading={loading}
                             disabled={loading}
                             onChange={(value) => {
-                                changeMarketAppStatus(value);
+                                dispatch(changeMarketAppStatus(app.ID, value));
                             }}
                         >
                             <Select.Option value={0}>Disabled</Select.Option>
