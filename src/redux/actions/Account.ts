@@ -12,7 +12,7 @@ export const updateSettings = (payload) => ({
     payload,
 });
 
-export const getProfileInfo = (Token) => {
+export const getProfileInfo = () => {
     return async (dispatch) => {
         return new AdminApi().GetProfileInfo().then((data: any) => {
             console.log(data);
@@ -36,7 +36,7 @@ export const setProfileInfo = (accountInfo) => {
         return new AdminApi().UpdateUser(accountInfo).then((data: any) => {
             const Token = getState().auth.token;
             if (data.ErrorCode === 0) {
-                dispatch(getProfileInfo(Token));
+                dispatch(getProfileInfo());
             }
         });
     };
