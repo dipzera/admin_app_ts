@@ -10,6 +10,7 @@ export const APP_NAME = "Admin Portal App";
 export const API_APP_URL = env!.API_APP_URL;
 export const CLIENT_URL = env!.CLIENT_URL;
 export const API_AUTH_URL = env!.API_AUTH_URL;
+export const SUBDIR_PATH = env!.SUBDIR_PATH;
 export const APP_PREFIX_PATH = "/app";
 export const AUTH_PREFIX_PATH = "/auth";
 

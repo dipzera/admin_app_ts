@@ -20,7 +20,7 @@ function getLanguageDetail(locale) {
     return data[0];
 }
 
-const SelectedLanguage = ({ locale }) => {
+export const SelectedLanguage = ({ locale }) => {
     const language = getLanguageDetail(locale);
     const { langName, icon } = language;
 
