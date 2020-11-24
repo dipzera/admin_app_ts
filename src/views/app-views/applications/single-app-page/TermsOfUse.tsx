@@ -58,7 +58,9 @@ const TermsOfUse = ({ app }) => {
     return (
         <>
             <Flex justifyContent="between" alignItems="center" className="py-2">
-                <h2 className="mb-4">Terms of use</h2>
+                <h2 className="mb-4" style={{ visibility: "hidden" }}>
+                    Terms of use
+                </h2>
                 <div>
                     <Tooltip title="Edit">
                         <Button

@@ -473,16 +473,16 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                     </Tooltip>
                                 </>
                             )}
-                            {/*                             <Link to={`${APP_PREFIX_PATH}/wizard`}> */}
-                            <Button
-                                type="primary"
-                                icon={<PlusCircleOutlined />}
-                                block
-                                onClick={() => this.showNewUserModal()}
-                            >
-                                Register company
-                            </Button>
-                            {/*                             </Link> */}
+                            <Link to={`${APP_PREFIX_PATH}/wizard`}>
+                                <Button
+                                    type="primary"
+                                    icon={<PlusCircleOutlined />}
+                                    block
+                                    // onClick={() => this.showNewUserModal()}
+                                >
+                                    Register company
+                                </Button>
+                            </Link>
                         </Flex>
                     </div>
                 </Flex>

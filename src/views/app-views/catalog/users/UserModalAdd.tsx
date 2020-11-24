@@ -34,6 +34,7 @@ export const UserModalAdd = ({
         new AuthApi()
             .RegisterUser({ ...values, Token, UiLanguage: 0 })
             .then((data: any) => {
+                console.log(data);
                 const { ErrorCode, ErrorMessage } = data;
                 if (ErrorCode === 0) getUsersInfo();
                 else message.error(ErrorMessage);

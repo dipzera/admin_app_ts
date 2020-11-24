@@ -35,12 +35,23 @@ const RegisterWizard = () => {
     function prev() {
         setCurrent(current - 1);
     }
+    const [apiSuccess, setApiSuccess] = useState(false);
+    const [companyID, setCompanyID] = useState<any>();
 
     useBeforeunload((e) => e.preventDefault());
 
     return (
         <WizardContext.Provider
-            value={{ wizardData, setWizardData, current, setCurrent }}
+            value={{
+                wizardData,
+                setWizardData,
+                current,
+                setCurrent,
+                apiSuccess,
+                setApiSuccess,
+                companyID,
+                setCompanyID,
+            }}
         >
             <div>
                 <PageHeaderAlt className="bg-white border-bottom">

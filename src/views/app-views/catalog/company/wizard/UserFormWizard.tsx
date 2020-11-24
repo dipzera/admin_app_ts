@@ -39,7 +39,7 @@ class UserFormWizard extends React.Component {
                                             name="FirstName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input first name",
                                                 },
@@ -54,7 +54,7 @@ class UserFormWizard extends React.Component {
                                             name="LastName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input last name",
                                                 },
@@ -69,7 +69,7 @@ class UserFormWizard extends React.Component {
                                             name="Email"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     type: "email",
                                                     message:
                                                         "Please input email",

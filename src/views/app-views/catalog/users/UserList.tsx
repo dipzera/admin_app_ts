@@ -117,6 +117,7 @@ export class UserList extends Component<ReduxStoreProps> {
 
     getUsersInfo = () => {
         return new AdminApi().GetAllUsers().then((data: any) => {
+            console.log(data);
             const { ErrorCode } = data;
             if (ErrorCode === 0) {
                 const filteredUsers = data.Users.filter(
