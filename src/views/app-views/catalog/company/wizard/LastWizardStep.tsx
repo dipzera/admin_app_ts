@@ -19,6 +19,7 @@ const LastWizardStep = () => {
             if (response.data.ErrorCode === 118) {
                 dispatch(refreshToken());
             }
+            console.log({ ...context.wizardData.CompanyData });
             console.log(response.data);
             return response.data;
         });
@@ -62,7 +63,6 @@ const LastWizardStep = () => {
                 await handleCompanyRegister()
                     .then((result) => {
                         if (result.ErrorCode === 0) {
-                            debugger;
                             context.setApiSuccess(true);
                             context.setCompanyID(+result.CompanyID);
                             return result.CompanyID;

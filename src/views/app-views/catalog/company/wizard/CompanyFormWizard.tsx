@@ -176,7 +176,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="BIC"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your BIC!",
                                                 },
@@ -204,7 +204,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="Bank"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your bank!",
                                                 },
@@ -225,7 +225,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="CommercialName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your commercial name!",
                                                 },
@@ -244,7 +244,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IBAN"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your IBAN!",
                                                 },
@@ -263,7 +263,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IDNO"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your IDNO!",
                                                 },
@@ -294,7 +294,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalAddress"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your juridical address!",
                                                 },
@@ -315,7 +315,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your juridical name!",
                                                 },
@@ -365,7 +365,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="OfficeAddress"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your office address!",
                                                 },
