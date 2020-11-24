@@ -16,6 +16,9 @@ const LastWizardStep = () => {
         return Axios.post(`${API_APP_URL}/RegisterClientCompany`, {
             ...context.wizardData.CompanyData,
         }).then((response) => {
+            if (response.data.ErrorCode === 118) {
+                dispatch(refreshToken());
+            }
             console.log(response.data);
             return response.data;
         });
@@ -27,6 +30,9 @@ const LastWizardStep = () => {
             CompanyID,
             UiLanguage: 0,
         }).then((response) => {
+            if (response.data.ErrorCode === 118) {
+                dispatch(refreshToken());
+            }
             console.log({
                 ...context.wizardData.UserData,
                 Token,
@@ -43,7 +49,7 @@ const LastWizardStep = () => {
                 await handleUserRegister(context.companyID)
                     .then((data) => {
                         if (data.ErrorCode === 0) {
-                            message.success("Successful registration");
+                            message.success("Successful registration!");
                         } else {
                             throw data.ErrorMessage;
                         }
@@ -73,7 +79,7 @@ const LastWizardStep = () => {
                                     .then((result) => {
                                         if (result.ErrorCode === 0) {
                                             message.success(
-                                                "Hooray! You've registered"
+                                                "Successful registration!"
                                             );
                                         } else {
                                             throw result.ErrorMessage;
