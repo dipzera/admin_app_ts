@@ -252,6 +252,18 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     <span className="ml-2">Manage</span>
                 </Flex>
             </Menu.Item>
+            <Menu.Item onClick={() => this.showUserProfile(row)}>
+                <Flex alignItems="center">
+                    <EyeOutlined />
+                    <span className="ml-2">View Details</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.showEditModal(row)}>
+                <Flex alignItems="center">
+                    <EditOutlined />
+                    <span className="ml-2">Edit</span>
+                </Flex>
+            </Menu.Item>
             {row.Status === 0 ? (
                 <Menu.Item
                     onClick={async () => {
@@ -293,18 +305,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     </Flex>
                 </Menu.Item>
             )}
-            <Menu.Item onClick={() => this.showUserProfile(row)}>
-                <Flex alignItems="center">
-                    <EyeOutlined />
-                    <span className="ml-2">View Details</span>
-                </Flex>
-            </Menu.Item>
-            <Menu.Item onClick={() => this.showEditModal(row)}>
-                <Flex alignItems="center">
-                    <EditOutlined />
-                    <span className="ml-2">Edit</span>
-                </Flex>
-            </Menu.Item>
             <Menu.Item
                 onClick={async () => {
                     Modal.confirm({

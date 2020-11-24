@@ -98,11 +98,11 @@ export const isUserActivated = (boolean, Token) => ({
 });
 
 export const refreshToken = () => async (dispatch) => {
-    return new AuthApi().RefreshToken().then((data: any) => {
+    return new AuthApi().RefreshToken().then(async (data: any) => {
         console.log(data);
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
-            dispatch(authenticated(Token));
+            await dispatch(authenticated(Token));
             window.location.reload();
         } else if (ErrorCode === 105) {
             const key = "updatable";

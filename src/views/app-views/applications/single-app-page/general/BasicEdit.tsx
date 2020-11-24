@@ -40,7 +40,7 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
         },
     ];
     const globalLanguage = useSelector((state) => state["theme"].locale);
-    const [lang, setLang] = useState(globalLanguage);
+    const [shortDescLang, setShortDescLang] = useState(globalLanguage);
     const [longDescLang, setLongDescLang] = useState(globalLanguage);
     const [selectedShortDesc, setSelectedShortDesc] = useState<any>();
     const [selectedLongDesc, setSelectedLongDesc] = useState<any>();
@@ -51,7 +51,9 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
         }));
     };
     useEffect(() => {
-        setSelectedShortDesc(fields.filter(({ locale }) => lang == locale));
+        setSelectedShortDesc(
+            fields.filter(({ locale }) => shortDescLang == locale)
+        );
         setSelectedLongDesc(
             fields.filter(({ locale }) => longDescLang == locale)
         );
@@ -72,7 +74,7 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
                     <div className="ml-2 mb-1">
                         <Select
                             defaultValue={globalLanguage}
-                            onChange={(e) => setLang(e)}
+                            onChange={(e) => setShortDescLang(e)}
                         >
                             {fields.map(({ title, locale }) => (
                                 <Select.Option value={locale} key={locale}>
