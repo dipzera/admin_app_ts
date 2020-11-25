@@ -60,10 +60,10 @@ class HttpClient {
     };
     public _handleError = async (error: any) => {
         if (error.config && error.data && error.data.ErrorCode === 118) {
-            REFRESH_TOKEN().then((data: any) => {
+            REFRESH_TOKEN().then(async (data: any) => {
                 if (data.ErrorCode === 0) {
-                    store.dispatch(authenticated(data.Token));
-                    return axios.request(error.config);
+                    await store.dispatch(authenticated(data.Token));
+                    return await axios.request(error.config);
                 } else if (data.ErrorCode === 105) {
                     const key = "updatable";
                     message
