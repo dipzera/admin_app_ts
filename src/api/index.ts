@@ -53,28 +53,25 @@ class HttpClient {
     };
 
     public _handleResponse = async (response: AxiosResponse) => {
-        // if (response.data.ErrorCode === 118) {
-        //     return this._handleError(response);
-        // }
         if (response.data.ErrorCode === 118) {
-            store.dispatch(refreshToken());
+            return this._handleError(response);
         }
         return response.data;
     };
     public _handleError = async (error: any) => {
-        // if (error.config && error.data && error.data.ErrorCode === 118) {
-        //     REFRESH_TOKEN().then((data: any) => {
-        //         if (data.ErrorCode === 0) {
-        //             store.dispatch(authenticated(data.Token));
-        //             return this.instance.request(error.config);
-        //         } else if (data.ErrorCode === 105) {
-        //             const key = "updatable";
-        //             message
-        //                 .loading({ content: EXPIRE_TIME, key })
-        //                 .then(() => store.dispatch(signOut()));
-        //         }
-        //     });
-        // }
+        if (error.config && error.data && error.data.ErrorCode === 118) {
+            REFRESH_TOKEN().then((data: any) => {
+                if (data.ErrorCode === 0) {
+                    store.dispatch(authenticated(data.Token));
+                    return this.instance.request(error.config);
+                } else if (data.ErrorCode === 105) {
+                    const key = "updatable";
+                    message
+                        .loading({ content: EXPIRE_TIME, key })
+                        .then(() => store.dispatch(signOut()));
+                }
+            });
+        }
         store.dispatch(hideLoading());
         return Promise.reject(error);
     };
