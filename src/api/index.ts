@@ -63,7 +63,7 @@ class HttpClient {
             REFRESH_TOKEN().then((data: any) => {
                 if (data.ErrorCode === 0) {
                     store.dispatch(authenticated(data.Token));
-                    return this.instance.request(error.config);
+                    return axios.request(error.config);
                 } else if (data.ErrorCode === 105) {
                     const key = "updatable";
                     message
