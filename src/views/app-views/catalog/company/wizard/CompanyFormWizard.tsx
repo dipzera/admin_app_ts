@@ -401,6 +401,36 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             <Input />
                                         </Form.Item>
                                     </Col>
+                                    <Col xs={24} sm={24} md={12}>
+                                        <Form.Item
+                                            label={"Short name"}
+                                            name="ShortName"
+                                            rules={[
+                                                {
+                                                    required: false,
+                                                    message:
+                                                        "Please input short name!",
+                                                },
+                                            ]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col xs={24} sm={24} md={12}>
+                                        <Form.Item
+                                            label={"Website"}
+                                            name="WebSite"
+                                            rules={[
+                                                {
+                                                    required: false,
+                                                    message:
+                                                        "Please input website!",
+                                                },
+                                            ]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </Col>
                                     <Col xs={24} sm={24} md={24}>
                                         <Form.Item
                                             label={
