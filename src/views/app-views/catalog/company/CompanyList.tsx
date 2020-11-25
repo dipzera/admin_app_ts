@@ -32,10 +32,6 @@ import UserView from "./CompanyView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import axios from "axios";
 import { connect } from "react-redux";
 import { signOut, refreshToken } from "../../../../redux/actions/Auth";
@@ -46,13 +42,19 @@ import {
     DONE,
     EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
+    INTERNAL_ERROR,
     LOADING,
 } from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
-import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
+import {
+    API_APP_URL,
+    APP_PREFIX_PATH,
+    CLIENT_URL,
+} from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import { AdminApi, AuthApi } from "../../../../api";
 
 enum status {
     active = 1,
@@ -94,7 +96,7 @@ export interface CompanyProps {
     WebSite: string;
 }
 
-interface ReduxStoreProps {
+export interface ReduxStoreProps {
     token: string;
     locale: string;
     CompanyID: number;
@@ -102,7 +104,6 @@ interface ReduxStoreProps {
     refreshToken: any;
 }
 export class CompanyList extends Component<ReduxStoreProps> {
-    /* MAKE THIS FROM API CALL */
     state: CompanyStateProps = {
         users: [],
         selectedRows: [],
@@ -118,33 +119,19 @@ export class CompanyList extends Component<ReduxStoreProps> {
     };
 
     getCompanyList = () => {
-        this.setState({ loading: true });
-        axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyList`, {
-                params: {
-                    Token: this.props.token,
-                },
-            })
-            .then((res) => {
-                this.setState({ loading: false });
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    const filteredCompanies = res.data.CompanyList.filter(
-                        (company) => company.ID !== this.props.CompanyID
-                    );
-                    this.setState({ users: [...filteredCompanies] });
-                    this.setState({
-                        companiesToSearch: [...filteredCompanies],
-                    });
-                } else {
-                    this.props.refreshToken(this.props.token);
-                }
-            })
-            .catch((error) => {
-                const key = "updatable";
-                this.setState({ loading: false });
-                message.error({ content: error.toString(), key });
-            });
+        return new AdminApi().GetCompanyList().then((data: any) => {
+            console.log(data);
+
+            if (data.ErrorCode === 0) {
+                const filteredCompanies = data.CompanyList.filter(
+                    (company) => company.ID !== this.props.CompanyID
+                );
+                this.setState({ users: [...filteredCompanies] });
+                this.setState({
+                    companiesToSearch: [...filteredCompanies],
+                });
+            }
+        });
     };
 
     componentDidMount() {
@@ -205,28 +192,13 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     await this.handleUserStatus(elm.ID, statusNumber);
                 }
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                this.getCompanyList();
+                await this.getCompanyList();
             },
         });
     };
 
     handleUserStatus = (userId: number, status: number) => {
-        axios
-            .get(`${API_IS_APP_SERVICE}/ChangeCompanyStatus`, {
-                params: {
-                    Token: this.props.token,
-                    ID: userId,
-                    Status: status,
-                },
-            })
-            .then((res) => {
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    // this.getUsersInfo();
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
-                }
-            });
+        return new AdminApi().ChangeCompanyStatus(userId, status);
     };
 
     deleteRow = (row) => {
@@ -257,20 +229,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
     };
 
     getManagedToken = (CompanyID) => {
-        return axios
-            .get(`${API_IS_AUTH_SERVICE}/GetManagedToken`, {
-                params: {
-                    Token: this.props.token,
-                    CompanyID,
-                },
-            })
-            .then((res) => {
-                if (res.data.ErrorCode === 0) {
-                    return res.data.Token;
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
-                }
-            });
+        return new AuthApi().GetManagedToken(CompanyID).then((data: any) => {
+            if (data.ErrorCode === 0) return data.Token;
+        });
     };
 
     dropdownMenu = (row) => (
@@ -284,6 +245,18 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 <Flex alignItems="center">
                     <PlayCircleOutlined />
                     <span className="ml-2">Manage</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.showUserProfile(row)}>
+                <Flex alignItems="center">
+                    <EyeOutlined />
+                    <span className="ml-2">View Details</span>
+                </Flex>
+            </Menu.Item>
+            <Menu.Item onClick={() => this.showEditModal(row)}>
+                <Flex alignItems="center">
+                    <EditOutlined />
+                    <span className="ml-2">Edit</span>
                 </Flex>
             </Menu.Item>
             {row.Status === 0 ? (
@@ -327,27 +300,12 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     </Flex>
                 </Menu.Item>
             )}
-            <Menu.Item onClick={() => this.showUserProfile(row)}>
-                <Flex alignItems="center">
-                    <EyeOutlined />
-                    <span className="ml-2">View Details</span>
-                </Flex>
-            </Menu.Item>
-            <Menu.Item onClick={() => this.showEditModal(row)}>
-                <Flex alignItems="center">
-                    <EditOutlined />
-                    <span className="ml-2">Edit</span>
-                </Flex>
-            </Menu.Item>
             <Menu.Item
                 onClick={async () => {
                     Modal.confirm({
                         title: `Are you sure you want to delete this company?`,
                         onOk: async () => {
-                            await this.handleUserStatus(
-                                row.ID,
-                                status.inactive
-                            );
+                            await this.handleUserStatus(row.ID, status.deleted);
                             this.getCompanyList();
                         },
                     });
@@ -373,14 +331,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
         const { users, userProfileVisible, selectedUser } = this.state;
 
         const tableColumns: ColumnsType<CompanyProps> = [
-            // {
-            //     title: "ID",
-            //     dataIndex: "ID",
-            //     sorter: {
-            //         compare: (a, b) => a.ID - b.ID,
-            //     },
-            //     defaultSortOrder: "ascend",
-            // },
             {
                 title: "Company",
                 dataIndex: "",
@@ -523,6 +473,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                     type="primary"
                                     icon={<PlusCircleOutlined />}
                                     block
+                                    // onClick={() => this.showNewUserModal()}
                                 >
                                     Register company
                                 </Button>
@@ -553,39 +504,18 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     }}
                 />
                 <CompanyModalAdd
-                    signOut={signOut}
-                    CompanyID={this.props.CompanyID}
-                    onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
-                    token={this.props.token}
+                    getCompanyList={this.getCompanyList}
                 />
                 <CompanyModalEdit
-                    signOut={signOut}
-                    locale={this.props.locale}
+                    getCompanyList={this.getCompanyList}
                     data={selectedUser}
                     visible={this.state.editModalVisible}
                     onCancel={() => {
                         this.closeEditModal();
                     }}
-                    token={this.props.token}
                 />
-                {/* {this.state.users.length > 0 && !this.state.loading && (
-                    <Tooltip title="Register company">
-                        <PlusOutlined
-                            onClick={this.showNewUserModal}
-                            className="add_company"
-                            style={{
-                                position: "absolute",
-                                bottom: "15px",
-                                left: "15px",
-                                cursor: "pointer",
-                                fontSize: "36px",
-                            }}
-                        />
-                    </Tooltip>
-                )} */}
-                {/* Continue coding here... */}
             </Card>
         );
     }

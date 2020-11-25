@@ -1,4 +1,3 @@
-import { API_IS_AUTH_SERVICE } from "../../constants/ApiConstant";
 import {
     SIGNIN,
     AUTHENTICATED,
@@ -27,6 +26,8 @@ import {
     EXPIRE_TIME,
     PASSWORD_SENT,
 } from "../../constants/Messages";
+import { API_AUTH_URL } from "../../configs/AppConfig";
+import { AuthApi } from "../../api";
 const publicIp = require("react-public-ip");
 
 export const signIn = (user) => ({
@@ -96,104 +97,49 @@ export const isUserActivated = (boolean, Token) => ({
     activationToken: Token,
 });
 
-export const refreshToken = (Token) => async (dispatch) => {
-    axios
-        .get(`${API_IS_AUTH_SERVICE}/RefreshToken`, {
-            params: { Token },
-        })
-        .then((res) => {
-            console.log(res.data);
-            console.log(Token);
-            if (res.data.ErrorCode === 0) {
-                dispatch({ type: SET_TOKEN, token: res.data.Token });
-                window.location.reload();
-            } else if (res.data.ErrorCode === 105) {
-                const key = "updatable";
-                message
-                    .loading({ content: EXPIRE_TIME, key })
-                    .then(() => dispatch(signOut()));
-            }
-        })
-        .catch((error) => {
+export const refreshToken = () => async (dispatch) => {
+    return new AuthApi().RefreshToken().then(async (data: any) => {
+        console.log(data);
+        const { ErrorCode, ErrorMessage, Token } = data;
+        if (ErrorCode === 0) {
+            await dispatch(authenticated(Token));
+            window.location.reload();
+        } else if (ErrorCode === 105) {
             const key = "updatable";
-            message.error({ content: error.toString(), key });
-        });
+            message
+                .loading({ content: EXPIRE_TIME, key })
+                .then(() => dispatch(signOut()));
+        }
+    });
 };
-const sendActivationCode = (Token, UserID = null) => {
-    return async (dispatch) => {
-        Modal.confirm({
-            title: "Confirm registration",
-            content: `Your account is not activated. Press the OK button down below if you
-      want us to send you a new confirmation message`,
-            onOk() {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve(
-                            axios
-                                .get(
-                                    `${API_IS_AUTH_SERVICE}/SendActivationCode`,
-                                    {
-                                        params: {
-                                            Token,
-                                            UserID,
-                                        },
-                                    }
-                                )
-                                .then((res) => {
-                                    console.log(res.data);
-                                    if (res.data.ErrorCode === 0) {
-                                        message.success(EMAIL_CONFIRM_MSG);
-                                    } else {
-                                        dispatch(
-                                            showAuthMessage(
-                                                res.data.ErrorMessage
-                                            )
-                                        );
-                                    }
-                                })
-                                .catch((error) => {
-                                    const key = "updatable";
-                                    message.error({
-                                        content: error.toString(),
-                                        key,
-                                    });
-                                })
-                        );
-                    }, 2000);
-                });
-            },
-            onCancel() {},
-        });
-    };
+const sendActivationCode = () => async (dispatch) => {
+    return new AuthApi().SendActivationCode().then((data: any) => {
+        const { ErrorMessage, ErrorCode } = data;
+        if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
+        else dispatch(showAuthMessage(ErrorMessage));
+    });
 };
-
-export const authorizeUser = (userData) => {
-    return async (dispatch, getState) => {
-        axios
-            .post(`${API_IS_AUTH_SERVICE}/AuthorizeUser`, {
-                ...userData,
-                info: (await publicIp.v4()) || "",
-            })
-            .then((response) => {
-                dispatch(hideLoading());
-                const { ErrorCode, ErrorMessage, Token } = response.data;
-                if (ErrorCode === 0) {
-                    dispatch(authenticated(Token));
-                    dispatch(getProfileInfo(Token));
-                } else if (ErrorCode === 102) {
-                    dispatch(showAuthMessage(ErrorMessage));
-                } else if (ErrorCode === 108) {
-                    dispatch(sendActivationCode(Token));
-                    /* Tell user that his account is not activated, and ask him if he wants a new email code. If yes - send the code, if not, cancel. */
-                }
-            })
-            .catch((error) => {
-                dispatch(hideLoading());
-                const key = "updatable";
-                message.error({
-                    content: error.toString(),
-                    key,
-                });
+export const authorizeUser = (data) => async (dispatch) => {
+    return new AuthApi().Login(data).then((data) => {
+        dispatch(hideLoading());
+        const { ErrorCode, ErrorMessage, Token } = data;
+        if (ErrorCode === 0) {
+            dispatch(authenticated(Token));
+            dispatch(getProfileInfo());
+        }
+        if (ErrorCode === 102) {
+            dispatch(hideLoading());
+            dispatch(showAuthMessage(ErrorMessage));
+        } else if (ErrorCode === 108) {
+            dispatch(hideLoading());
+            Modal.confirm({
+                title: "Confirm registration",
+                content:
+                    "Press the OK button down below if you want us to send you a new activation code!",
+                onOk: () => {
+                    dispatch(sendActivationCode());
+                },
             });
-    };
+        }
+    });
 };

@@ -20,7 +20,6 @@ import { IntlProvider } from "react-intl";
 import AppLocale from "../../../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { API_IS_APP_SERVICE } from "../../../../../constants/ApiConstant";
 import { signOut, refreshToken } from "../../../../../redux/actions/Auth";
 import {
     DONE,
@@ -177,22 +176,23 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="BIC"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your BIC!",
                                                 },
-                                                {
-                                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
-                                                    message:
-                                                        "Invalid BIC format",
-                                                },
+                                                // {
+                                                //     pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                                //     message:
+                                                //         "Invalid BIC format",
+                                                // },
                                             ]}
                                         >
-                                            <MaskedInput
+                                            {/* <MaskedInput
                                                 mask="AAAA-AA-11111"
                                                 name="BIC"
                                                 onChange={onChangeMask}
-                                            />
+                                            /> */}
+                                            <Input />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>
@@ -205,7 +205,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="Bank"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your bank!",
                                                 },
@@ -226,7 +226,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="CommercialName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your commercial name!",
                                                 },
@@ -245,7 +245,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IBAN"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your IBAN!",
                                                 },
@@ -264,7 +264,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="IDNO"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your IDNO!",
                                                 },
@@ -295,7 +295,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalAddress"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your juridical address!",
                                                 },
@@ -316,7 +316,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="JuridicalName"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your juridical name!",
                                                 },
@@ -366,7 +366,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             name="OfficeAddress"
                                             rules={[
                                                 {
-                                                    required: false,
+                                                    required: true,
                                                     message:
                                                         "Please input your office address!",
                                                 },

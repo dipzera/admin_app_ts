@@ -1,36 +1,24 @@
 import React, { Component } from "react";
-import {
-    Form,
-    Avatar,
-    Button,
-    Input,
-    DatePicker,
-    Row,
-    Col,
-    message,
-    Upload,
-} from "antd";
+import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { updateSettings } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
-import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
 import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
 import { refreshToken, signOut } from "../../../redux/actions/Auth";
 import {
     DONE,
     ERROR,
-    EXPIRE_TIME,
-    LOADING,
     UPDATING,
     UPLOADED,
     UPLOADING,
 } from "../../../constants/Messages";
+import { API_APP_URL } from "../../../configs/AppConfig";
+import { AdminApi } from "../../../api";
 const publicIp = require("react-public-ip");
 
 function beforeUpload(file) {
@@ -51,25 +39,31 @@ class CompanyForm extends Component<{ [key: string]: any }> {
     state = { Company: {} } as { [key: string]: any };
     formRef = React.createRef() as any;
 
-    componentDidMount() {
-        axios
-            .get(`${API_IS_APP_SERVICE}/GetCompanyInfo`, {
-                params: {
-                    Token: this.props.token,
-                },
+    getCompanyInfo = () => {
+        return new AdminApi().GetCompanyInfo().then((data: any) => {
+            if (data.ErrorCode === 0) {
+                this.setState({ Company: { ...data.Company } });
+                this.formRef["current"].setFieldsValue(data.Company);
+            } else {
+                message.error(data.ErrorMessage);
+            }
+        });
+    };
+    updateCompany = (values) => {
+        return new AdminApi()
+            .UpdateCompany({
+                Company: { ...this.state.Company, ...values },
             })
-            .then((res) => {
-                const { ErrorCode, ErrorMessage, Company } = res.data;
-                if (ErrorCode === 0) {
-                    console.log(Company);
-                    this.setState({ Company: { ...Company } });
-                    this.formRef["current"].setFieldsValue(Company);
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
+            .then(async (data) => {
+                if (data.ErrorCode === 0) {
+                    await this.getCompanyInfo();
                 } else {
-                    message.error(ErrorMessage);
+                    message.error(data.ErrorMessage);
                 }
             });
+    };
+    componentDidMount() {
+        this.getCompanyInfo();
     }
 
     getBase64(img, callback) {
@@ -79,12 +73,9 @@ class CompanyForm extends Component<{ [key: string]: any }> {
     }
 
     render() {
-        let { updateSettings, removeAvatar, locale, signOut } = this.props;
-
         const onChangeMask = (e) => {
             this.setState({ [e.target.name]: e.target.value });
         };
-        const currentAppLocale = AppLocale[locale];
         const onFinish = async (values) => {
             const key = "updatable";
             message.loading({
@@ -93,30 +84,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 duration: 1,
             });
             setTimeout(async () => {
-                console.log({
-                    Company: { ...this.state.Company, ...values },
-                    Token: this.props.token,
-                    info: await publicIp.v4(),
-                });
-                axios
-                    .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
-                        Company: {
-                            ...this.state.Company,
-                            ...values,
-                        },
-                        Token: this.props.token,
-                        info: (await publicIp.v4()) || "",
-                    })
-                    .then((res) => {
-                        console.log(res.data);
-                        if (res.data.ErrorCode === 0) {
-                            message.success(DONE, 2);
-                        } else if (res.data.ErrorCode === 118) {
-                            this.props.refreshToken(this.props.token);
-                        } else {
-                            message.error(ERROR, 2);
-                        }
-                    });
+                this.updateCompany(values);
             }, 1000);
         };
 
@@ -132,28 +100,8 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             }
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, async (imageUrl) => {
-                    axios
-                        .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
-                            Company: {
-                                ...this.state.Company,
-                                Logo: imageUrl,
-                            },
-                            Token: this.props.token,
-                            info: (await publicIp.v4()) || "",
-                        })
-                        .then((res) => {
-                            console.log(res.data);
-                            if (res.data.ErrorCode === 0) {
-                                this.setState({
-                                    Company: {
-                                        ...this.state.Company,
-                                        Logo: imageUrl,
-                                    },
-                                });
-                            } else if (res.data.ErrorCode === 118) {
-                                this.props.refreshToken(this.props.token);
-                            }
-                        });
+                    const imageToSend = { Logo: imageUrl };
+                    await this.updateCompany(imageToSend);
                 });
                 message.success({ content: UPLOADED, key });
             } else {
@@ -162,25 +110,8 @@ class CompanyForm extends Component<{ [key: string]: any }> {
         };
 
         const onRemoveAvater = async () => {
-            axios
-                .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
-                    Company: {
-                        ...this.state.Company,
-                        Logo: "",
-                    },
-                    Token: this.props.token,
-                    info: (await publicIp.v4()) || "",
-                })
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data.ErrorCode === 0) {
-                        this.setState({
-                            Company: { ...this.state.Company, Logo: "" },
-                        });
-                    } else if (res.data.ErrorCode === 118) {
-                        this.props.refreshToken(this.props.token);
-                    }
-                });
+            const imageToSend = { Logo: "" };
+            await this.updateCompany(imageToSend);
         };
 
         return (
@@ -200,7 +131,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                             onChange={onUploadAavater}
                             showUploadList={false}
                             action={this.avatarEndpoint}
-                            // beforeUpload={beforeUpload}
+                            beforeUpload={beforeUpload}
                         >
                             <Button type="primary">
                                 <IntlMessage
@@ -239,18 +170,19 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                                     message:
                                                         "Please input your BIC!",
                                                 },
-                                                {
-                                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
-                                                    message:
-                                                        "Invalid BIC format",
-                                                },
+                                                // {
+                                                //     pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                                //     message:
+                                                //         "Invalid BIC format",
+                                                // },
                                             ]}
                                         >
-                                            <MaskedInput
+                                            {/* <MaskedInput
                                                 mask="AAAA-AA-11111"
                                                 name="BIC"
                                                 onChange={onChangeMask}
-                                            />
+                                            /> */}
+                                            <Input />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>

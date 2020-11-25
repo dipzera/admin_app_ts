@@ -3,14 +3,13 @@ import { Form, Button, Input, Row, Col, message } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { connect } from "react-redux";
 import Utils from "../../../utils";
-import {
-    API_IS_AUTH_SERVICE,
-    API_PUBLIC_KEY,
-} from "../../../constants/ApiConstant";
+import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import axios from "axios";
 import AppLocale from "../../../lang";
 import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
 import { refreshToken } from "../../../redux/actions/Auth";
+import { API_AUTH_URL } from "../../../configs/AppConfig";
+import { AuthApi } from "../../../api";
 interface IChangePassword {
     token: string;
     locale: string;
@@ -33,8 +32,8 @@ export class ChangePassword extends Component<IChangePassword> {
         this.setState({ loading: true });
         setTimeout(() => {
             this.setState({ loading: false });
-            axios
-                .post(`${API_IS_AUTH_SERVICE}/ChangePassword`, {
+            new AuthApi()
+                .ChangePassword({
                     NewPassword: Utils.encryptInput(
                         newPassword,
                         API_PUBLIC_KEY
@@ -45,16 +44,10 @@ export class ChangePassword extends Component<IChangePassword> {
                     ),
                     Token: this.props["token"],
                 })
-                .then((res) => {
-                    const { errorCode, errorMessage } = res.data;
-                    if (errorCode === 0) {
-                        message.success(DONE, 1.5);
-                    } else if (errorCode === 118) {
-                        this.props.refreshToken(this.props["token"]);
-                    } else {
-                        /* Incorrect old password */
-                        message.error(errorMessage, 2);
-                    }
+                .then((data: any) => {
+                    const { ErrorCode, ErrorMessage } = data;
+                    if (ErrorCode === 0) message.success(DONE, 1.5);
+                    else message.error(ErrorMessage, 1.5);
                 });
         }, 1500);
         this.onReset();

@@ -11,6 +11,7 @@ export const DELETE_PACKAGE_MSG = (ID) =>
 export const DONE = "Done!";
 export const UPLOADED = "Uploaded!";
 export const UPLOADING = "Uploading!";
+export const INTERNAL_ERROR = "Internal Error";
 export const LOADING = "Loading...";
 export const UPDATING = "Updating!";
 export const ERROR = "Something went wrong... Try again!";

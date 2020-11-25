@@ -1,42 +1,16 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    Col,
-    Slider,
-    Form,
-    Input,
-    message,
-    Modal,
-    Row,
-    Switch,
-    DatePicker,
-} from "antd";
-import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
-import Utils from "../../../utils";
-import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
+import { Col, Slider, Form, Input, Modal, Row, Switch, DatePicker } from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import {
-    getMarketApps,
-    updateMarketAppPackage,
-} from "../../../redux/actions/Applications";
+import { updateMarketAppPackage } from "../../../redux/actions/Applications";
 interface IEditPackageForm {
     packages: any;
     visible: boolean;
     close: () => any;
-    signOut: () => any;
 }
-const EditPackageForm = ({
-    packages,
-    visible,
-    close,
-    signOut,
-}: IEditPackageForm) => {
+const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
     const [form] = Form.useForm();
-    // const { MinValue, MaxValue } = packages;
-    // const initialValues = { ...packages, Range: [MinValue, MaxValue] };
-    /*  Destroy initialValues of form after Modal is closed */
     useEffect(() => {
         if (!visible) return;
 
@@ -75,7 +49,7 @@ const EditPackageForm = ({
             },
             Token,
         });
-        dispatch(updateMarketAppPackage(AppPackage, Token));
+        dispatch(updateMarketAppPackage(AppPackage));
     };
 
     const onFinishFailed = () => {};

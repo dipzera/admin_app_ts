@@ -1,17 +1,30 @@
 import { Form, Input, Select } from "antd";
-import { isEmpty } from "lodash";
+import { lang } from "../../../../../assets/data/language.data.json";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
-
-const BasicEdit = ({
-    app,
-    longDesc,
-    setLongDesc,
-    setShortDesc,
-    rules,
-    shortDesc,
-}) => {
+import Flex from "../../../../../components/shared-components/Flex";
+const rules = {
+    name: [
+        {
+            required: true,
+            message: "Please enter product name",
+        },
+    ],
+    ShortDescription: [
+        {
+            required: true,
+            message: "Please enter short description",
+        },
+    ],
+    LongDescription: [
+        {
+            required: false,
+            message: "Please enter long description",
+        },
+    ],
+};
+const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
     const fields = [
         {
             title: "English",
@@ -26,58 +39,102 @@ const BasicEdit = ({
             locale: "ru",
         },
     ];
-
-    const onChange: any = (name, value) => {
+    const globalLanguage = useSelector((state) => state["theme"].locale);
+    const [shortDescLang, setShortDescLang] = useState(globalLanguage);
+    const [longDescLang, setLongDescLang] = useState(globalLanguage);
+    const [selectedShortDesc, setSelectedShortDesc] = useState<any>();
+    const [selectedLongDesc, setSelectedLongDesc] = useState<any>();
+    const onChange = (name, value) => {
         setShortDesc((prevState) => ({
             ...prevState,
             [name]: value,
         }));
     };
+    useEffect(() => {
+        setSelectedShortDesc(
+            fields.filter(({ locale }) => shortDescLang == locale)
+        );
+        setSelectedLongDesc(
+            fields.filter(({ locale }) => longDescLang == locale)
+        );
+    }, [lang, longDescLang]);
 
     return (
         <>
             <Form.Item name="Name" label="Application name" rules={rules.name}>
                 <Input />
             </Form.Item>
-
-            <Form.Item label="Short Description">
-                {/* <Select defaultValue={"English"}>
-                    {fields.map((field) => (
-                        <Select.Option value={field.locale}>
-                            {field.title}
-                        </Select.Option>
+            <div className="form__item shortdesc mb-3">
+                <Flex
+                    alignItems="center"
+                    className="mb-2"
+                    justifyContent="between"
+                >
+                    <h5>Short description</h5>
+                    <div className="ml-2 mb-1">
+                        <Select
+                            defaultValue={globalLanguage}
+                            onChange={(e) => setShortDescLang(e)}
+                        >
+                            {fields.map(({ title, locale }) => (
+                                <Select.Option value={locale} key={locale}>
+                                    {title}
+                                </Select.Option>
+                            ))}
+                        </Select>
+                    </div>
+                </Flex>
+                {selectedShortDesc &&
+                    selectedShortDesc.map(({ title, locale }) => (
+                        <div key={locale}>
+                            {/* <h6>{title}</h6> */}
+                            <Input.TextArea
+                                rows={4}
+                                name={locale}
+                                value={shortDesc ? shortDesc[locale] : null}
+                                onChange={(e) =>
+                                    onChange(e.target.name, e.target.value)
+                                }
+                            />
+                        </div>
                     ))}
-                </Select> */}
-                {fields.map(({ title, locale }) => (
-                    <div key={locale}>
-                        <h6>{title}</h6>
-                        <Input.TextArea
-                            rows={4}
-                            name={locale}
-                            value={shortDesc ? shortDesc[locale] : null}
-                            onChange={(e) =>
-                                onChange(e.target.name, e.target.value)
-                            }
-                        />
+            </div>
+            <div className="form__item longdesc">
+                <Flex
+                    alignItems="center"
+                    className="mb-2"
+                    justifyContent="between"
+                >
+                    <h5>Long description</h5>
+                    <div className="ml-2 mb-1">
+                        <Select
+                            defaultValue={globalLanguage}
+                            onChange={(e) => setLongDescLang(e)}
+                        >
+                            {fields.map(({ title, locale }) => (
+                                <Select.Option value={locale} key={locale}>
+                                    {title}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </div>
-                ))}
-            </Form.Item>
-            <Form.Item label="Long description" rules={rules.LongDescription}>
-                {fields.map(({ title, locale }) => (
-                    <div key={locale} className="mb-3">
-                        <h4>{title}</h4>
-                        <TextEditor
-                            apps={longDesc ? longDesc[locale] : null}
-                            handleEditorChange={(e) =>
-                                setLongDesc((prevState) => ({
-                                    ...prevState,
-                                    [locale]: e,
-                                }))
-                            }
-                        />
-                    </div>
-                ))}
-            </Form.Item>
+                </Flex>
+                {selectedLongDesc &&
+                    selectedLongDesc.map(({ title, locale }) => (
+                        <div key={locale} className="mb-3">
+                            {/* <h4>{title}</h4> */}
+                            <TextEditor
+                                apps={longDesc ? longDesc[locale] : null}
+                                handleEditorChange={(e) =>
+                                    setLongDesc((prevState) => ({
+                                        ...prevState,
+                                        [locale]: e,
+                                    }))
+                                }
+                            />
+                        </div>
+                    ))}
+            </div>
         </>
     );
 };

@@ -1,62 +1,28 @@
-import {
-    Button,
-    Card,
-    Col,
-    Form,
-    Menu,
-    message,
-    Modal,
-    Row,
-    Tabs,
-    Tag,
-} from "antd";
+import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
-import {
-    PlusOutlined,
-    ExperimentOutlined,
-    EyeOutlined,
-    EditOutlined,
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-    DeleteOutlined,
-} from "@ant-design/icons";
-import { connect, useDispatch, useSelector } from "react-redux";
-import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import { ExperimentOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "../EditPackageForm";
-import {
-    hideLoading,
-    refreshToken,
-    showLoading,
-    signOut,
-} from "../../../../redux/actions/Auth";
+import { hideLoading, showLoading } from "../../../../redux/actions/Auth";
 import {
     deleteMarketAppPackage,
-    getMarketApps,
     updateMarketApp,
 } from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
 import moment from "moment";
-import Axios from "axios";
-import { API_APP_URL, APP_PREFIX_PATH } from "../../../../configs/AppConfig";
 import {
     DELETE_PACKAGE_MSG,
     DONE,
     ERROR,
-    EXPIRE_TIME,
     LOADING,
 } from "../../../../constants/Messages";
-import { Link, Redirect, Route, Switch } from "react-router-dom";
 import Packages from "./Packages";
-import Description from "./Description";
 import TermsOfUse from "./TermsOfUse";
-import InnerAppLayout from "../../../../layouts/inner-app-layout";
-import EditAppForm from "../EditAppForm";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
-import EditApp from "./EditApp";
 import General from "./general";
+import { AdminApi } from "../../../../api";
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -64,14 +30,12 @@ const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 };
 
-const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
+const SingleAppPage = ({ match }) => {
     const { appID } = match.params;
     const { confirm } = Modal;
     const app = useSelector((state) =>
         state["apps"].find((data) => data.ID == appID)
     );
-    const Token = useSelector((state) => state["auth"].token);
-    const loading = useSelector((state) => state["auth"].loading);
     const dispatch = useDispatch();
     const [edit, setEdit] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<{
@@ -83,7 +47,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const [addPackageModalVisible, setAddPackageModalVisible] = useState<
         boolean
     >(false);
-    const [isEditAppVisible, setIsEditAppVisible] = useState(false);
     const showEditPackageModal = (selected) => {
         setSelectedPackage({
             ...selected,
@@ -102,19 +65,12 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const closeAddPackageModal = () => {
         setAddPackageModalVisible(false);
     };
-    const showEditAppModal = () => {
-        setIsEditAppVisible(true);
-    };
-
-    const closeEditAppModal = () => {
-        setIsEditAppVisible(false);
-    };
 
     const deletePackage = (ID) => {
         confirm({
             title: DELETE_PACKAGE_MSG(ID),
             onOk: () => {
-                deleteMarketAppPackage(ID, Token);
+                dispatch(deleteMarketAppPackage(ID));
             },
         });
     };
@@ -124,7 +80,6 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
     const [shortDesc, setShortDesc] = useState<any>();
     const [longDesc, setLongDesc] = useState<any>();
     const [status, setStatus] = useState<number>(app.Status);
-    const [submitLoading, setSubmitLoading] = useState(false);
     useEffect(() => {
         try {
             setShortDesc(JSON.parse(window.atob(app.ShortDescription)));
@@ -159,47 +114,23 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     TermsOfUse,
                     LongDescription,
                 } = app;
-                Axios.post(`${API_IS_APP_SERVICE}/UpdateMarketApp`, {
-                    App: {
+                dispatch(
+                    updateMarketApp({
                         ID: appID,
                         LongDescription,
                         ShortDescription,
                         TermsOfUse,
                         Name,
                         Photo,
-                    },
-                    Token,
-                }).then((res) => {
-                    if (res.data.ErrorCode === 0) {
-                        dispatch(getMarketApps(Token));
-                    } else if (res.data.ErrorCode === 118) {
-                        dispatch(refreshToken(Token));
-                    }
-                });
+                    })
+                );
                 setImage(Photo);
-                // setUploadLoading(false);
                 message.success(DONE, 1.5);
             });
         }
         if (info.file.status === "failed") {
             message.error(ERROR, 1.5);
         }
-    };
-    const changeMarketAppStatus = (Status) => {
-        dispatch(showLoading());
-        setTimeout(() => {
-            dispatch(hideLoading());
-            Axios.get(`${API_IS_APP_SERVICE}/ChangeMarketAppStatus`, {
-                params: { Token, ID: appID, Status },
-            }).then((res) => {
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    message.success(DONE, 1);
-                } else if (res.data.ErrorCode === 118) {
-                    dispatch(refreshToken(Token));
-                }
-            });
-        }, 1000);
     };
 
     const onFinish = (values) => {
@@ -216,11 +147,10 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             ),
             Photo: uploadedImg ? uploadedImg : app.Photo,
         };
-        console.log(App);
         message
             .loading(LOADING, 1.5)
             .then(() => {
-                dispatch(updateMarketApp(App, Token));
+                dispatch(updateMarketApp(App));
                 setEdit(false);
             })
             .then(() => message.success(DONE, 1.5));
@@ -235,23 +165,13 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
             <AddPackageForm
                 appID={appID}
                 close={closeAddPackageModal}
-                signOut={signOut}
                 visible={addPackageModalVisible}
             />
             <EditPackageForm
                 close={closeEditPackageModal}
-                signOut={signOut}
                 packages={selectedPackage}
                 visible={editPackageModalVisible}
             />
-            <EditAppForm
-                apps={app}
-                visible={isEditAppVisible}
-                close={closeEditAppModal}
-                signOut={signOut}
-            />
-            {/* App Content Card */}
-            {/* <AboutItem appData={app} showEditAppModal={showEditAppModal} /> */}
             <Form
                 form={form}
                 layout="vertical"
@@ -304,10 +224,8 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     >
                         <Tabs.TabPane tab="General" key="1">
                             <General
-                                changeMarketAppStatus={changeMarketAppStatus}
                                 app={app}
                                 status={status}
-                                setStatus={setStatus}
                                 setLongDesc={setLongDesc}
                                 edit={edit}
                                 setShortDesc={setShortDesc}
@@ -333,24 +251,7 @@ const SingleAppPage = ({ match, location, deleteMarketAppPackage }) => {
                     </Tabs>
                 </div>
             </Form>
-            {/* <InnerAppLayout
-                sideContent={<AppOption location={location} match={match} />}
-                mainContent={
-                    <AppRoute
-                        location={location}
-                        match={match}
-                        packages={app.Packages}
-                        app={app}
-                        showEditPackageModal={showEditPackageModal}
-                        deletePackage={deletePackage}
-                        showAddPackageModal={showAddPackageModal}
-                    />
-                }
-            /> */}
         </>
     );
 };
-export default connect(null, {
-    signOut,
-    deleteMarketAppPackage,
-})(SingleAppPage);
+export default SingleAppPage;

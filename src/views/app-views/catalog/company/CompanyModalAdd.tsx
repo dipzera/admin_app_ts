@@ -1,21 +1,10 @@
 import { Row, Col, Input, Modal, Form, message } from "antd";
 import React, { useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { API_IS_AUTH_SERVICE } from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import axios from "axios";
-import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../../../constants/Messages";
 import { MaskedInput } from "antd-mask-input";
-import utils from "../../../../utils";
-const publicIp = require("react-public-ip");
-export const CompanyModalAdd = ({
-    onCreate,
-    onCancel,
-    visible,
-    token: Token,
-    CompanyID,
-    signOut,
-}) => {
+import { AdminApi } from "../../../../api";
+export const CompanyModalAdd = ({ onCancel, visible, getCompanyList }) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [mask, setMask] = useState<any>();
@@ -23,36 +12,15 @@ export const CompanyModalAdd = ({
         setMask({ [e.target.name]: e.target.value });
     };
     const onFinish = async (values) => {
-        // const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
-        /*  EDIT ABOVE WHEN REGISTER COMPANY FUNCTION IS READY */
-        console.log({
-            Company: { ...values },
-            Token,
-            info: await publicIp.v4(),
-        });
-        axios
-            .post(`${API_IS_AUTH_SERVICE}/RegisterClientCompany`, {
-                /* Get the companyID, token and uilanguage from redux store */
-                Company: {
-                    ...values,
-                },
-                Token,
-                info: (await publicIp.v4()) || "",
-            })
-            .then((res) => {
-                console.log(res.data);
-                form.resetFields();
-                if (res.data.ErrorCode === 0) {
-                    message.success(EMAIL_CONFIRM_MSG, 2);
-                } else if (res.data.ErrorCode === 118) {
-                    message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                } else {
-                    message.error(res.data.ErrorMessage);
-                }
+        new AdminApi()
+            .RegisterClientCompany({ Company: { ...values } })
+            .then((data: any) => {
+                data.ErrorCode === 0
+                    ? getCompanyList()
+                    : message.error(data.ErrorMessage);
             });
     };
     return (
-        /* The component above doesn't work just yet */
         <Modal
             title={"Register company"}
             visible={visible}

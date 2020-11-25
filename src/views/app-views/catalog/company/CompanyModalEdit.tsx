@@ -1,36 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Input, Row, Col, Tooltip, Form, Modal, Button, message } from "antd";
+import { Input, Row, Col, Form, Modal, message } from "antd";
 import MaskedInput from "antd-mask-input";
-import {
-    CreditCardOutlined,
-    CalendarOutlined,
-    QuestionCircleOutlined,
-} from "@ant-design/icons";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import AppLocale from "../../../../lang";
-import { IntlProvider } from "react-intl";
-import { useDispatch } from "react-redux";
-import { setProfileInfo } from "../../../../redux/actions/Account";
-import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
-import { DONE, ERROR, EXPIRE_TIME } from "../../../../constants/Messages";
-const publicIp = require("react-public-ip");
+import { AdminApi } from "../../../../api";
 
 export const CompanyModalEdit = ({
     data,
     visible,
     onCancel,
-    locale,
-    token,
-    signOut,
+    getCompanyList,
 }) => {
     const [form] = Form.useForm();
 
-    const dispatch = useDispatch();
-
     const [mask, setMask] = useState<any>();
-    /*  Destroy initialValues of form after Modal is closed */
+
     useEffect(() => {
         if (!visible) return;
         form.resetFields();
@@ -40,47 +24,14 @@ export const CompanyModalEdit = ({
         setMask({ [e.target.name]: e.target.value });
     };
 
-    const currentAppLocale = AppLocale[locale];
     const onFinish = (values) => {
-        const key = "updatable";
-        message.loading({
-            content: (
-                <IntlProvider
-                    locale={currentAppLocale.locale}
-                    messages={currentAppLocale.messages}
-                >
-                    <IntlMessage id={"message.AccountSettings.Updating"} />
-                </IntlProvider>
-            ),
-            key,
-        });
-        setTimeout(async () => {
-            console.log({
-                Company: { ...data, ...values },
-                Token: token,
-                info: await publicIp.v4(),
+        new AdminApi()
+            .UpdateCompany({ Company: { ...data, ...values } })
+            .then((data) => {
+                data.ErrorCode === 0
+                    ? getCompanyList()
+                    : message.error(data.ErrorMessage);
             });
-            axios
-                .post(`${API_IS_APP_SERVICE}/UpdateCompany`, {
-                    Company: {
-                        ...data,
-                        ...values,
-                    },
-                    Token: token,
-                    info: (await publicIp.v4()) || "",
-                })
-                .then((res) => {
-                    console.log(res.data);
-                    if (res.data.ErrorCode === 0) {
-                        message.success(DONE, 1.5);
-                        window.location.reload();
-                    } else if (res.data.ErrorCode === 118) {
-                        message.loading(EXPIRE_TIME, 1.5).then(() => signOut());
-                    } else {
-                        message.error(ERROR, 2);
-                    }
-                });
-        }, 1000);
     };
     const onFinishFailed = () => {};
 
@@ -88,7 +39,6 @@ export const CompanyModalEdit = ({
         <Modal
             destroyOnClose
             title={"Edit company"}
-            // style={{ top: "0" }}
             visible={visible}
             okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
             onCancel={onCancel}
@@ -121,16 +71,17 @@ export const CompanyModalEdit = ({
                                     required: true,
                                     message: "Please input your BIC!",
                                 },
-                                {
-                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
-                                    message: "Invalid BIC format",
-                                },
+                                // {
+                                //     pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                //     message: "Invalid BIC format",
+                                // },
                             ]}
                         >
-                            <MaskedInput
+                            {/* <MaskedInput
                                 mask="AAAA-AA-11111"
                                 onChange={onChangeMask}
-                            />
+                            /> */}
+                            <Input />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>
@@ -296,7 +247,7 @@ export const CompanyModalEdit = ({
                             name="VATCode"
                             rules={[
                                 {
-                                    required: true,
+                                    required: false,
                                     message: "Please input your VAT code!",
                                 },
                                 {

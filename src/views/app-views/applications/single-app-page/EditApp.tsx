@@ -32,7 +32,7 @@ const EditApp = ({ app }) => {
         message
             .loading(LOADING, 1.5)
             .then(() => {
-                dispatch(updateMarketApp(App, Token));
+                dispatch(updateMarketApp(App));
             })
             .then(() => message.success(DONE, 1.5));
     };

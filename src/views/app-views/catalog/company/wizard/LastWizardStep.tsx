@@ -2,10 +2,7 @@ import { message } from "antd";
 import Axios, { AxiosResponse } from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../../constants/ApiConstant";
+import { API_APP_URL, API_AUTH_URL } from "../../../../../configs/AppConfig";
 import { refreshToken } from "../../../../../redux/actions/Auth";
 import { WizardContext } from "./WizardContext";
 
@@ -14,52 +11,90 @@ const LastWizardStep = () => {
     const dispatch = useDispatch();
     const Token = useSelector((state) => state["auth"].token);
     /* Above might be stored inside the Wizard Context */
-    const [companyApiSuccess, setCompanyApiSuccess] = useState(false);
 
     const handleCompanyRegister = (): any => {
-        return Axios.post(`${API_IS_APP_SERVICE}/RegisterClientCompany`, {
+        return Axios.post(`${API_APP_URL}/RegisterClientCompany`, {
             ...context.wizardData.CompanyData,
-        }).then((response) => response.data);
+        }).then((response) => {
+            // if (response.data.ErrorCode === 118) {
+            //     dispatch(refreshToken());
+            // }
+            console.log({ ...context.wizardData.CompanyData });
+            console.log(response.data);
+            return response.data;
+        });
     };
     const handleUserRegister = (CompanyID) => {
-        return Axios.post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
+        return Axios.post(`${API_AUTH_URL}/RegisterUser`, {
             ...context.wizardData.UserData,
             Token,
             CompanyID,
+            UiLanguage: 0,
         }).then((response) => {
+            if (response.data.ErrorCode === 118) {
+                dispatch(refreshToken());
+            }
+            console.log({
+                ...context.wizardData.UserData,
+                Token,
+                CompanyID: context.companyID,
+                UiLanguage: 0,
+            });
+            console.log(response.data);
             return response.data;
         });
     };
     useEffect(() => {
-        message.loading("Proceeding to send data...", 1.5).then((resolve) => {
-            if (companyApiSuccess) {
-                handleUserRegister(context.CompanyID);
+        message.loading("Proceeding to send data...", 1.5).then(async () => {
+            if (context.apiSuccess) {
+                await handleUserRegister(context.companyID)
+                    .then((data) => {
+                        if (data.ErrorCode === 0) {
+                            message.success("Successful registration!");
+                        } else {
+                            throw data.ErrorMessage;
+                        }
+                    })
+                    .catch((err) => {
+                        message.error(err.toString());
+                        context.setCurrent(context.current - 1);
+                    });
             } else {
-                handleCompanyRegister()
+                await handleCompanyRegister()
                     .then((result) => {
                         if (result.ErrorCode === 0) {
+                            context.setApiSuccess(true);
+                            context.setCompanyID(+result.CompanyID);
                             return result.CompanyID;
                         } else {
-                            message.error(result.ErrorMessage);
-                            context.setCurrent(context.current - 2);
+                            throw result.ErrorMessage;
                         }
                     }) /* Maybe place an if statement below */
-                    .then((CompanyID) =>
+                    .then((CompanyID) => {
+                        console.log({ companyID: context.companyID });
                         message
                             .loading("Proceeding to send user data...", 1.5)
-                            .then(() => {
-                                handleUserRegister(CompanyID).then((result) => {
-                                    if (result.ErrorCode === 0) {
-                                        message.success(
-                                            "Hooray! You've registered"
-                                        );
-                                    } else {
-                                        message.error(result.ErrorMessage);
+                            .then(async () => {
+                                await handleUserRegister(CompanyID)
+                                    .then((result) => {
+                                        if (result.ErrorCode === 0) {
+                                            message.success(
+                                                "Successful registration!"
+                                            );
+                                        } else {
+                                            throw result.ErrorMessage;
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        message.error(err.toString());
                                         context.setCurrent(context.current - 1);
-                                    }
-                                });
-                            })
-                    );
+                                    });
+                            });
+                    })
+                    .catch((err) => {
+                        message.error(err.toString());
+                        context.setCurrent(context.current - 2);
+                    });
             }
         });
         console.log(context);

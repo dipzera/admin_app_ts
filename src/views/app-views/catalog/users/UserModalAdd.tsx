@@ -1,36 +1,13 @@
 import { Row, Col, Input, Modal, Form, message, Select, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import axios from "axios";
-import {
-    EMAIL_CONFIRM_MSG,
-    EXPIRE_TIME,
-    LOADING,
-} from "../../../../constants/Messages";
-import utils from "../../../../utils";
-
-const renderItem = (id, title, idno) => ({
-    value: id,
-    title,
-    label: (
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-            {title}
-            <span>{idno}</span>
-        </div>
-    ),
-});
+import { AdminApi, AuthApi } from "../../../../api";
 
 export const UserModalAdd = ({
-    onCreate,
     onCancel,
     visible,
     token: Token,
-    signOut,
     getUsersInfo,
 }) => {
     const [form] = Form.useForm();
@@ -38,19 +15,12 @@ export const UserModalAdd = ({
     const [companies, setCompanies] = useState<any>([]);
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
-        axios
-            .get(`${API_IS_APP_SERVICE}/GetBasicCompaniesList`, {
-                params: { Token },
-            })
-            .then((res) => {
-                console.log(res.data);
-
-                const { ErrorCode, ErrorMessage, CompanyList } = res.data;
-                if (ErrorCode === 0) {
-                    setCompanies(CompanyList);
-                } else if (ErrorCode === 118) {
-                }
-            });
+        new AdminApi()
+            .GetBasicCompanyList()
+            .then(
+                (data: any) =>
+                    data.ErrorCode === 0 && setCompanies(data.CompanyList)
+            );
     }, []);
     const onSearch = (value) => {
         if (value.length > 1) {
@@ -60,20 +30,14 @@ export const UserModalAdd = ({
         }
     };
     const onFinish = (values) => {
-        axios
-            .post(`${API_IS_AUTH_SERVICE}/RegisterUser`, {
-                ...values,
-                Token,
-                UiLanguage: 0,
-            })
-            .then((res) => {
-                console.log(res.data);
-                form.resetFields();
-                if (res.data.ErrorCode === 0) {
-                    getUsersInfo();
-                } else {
-                    message.error(res.data.ErrorMessage);
-                }
+        form.resetFields();
+        new AuthApi()
+            .RegisterUser({ ...values, Token, UiLanguage: 0 })
+            .then((data: any) => {
+                console.log(data);
+                const { ErrorCode, ErrorMessage } = data;
+                if (ErrorCode === 0) getUsersInfo();
+                else message.error(ErrorMessage);
             });
     };
 

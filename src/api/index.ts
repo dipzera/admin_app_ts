@@ -1,40 +1,198 @@
-import axios, { Method } from "axios";
-import { useEffect, useState } from "react";
-
-interface useApiRequestProps {
-    method: Method;
-    url: any;
-    data?: any;
-    config?: any;
+import { message } from "antd";
+import Axios from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
+import {
+    EMAIL_CONFIRM_MSG,
+    EXPIRE_TIME,
+    INTERNAL_ERROR,
+} from "../constants/Messages";
+import {
+    authenticated,
+    hideLoading,
+    refreshToken,
+    signOut,
+} from "../redux/actions/Auth";
+import store from "../redux/store";
+const publicIp = require("react-public-ip");
+declare module "axios" {
+    interface AxiosResponse<T = any> extends Promise<T> {}
 }
-export function useApiRequest({
-    method,
-    url,
-    data = null,
-    config = null,
-}: useApiRequestProps) {
-    const [response, setResponse] = useState(null);
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
+const REFRESH_TOKEN = () => {
+    return new AuthApi().RefreshToken();
+};
+class HttpClient {
+    public readonly instance: AxiosInstance;
+    public _token: string;
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                axios[method](url, JSON.parse(config), JSON.parse(data))
-                    .then((res) => {
-                        setResponse(res.data);
-                    })
-                    .catch((e) => {
-                        setError(e);
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
-            } catch (err) {
-                setError(err);
+    public constructor(baseURL: string) {
+        this.instance = axios.create({
+            baseURL,
+        });
+        this._token = store.getState().auth.token;
+        this._initializeResponseInterceptor();
+        this._initializeRequestInterceptor();
+    }
+
+    public _initializeResponseInterceptor = () => {
+        this.instance.interceptors.response.use(
+            this._handleResponse,
+            this._handleError
+        );
+    };
+    public _initializeRequestInterceptor = () => {
+        this.instance.interceptors.request.use((config) => {
+            if (config.method === "get") {
+                config.params = {
+                    Token: this._token,
+                    ...config.params,
+                };
             }
-        };
-        fetchData();
-    }, [method, url, data, config]);
-    return { response, error, isLoading };
+            return config;
+        });
+    };
+
+    public _handleResponse = async (response: AxiosResponse) => {
+        // if (response.data.ErrorCode === 118) {
+        //     return this._handleError(response);
+        // }
+        if (response.data.ErrorCode === 118) {
+            store.dispatch(refreshToken());
+        }
+        return response.data;
+    };
+    public _handleError = async (error: any) => {
+        // if (error.config && error.data && error.data.ErrorCode === 118) {
+        //     REFRESH_TOKEN().then((data: any) => {
+        //         if (data.ErrorCode === 0) {
+        //             store.dispatch(authenticated(data.Token));
+        //             return this.instance.request(error.config);
+        //         } else if (data.ErrorCode === 105) {
+        //             const key = "updatable";
+        //             message
+        //                 .loading({ content: EXPIRE_TIME, key })
+        //                 .then(() => store.dispatch(signOut()));
+        //         }
+        //     });
+        // }
+        store.dispatch(hideLoading());
+        return Promise.reject(error);
+    };
+}
+export class AuthApi extends HttpClient {
+    public constructor() {
+        super(`${API_AUTH_URL}`);
+    }
+
+    public Login = async (data) =>
+        this.instance.post("/AuthorizeUser", {
+            ...data,
+            info: (await publicIp.v4()) || ("" as string),
+        });
+
+    public RefreshToken = () => this.instance.get("/RefreshToken");
+
+    public SendActivationCode = () => this.instance.get("/SendActivationCode");
+
+    public ResetPassword = async (Email) =>
+        this.instance.post("/ResetPassword", {
+            Email,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public RegisterUser = (data) => this.instance.post("/RegisterUser", data);
+
+    public GetManagedToken = (CompanyID) =>
+        this.instance.get("/GetManagedToken", {
+            params: { CompanyID },
+        });
+
+    public ChangePassword = (data) =>
+        this.instance.post("/ChangePassword", data);
+
+    public ActivateUser = (params) =>
+        this.instance.get("/ActivateUser", {
+            params,
+        });
+}
+
+export class AdminApi extends HttpClient {
+    public constructor() {
+        super(`${API_APP_URL}`);
+    }
+
+    public GetAllUsers = () => this.instance.get("/GetAllUsersInfo");
+
+    public GetCompanyList = () => this.instance.get("/GetCompanyList");
+
+    public GetBasicCompanyList = () =>
+        this.instance.get("/GetBasicCompaniesList");
+
+    public ChangeCompanyStatus = (ID, Status) =>
+        this.instance.get("/ChangeCompanyStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+
+    public ChangeUserStatus = (ID, Status) =>
+        this.instance.get("/ChangeUserStatus", {
+            params: {
+                ID,
+                Status,
+            },
+        });
+    public UpdateUser = async (data) => this.instance.post("/UpdateUser", data);
+
+    public RegisterClientCompany = async (data) =>
+        this.instance.post("/RegisterClientCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public UpdateCompany = async (data) =>
+        this.instance.post("/UpdateCompany", {
+            ...data,
+            Token: this._token,
+            info: (await publicIp.v4()) || "",
+        });
+
+    public GetProfileInfo = () => this.instance.get("/GetProfileInfo");
+
+    public GetCompanyInfo = () => this.instance.get("/GetCompanyInfo");
+
+    public GetMarketAppList = () => this.instance.get("/GetMarketAppList");
+
+    public UpdateMarketApp = (App) =>
+        this.instance.post("/UpdateMarketApp", {
+            App,
+            Token: this._token,
+        });
+
+    public CreateMarketAppPackage = (data, MarketAppID) =>
+        this.instance.post("/CreateMarketAppPackage", {
+            AppPackage: {
+                ...data,
+            },
+            MarketAppID,
+            Token: this._token,
+        });
+
+    public UpdateMarketAppPackage = (AppPackage) =>
+        this.instance.post("/UpdateMarketAppPackage", {
+            AppPackage,
+            Token: this._token,
+        });
+
+    public DeleteMarketAppPackage = (ID) =>
+        this.instance.post("/DeleteMarketAppPackage", {
+            ID,
+        });
+
+    public ChangeMarketAppStatus = (ID, Status) =>
+        this.instance.get("/ChangeMarketAppStatus", {
+            params: { ID, Status },
+        });
 }

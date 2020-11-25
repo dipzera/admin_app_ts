@@ -31,17 +31,13 @@ import UserView from "./UserView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import {
-    API_IS_APP_SERVICE,
-    API_IS_AUTH_SERVICE,
-} from "../../../../constants/ApiConstant";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { connect } from "react-redux";
 import { refreshToken, signOut } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import { useApiRequest } from "../../../../api";
+import { AdminApi } from "../../../../api";
 import Utils from "../../../../utils";
 import {
     ACTIVATION_MSG_CONTENT,
@@ -49,12 +45,15 @@ import {
     DONE,
     EMAIL_CONFIRM_MSG,
     EXPIRE_TIME,
+    INTERNAL_ERROR,
     LOADING,
 } from "../../../../constants/Messages";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import { SortOrder } from "antd/es/table/interface";
+import { IUsers, ServerData } from "../../../../types";
+import { API_APP_URL } from "../../../../configs/AppConfig";
 
 enum status {
     inactive = 0,
@@ -117,31 +116,16 @@ export class UserList extends Component<ReduxStoreProps> {
     };
 
     getUsersInfo = () => {
-        this.setState({ loading: true });
-        return axios
-            .get(`${API_IS_APP_SERVICE}/GetAllUsersInfo`, {
-                params: {
-                    Token: this.props.token,
-                },
-            })
-            .then((res) => {
-                this.setState({ loading: false });
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    const filteredUsers = res.data.Users.filter(
-                        (user) => user.ID !== this.props.ID
-                    );
-                    this.setState({ usersToSearch: [...filteredUsers] });
-                    this.setState({ users: [...filteredUsers] });
-                } else {
-                    this.props.refreshToken(this.props.token);
-                }
-            })
-            .catch((error) => {
-                this.setState({ loading: false });
-                const key = "updatable";
-                message.error({ content: error.toString(), key });
-            });
+        return new AdminApi().GetAllUsers().then((data: any) => {
+            const { ErrorCode } = data;
+            if (ErrorCode === 0) {
+                const filteredUsers = data.Users.filter(
+                    (user) => user.ID !== this.props.ID
+                );
+                this.setState({ usersToSearch: [...filteredUsers] });
+                this.setState({ users: [...filteredUsers] });
+            }
+        });
     };
 
     componentDidMount() {
@@ -228,26 +212,7 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
     handleUserStatus = (userId: number, status: number) => {
-        axios
-            .get(`${API_IS_APP_SERVICE}/ChangeUserStatus`, {
-                params: {
-                    Token: this.props.token,
-                    ID: userId,
-                    Status: status,
-                },
-            })
-            .then((res) => {
-                console.log(res.data);
-                if (res.data.ErrorCode === 0) {
-                    // this.getUsersInfo();
-                } else if (res.data.ErrorCode === 118) {
-                    this.props.refreshToken(this.props.token);
-                }
-            })
-            .catch((error) => {
-                const key = "updatable";
-                message.error({ content: error.toString(), key });
-            });
+        return new AdminApi().ChangeUserStatus(userId, status);
     };
 
     dropdownMenu = (row) => (
@@ -360,6 +325,11 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
+            },
+            {
+                title: "Company",
+                dataIndex: "Company",
+                render: (Company) => <span>{Company}</span>,
             },
             {
                 title: "Role",
@@ -521,8 +491,6 @@ export class UserList extends Component<ReduxStoreProps> {
                     }}
                 />
                 <UserModalAdd
-                    signOut={signOut}
-                    onCreate={this.showNewUserModal}
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
                     token={this.props.token}

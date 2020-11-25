@@ -1,13 +1,10 @@
-import { Button, Empty, Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
 import Flex from "../../../../components/shared-components/Flex";
 import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
-import Axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../../constants/ApiConstant";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
-import utils from "../../../../utils";
 
 const textarea = [
     {
@@ -26,7 +23,6 @@ const textarea = [
 const TermsOfUse = ({ app }) => {
     const [edit, setEdit] = useState(false);
     const [terms, setTerms] = useState<any>();
-    const Token = useSelector((state) => state["auth"].token);
     const locale = useSelector((state) => state["theme"].locale);
     const dispatch = useDispatch();
     useEffect(() => {
@@ -56,13 +52,15 @@ const TermsOfUse = ({ app }) => {
             TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
         };
         console.log(App);
-        dispatch(updateMarketApp(App, Token));
+        dispatch(updateMarketApp(App));
         setEdit(false);
     };
     return (
         <>
             <Flex justifyContent="between" alignItems="center" className="py-2">
-                <h2 className="mb-4">Terms of use</h2>
+                <h2 className="mb-4" style={{ visibility: "hidden" }}>
+                    Terms of use
+                </h2>
                 <div>
                     <Tooltip title="Edit">
                         <Button

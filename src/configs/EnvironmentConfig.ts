@@ -2,18 +2,21 @@ const dev = {
     API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
     API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
     CLIENT_URL: "http://localhost:3001/clientportal",
+    SUBDIR_PATH: "/adminportal",
 };
 
 const prod = {
-    /* TODO: complete this when prod ready */
-    API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
-    API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
-    CLIENT_URL: "http://efactura.md/clientportal",
+    API_APP_URL: "https://api.edi.md/ISAdminWebAppService/json",
+    API_AUTH_URL: "https://api.edi.md/ISAuthService/json",
+    CLIENT_URL: "https://eservicii.md/clientportal",
+    SUBDIR_PATH: "/adminportal",
 };
 
 const test = {
-    API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
-    API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
+    API_APP_URL: "https://api.edi.md/ISAdminWebAppServiceTest/json",
+    API_AUTH_URL: "https://api.edi.md/ISAuthServiceTest/json",
+    CLIENT_URL: "https://eservicii.md/testclientportal",
+    SUBDIR_PATH: "/testadminportal",
 };
 
 const getEnv = (): any => {

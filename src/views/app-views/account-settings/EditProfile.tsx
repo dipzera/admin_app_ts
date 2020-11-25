@@ -1,26 +1,14 @@
 import React, { Component } from "react";
-import {
-    Form,
-    Avatar,
-    Button,
-    Input,
-    DatePicker,
-    Row,
-    Col,
-    message,
-    Upload,
-} from "antd";
+import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
-import { updateSettings, setProfileInfo } from "../../../redux/actions/Account";
+import { setProfileInfo } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
 import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
-import axios from "axios";
-import store from "../../../redux/store";
-const publicIp = require("react-public-ip");
+import { ERROR, UPLOADED, UPLOADING } from "../../../constants/Messages";
 
 interface EditProfileProps {
     CompanyID: number;
@@ -36,7 +24,6 @@ interface EditProfileProps {
     locale: string;
     account: {};
     token: string;
-    updateSettings: any;
     setProfileInfo: any;
 }
 
@@ -55,11 +42,6 @@ function beforeUpload(file) {
 class EditProfile extends Component<EditProfileProps> {
     avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
 
-    // state = {
-    // 	avatarUrl: store.getState().account.avatar,
-    // 	name: store.getState().account.name,
-    // 	email: store.getState().account.email, // 	userName: store.getState().account.userName,
-    // 	dateOfBirth: null, // 	phoneNumber: store.getState().account.phoneNumber, // 	website: '', // 	address: '', // 	city: '', // 	postcode: '' // }
     getBase64(img, callback) {
         const reader = new FileReader();
         reader.addEventListener("load", () => callback(reader.result));
@@ -78,7 +60,6 @@ class EditProfile extends Component<EditProfileProps> {
             PhoneNumber,
             Photo,
             locale,
-            updateSettings,
             setProfileInfo,
             token: Token,
         } = this.props;
@@ -99,17 +80,13 @@ class EditProfile extends Component<EditProfileProps> {
                 key,
             });
             setTimeout(async () => {
-                // console.log({ Token: token, User: { ...account, ...values } });
-                setProfileInfo(
-                    {
-                        Token,
-                        User: {
-                            ...account,
-                            ...values,
-                        },
+                setProfileInfo({
+                    Token,
+                    User: {
+                        ...account,
+                        ...values,
                     },
-                    Token
-                );
+                });
                 message.success({
                     content: (
                         <IntlProvider
@@ -133,16 +110,7 @@ class EditProfile extends Component<EditProfileProps> {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({
-                    content: (
-                        <IntlProvider
-                            locale={currentAppLocale.locale}
-                            messages={currentAppLocale.messages}
-                        >
-                            <IntlMessage
-                                id={"message.AccountSettings.Uploading"}
-                            />
-                        </IntlProvider>
-                    ),
+                    content: UPLOADING,
                     key,
                     duration: 2,
                 });
@@ -150,38 +118,19 @@ class EditProfile extends Component<EditProfileProps> {
             }
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, (imageUrl) => {
-                    setProfileInfo(
-                        {
-                            Token,
-                            User: { ...account, Photo: imageUrl },
-                        },
-                        Token
-                    );
+                    setProfileInfo({
+                        Token,
+                        User: { ...account, Photo: imageUrl },
+                    });
                 });
                 message.success({
-                    content: (
-                        <IntlProvider
-                            locale={currentAppLocale.locale}
-                            messages={currentAppLocale.messages}
-                        >
-                            <IntlMessage
-                                id={"message.AccountSettings.Uploaded"}
-                            />
-                        </IntlProvider>
-                    ),
+                    content: UPLOADED,
                     key,
                     duration: 2,
                 });
             } else {
                 message.error({
-                    content: (
-                        <IntlProvider
-                            locale={currentAppLocale.locale}
-                            messages={currentAppLocale.messages}
-                        >
-                            <IntlMessage id={"message.AccountSettings.Error"} />
-                        </IntlProvider>
-                    ),
+                    content: ERROR,
                     key,
                     duration: 2.5,
                 });
@@ -189,13 +138,10 @@ class EditProfile extends Component<EditProfileProps> {
         };
 
         const onRemoveAvater = () => {
-            setProfileInfo(
-                {
-                    Token,
-                    User: { ...account, Photo: "" },
-                },
-                Token
-            );
+            setProfileInfo({
+                Token,
+                User: { ...account, Photo: "" },
+            });
         };
 
         return (
@@ -353,7 +299,6 @@ class EditProfile extends Component<EditProfileProps> {
 }
 
 const mapDispatchToProps = {
-    updateSettings,
     setProfileInfo,
 };
 

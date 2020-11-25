@@ -1,38 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    Col,
-    Form,
-    Input,
-    message,
-    Modal,
-    Row,
-    Switch,
-    DatePicker,
-    Slider,
-} from "antd";
-import axios from "axios";
-import { API_IS_APP_SERVICE } from "../../../constants/ApiConstant";
-import Utils from "../../../utils";
-import { DONE, EXPIRE_TIME, LOADING } from "../../../constants/Messages";
+import { Col, Form, Input, Modal, Row, Switch, DatePicker, Slider } from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import {
-    createMarketAppPackage,
-    getMarketApps,
-} from "../../../redux/actions/Applications";
+import { createMarketAppPackage } from "../../../redux/actions/Applications";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
     close: () => any;
-    signOut: () => any;
 }
-const AddPackageForm = ({
-    appID,
-    visible,
-    close,
-    signOut,
-}: IAddPackageForm) => {
+const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
     const [form] = Form.useForm();
 
     /*  Destroy initialValues of form after Modal is closed */
@@ -41,8 +18,7 @@ const AddPackageForm = ({
         form.resetFields();
     }, [visible, form]);
 
-    const Token = useSelector((state) => state["auth"].token);
-    const loading = useSelector(state => state["auth"].loading)
+    const loading = useSelector((state) => state["auth"].loading);
     const dispatch = useDispatch();
     const onFinish = (values) => {
         const Status = values.Status ? 1 : 0;
@@ -51,18 +27,6 @@ const AddPackageForm = ({
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete values.ValidDate;
         delete values.Range;
-        console.log({
-            AppPackage: {
-                ...values,
-                ValidFrom,
-                ValidTo,
-                MinValue: Range[0],
-                MaxValue: Range[1],
-                Status,
-            },
-            MarketAppID: appID,
-            Token,
-        });
         dispatch(
             createMarketAppPackage(
                 {
@@ -73,13 +37,10 @@ const AddPackageForm = ({
                     MaxValue: Range[1],
                     Status,
                 },
-                appID,
-                Token
+                appID
             )
         );
     };
-
-    const onFinishFailed = () => {};
 
     const onOk = () => {
         form.validateFields()
