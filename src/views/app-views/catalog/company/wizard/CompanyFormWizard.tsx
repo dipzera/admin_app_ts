@@ -180,18 +180,19 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                                     message:
                                                         "Please input your BIC!",
                                                 },
-                                                {
-                                                    pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
-                                                    message:
-                                                        "Invalid BIC format",
-                                                },
+                                                // {
+                                                //     pattern: /[A-Z]{4}-[A-Z]{2}-[0-9]{5}/,
+                                                //     message:
+                                                //         "Invalid BIC format",
+                                                // },
                                             ]}
                                         >
-                                            <MaskedInput
+                                            {/* <MaskedInput
                                                 mask="AAAA-AA-11111"
                                                 name="BIC"
                                                 onChange={onChangeMask}
-                                            />
+                                            /> */}
+                                            <Input />
                                         </Form.Item>
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>
