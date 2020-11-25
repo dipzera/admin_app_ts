@@ -16,9 +16,9 @@ const LastWizardStep = () => {
         return Axios.post(`${API_APP_URL}/RegisterClientCompany`, {
             ...context.wizardData.CompanyData,
         }).then((response) => {
-            if (response.data.ErrorCode === 118) {
-                dispatch(refreshToken());
-            }
+            // if (response.data.ErrorCode === 118) {
+            //     dispatch(refreshToken());
+            // }
             console.log({ ...context.wizardData.CompanyData });
             console.log(response.data);
             return response.data;

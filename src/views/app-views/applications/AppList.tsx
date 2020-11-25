@@ -8,9 +8,9 @@ import {
 import Flex from "../../../components/shared-components/Flex";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { getMarketApps } from "../../../redux/actions/Applications";
-import { signOut } from "../../../redux/actions/Auth";
+import { hideLoading, signOut } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
 
 const GridItem = ({ data }) => {
@@ -69,8 +69,10 @@ const GridItem = ({ data }) => {
 };
 
 const AppList = ({ getMarketApps, token: Token, loading, apps }) => {
+    const dispatch = useDispatch();
     useEffect(() => {
         getMarketApps(Token);
+        dispatch(hideLoading());
     }, []);
 
     return (

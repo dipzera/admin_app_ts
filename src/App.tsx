@@ -4,7 +4,9 @@ import Views from "./views/index";
 import { Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./redux/store";
-import { SUBDIR_PATH } from "./configs/AppConfig";
+import { API_APP_URL, SUBDIR_PATH } from "./configs/AppConfig";
+import { useEffect } from "react";
+import Axios, { AxiosResponse } from "axios";
 
 const App: React.FC = () => {
     return (

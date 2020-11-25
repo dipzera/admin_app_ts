@@ -1,13 +1,26 @@
 import { message } from "antd";
+import Axios from "axios";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
-import { EMAIL_CONFIRM_MSG, INTERNAL_ERROR } from "../constants/Messages";
-import { hideLoading, refreshToken } from "../redux/actions/Auth";
+import {
+    EMAIL_CONFIRM_MSG,
+    EXPIRE_TIME,
+    INTERNAL_ERROR,
+} from "../constants/Messages";
+import {
+    authenticated,
+    hideLoading,
+    refreshToken,
+    signOut,
+} from "../redux/actions/Auth";
 import store from "../redux/store";
 const publicIp = require("react-public-ip");
 declare module "axios" {
-    interface AxiosResponse<T> extends Promise<T> {}
+    interface AxiosResponse<T = any> extends Promise<T> {}
 }
+const REFRESH_TOKEN = () => {
+    return new AuthApi().RefreshToken();
+};
 class HttpClient {
     public readonly instance: AxiosInstance;
     public _token: string;
@@ -39,16 +52,31 @@ class HttpClient {
         });
     };
 
-    public _handleResponse = ({ data }: AxiosResponse) => {
-        if (data.ErrorCode === 118) {
+    public _handleResponse = async (response: AxiosResponse) => {
+        // if (response.data.ErrorCode === 118) {
+        //     return this._handleError(response);
+        // }
+        if (response.data.ErrorCode === 118) {
             store.dispatch(refreshToken());
         }
-        return data;
+        return response.data;
     };
-    public _handleError = (error: any) => {
+    public _handleError = async (error: any) => {
+        // if (error.config && error.data && error.data.ErrorCode === 118) {
+        //     REFRESH_TOKEN().then((data: any) => {
+        //         if (data.ErrorCode === 0) {
+        //             store.dispatch(authenticated(data.Token));
+        //             return this.instance.request(error.config);
+        //         } else if (data.ErrorCode === 105) {
+        //             const key = "updatable";
+        //             message
+        //                 .loading({ content: EXPIRE_TIME, key })
+        //                 .then(() => store.dispatch(signOut()));
+        //         }
+        //     });
+        // }
         store.dispatch(hideLoading());
-        const key = "updatable";
-        message.error({ content: error.toString(), key });
+        return Promise.reject(error);
     };
 }
 export class AuthApi extends HttpClient {
