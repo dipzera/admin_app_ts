@@ -122,8 +122,14 @@ export class UserList extends Component<ReduxStoreProps> {
                 const filteredUsers = data.Users.filter(
                     (user) => user.ID !== this.props.ID
                 );
-                this.setState({ usersToSearch: [...filteredUsers] });
-                this.setState({ users: [...filteredUsers] });
+                this.setState((prev) => ({
+                    ...prev,
+                    usersToSearch: [...filteredUsers],
+                }));
+                this.setState((prev) => ({
+                    ...prev,
+                    users: [...filteredUsers],
+                }));
             }
         });
     };

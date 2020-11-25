@@ -68,10 +68,10 @@ const GridItem = ({ data }) => {
     );
 };
 
-const AppList = ({ getMarketApps, token: Token, loading, apps }) => {
+const AppList = ({ getMarketApps, loading, apps }) => {
     const dispatch = useDispatch();
     useEffect(() => {
-        getMarketApps(Token);
+        getMarketApps();
         dispatch(hideLoading());
     }, []);
 

@@ -15,12 +15,12 @@ export const UserModalAdd = ({
     const [companies, setCompanies] = useState<any>([]);
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
-        new AdminApi()
-            .GetBasicCompanyList()
-            .then(
-                (data: any) =>
-                    data.ErrorCode === 0 && setCompanies(data.CompanyList)
-            );
+        new AdminApi().GetBasicCompanyList().then((data: any) => {
+            const { CompanyList, ErrorCode } = data;
+            if (ErrorCode === 0) {
+                setCompanies((prev) => ({ ...prev, CompanyList }));
+            }
+        });
     }, []);
     const onSearch = (value) => {
         if (value.length > 1) {

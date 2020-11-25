@@ -1,5 +1,4 @@
 import { message } from "antd";
-import Axios from "axios";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import {
@@ -18,8 +17,10 @@ const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
 }
-const REFRESH_TOKEN = () => {
-    return new AuthApi().RefreshToken();
+const REFRESH_TOKEN = (Token) => {
+    return axios.get(`${API_AUTH_URL}/RefreshToken`, {
+        params: { Token },
+    });
 };
 class HttpClient {
     public readonly instance: AxiosInstance;
@@ -52,6 +53,9 @@ class HttpClient {
         });
     };
 
+    private _RefreshToken = () =>
+        this.instance.get(`${API_AUTH_URL}/RefreshToken`);
+
     public _handleResponse = async (response: AxiosResponse) => {
         if (response.data.ErrorCode === 118) {
             return this._handleError(response);
@@ -60,11 +64,15 @@ class HttpClient {
     };
     public _handleError = async (error: any) => {
         if (error.config && error.data && error.data.ErrorCode === 118) {
-            REFRESH_TOKEN().then(async (data: any) => {
-                if (data.ErrorCode === 0) {
-                    await store.dispatch(authenticated(data.Token));
-                    return await axios.request(error.config);
-                } else if (data.ErrorCode === 105) {
+            return this._RefreshToken().then(async (data: any) => {
+                const { ErrorCode, Token } = data;
+                if (ErrorCode === 0) {
+                    store.dispatch(authenticated(Token));
+                    error.config.params = { Token };
+                    return axios
+                        .request(error.config)
+                        .then((response) => response.data);
+                } else if (ErrorCode === 105) {
                     const key = "updatable";
                     message
                         .loading({ content: EXPIRE_TIME, key })
