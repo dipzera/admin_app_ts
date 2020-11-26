@@ -16,11 +16,6 @@ const LastWizardStep = () => {
         return Axios.post(`${API_APP_URL}/RegisterClientCompany`, {
             ...context.wizardData.CompanyData,
         }).then((response) => {
-            // if (response.data.ErrorCode === 118) {
-            //     dispatch(refreshToken());
-            // }
-            console.log({ ...context.wizardData.CompanyData });
-            console.log(response.data);
             return response.data;
         });
     };
@@ -31,16 +26,6 @@ const LastWizardStep = () => {
             CompanyID,
             UiLanguage: 0,
         }).then((response) => {
-            if (response.data.ErrorCode === 118) {
-                dispatch(refreshToken());
-            }
-            console.log({
-                ...context.wizardData.UserData,
-                Token,
-                CompanyID: context.companyID,
-                UiLanguage: 0,
-            });
-            console.log(response.data);
             return response.data;
         });
     };
@@ -71,7 +56,6 @@ const LastWizardStep = () => {
                         }
                     }) /* Maybe place an if statement below */
                     .then((CompanyID) => {
-                        console.log({ companyID: context.companyID });
                         message
                             .loading("Proceeding to send user data...", 1.5)
                             .then(async () => {
@@ -97,7 +81,6 @@ const LastWizardStep = () => {
                     });
             }
         });
-        console.log(context);
     }, []);
     return <div>This is last wizard step, congratulations</div>;
 };

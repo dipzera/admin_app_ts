@@ -15,8 +15,6 @@ export const updateSettings = (payload) => ({
 export const getProfileInfo = () => {
     return async (dispatch) => {
         return new AdminApi().GetProfileInfo().then((data: any) => {
-            console.log(data);
-
             const { ErrorCode, ErrroMessage, User } = data;
             if (ErrorCode === 0) {
                 dispatch(updateSettings(data.User));
@@ -32,11 +30,13 @@ export const getProfileInfo = () => {
     };
 };
 export const setProfileInfo = (accountInfo) => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         return new AdminApi().UpdateUser(accountInfo).then((data: any) => {
-            const Token = getState().auth.token;
             if (data.ErrorCode === 0) {
                 dispatch(getProfileInfo());
+                message.success({ content: DONE, key: "updatable" });
+            } else {
+                message.error({ content: data.ErrorMessage, key: "updatable" });
             }
         });
     };

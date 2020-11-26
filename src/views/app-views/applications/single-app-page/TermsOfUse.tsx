@@ -51,7 +51,6 @@ const TermsOfUse = ({ app }) => {
             Photo,
             TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
         };
-        console.log(App);
         dispatch(updateMarketApp(App));
         setEdit(false);
     };

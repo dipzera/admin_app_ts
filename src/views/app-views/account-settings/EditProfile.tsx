@@ -40,8 +40,6 @@ function beforeUpload(file) {
 }
 
 class EditProfile extends Component<EditProfileProps> {
-    avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
-
     getBase64(img, callback) {
         const reader = new FileReader();
         reader.addEventListener("load", () => callback(reader.result));
@@ -81,23 +79,10 @@ class EditProfile extends Component<EditProfileProps> {
             });
             setTimeout(async () => {
                 setProfileInfo({
-                    Token,
                     User: {
                         ...account,
                         ...values,
                     },
-                });
-                message.success({
-                    content: (
-                        <IntlProvider
-                            locale={currentAppLocale.locale}
-                            messages={currentAppLocale.messages}
-                        >
-                            <IntlMessage id={"message.AccountSettings.Done"} />
-                        </IntlProvider>
-                    ),
-                    key,
-                    duration: 2,
                 });
             }, 1000);
         };
@@ -117,16 +102,10 @@ class EditProfile extends Component<EditProfileProps> {
                 return;
             }
             if (info.file.status === "done") {
-                this.getBase64(info.file.originFileObj, (imageUrl) => {
-                    setProfileInfo({
-                        Token,
+                this.getBase64(info.file.originFileObj, async (imageUrl) => {
+                    await setProfileInfo({
                         User: { ...account, Photo: imageUrl },
                     });
-                });
-                message.success({
-                    content: UPLOADED,
-                    key,
-                    duration: 2,
                 });
             } else {
                 message.error({
@@ -139,9 +118,13 @@ class EditProfile extends Component<EditProfileProps> {
 
         const onRemoveAvater = () => {
             setProfileInfo({
-                Token,
                 User: { ...account, Photo: "" },
             });
+        };
+        const dummyRequest = ({ file, onSuccess }) => {
+            setTimeout(() => {
+                onSuccess("ok");
+            }, 0);
         };
 
         return (
@@ -154,10 +137,10 @@ class EditProfile extends Component<EditProfileProps> {
                     <Avatar size={90} src={Photo} icon={<UserOutlined />} />
                     <div className="ml-md-3 mt-md-0 mt-3">
                         <Upload
+                            customRequest={dummyRequest}
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            action={this.avatarEndpoint}
-                            beforeUpload={beforeUpload}
+                            beforeUpload={(info) => beforeUpload(info)}
                         >
                             <Button type="primary">
                                 <IntlMessage
@@ -253,16 +236,6 @@ class EditProfile extends Component<EditProfileProps> {
                                             <Input />
                                         </Form.Item>
                                     </Col>
-                                    {/* <Col xs={24} sm={24} md={12}>
-                    <Form.Item
-                      label={
-                        <IntlMessage id={"account.EditProfile.DateOfBirth"} />
-                      }
-                      name="dateOfBirth"
-                    >
-                      <DatePicker className="w-100" />
-                    </Form.Item>
-                  </Col> */}
                                     <Col xs={24} sm={24} md={12}>
                                         <Form.Item
                                             label={

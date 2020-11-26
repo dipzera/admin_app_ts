@@ -43,6 +43,7 @@ class HttpClient {
     };
     public _initializeRequestInterceptor = () => {
         this.instance.interceptors.request.use((config) => {
+            console.log(config);
             if (config.method === "get") {
                 config.params = {
                     Token: this._token,
@@ -57,6 +58,7 @@ class HttpClient {
         this.instance.get(`${API_AUTH_URL}/RefreshToken`);
 
     public _handleResponse = async (response: AxiosResponse) => {
+        console.log(response);
         if (response.data.ErrorCode === 118) {
             return this._handleError(response);
         }
@@ -68,7 +70,19 @@ class HttpClient {
                 const { ErrorCode, Token } = data;
                 if (ErrorCode === 0) {
                     store.dispatch(authenticated(Token));
-                    error.config.params = { Token };
+                    if (error.config.method === "get") {
+                        error.config.params = {
+                            Token,
+                            ...JSON.parse(error.config.params),
+                        };
+                    }
+                    if (error.config.method === "post") {
+                        error.config.data = {
+                            ...JSON.parse(error.config.data),
+                            Token,
+                        };
+                    }
+                    /* If it's a post request this doesn't seem to work correctly. */
                     return axios
                         .request(error.config)
                         .then((response) => response.data);
@@ -97,7 +111,10 @@ export class AuthApi extends HttpClient {
 
     public RefreshToken = () => this.instance.get("/RefreshToken");
 
-    public SendActivationCode = () => this.instance.get("/SendActivationCode");
+    public SendActivationCode = (UserID?: number) =>
+        this.instance.get("/SendActivationCode", {
+            params: { UserID },
+        });
 
     public ResetPassword = async (Email) =>
         this.instance.post("/ResetPassword", {
@@ -117,7 +134,7 @@ export class AuthApi extends HttpClient {
 
     public ActivateUser = (params) =>
         this.instance.get("/ActivateUser", {
-            params,
+            params /* Param is a token took from the browser url */,
         });
 }
 
@@ -148,7 +165,12 @@ export class AdminApi extends HttpClient {
                 Status,
             },
         });
-    public UpdateUser = async (data) => this.instance.post("/UpdateUser", data);
+    public UpdateUser = async (data) =>
+        this.instance.post("/UpdateUser", {
+            ...data,
+            Token: this._token,
+            info: await publicIp.v4(),
+        });
 
     public RegisterClientCompany = async (data) =>
         this.instance.post("/RegisterClientCompany", {

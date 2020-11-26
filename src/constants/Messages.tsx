@@ -2,8 +2,9 @@ export const ACTIVATION_MSG_TITLE = "User registration confirmation";
 export const ACTIVATION_MSG_CONTENT =
     "Press OK if you want us to send a new activation message";
 export const EXPIRE_TIME = "Time has expired! Redirecting you to login page...";
-export const EMAIL_CONFIRM_MSG =
+export const EMAIL_CONFIRM_MSG_2 =
     "Please confirm the registration by clicking on the link we've sent to your email!";
+export const EMAIL_CONFIRM_MSG = "Confirmation message was send to the email!";
 export const ACTIVATE_ACCOUNT =
     "Your account is not activated. Press the OK button down below if you want us to send you a new confirmation message.";
 export const DELETE_PACKAGE_MSG = (ID) =>

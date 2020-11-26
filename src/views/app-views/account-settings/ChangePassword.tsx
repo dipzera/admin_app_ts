@@ -22,13 +22,6 @@ export class ChangePassword extends Component<IChangePassword> {
     };
 
     onFinish = ({ currentPassword, newPassword }) => {
-        console.log({
-            NewPassword: Utils.encryptInput(newPassword, API_PUBLIC_KEY),
-            OldPassword: Utils.encryptInput(currentPassword, API_PUBLIC_KEY),
-            Token: this.props["token"],
-        });
-        const refreshToken = this.props.refreshToken;
-        const currentAppLocale = AppLocale[this.props["locale"]];
         this.setState({ loading: true });
         setTimeout(() => {
             this.setState({ loading: false });

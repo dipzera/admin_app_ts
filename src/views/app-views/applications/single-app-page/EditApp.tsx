@@ -8,7 +8,6 @@ import { updateMarketApp } from "../../../../redux/actions/Applications";
 import TextEditor from "./TextEditor";
 
 const EditApp = ({ app }) => {
-    useEffect(() => console.log(app), []);
     const [form] = Form.useForm();
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();

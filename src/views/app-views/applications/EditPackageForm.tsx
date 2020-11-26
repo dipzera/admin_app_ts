@@ -37,18 +37,6 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
             ...values,
             Status,
         };
-        console.log({
-            AppPackage: {
-                ...packages,
-                ValidFrom,
-                ValidTo,
-                MinValue: Range[0],
-                MaxValue: Range[1],
-                ...values,
-                Status,
-            },
-            Token,
-        });
         dispatch(updateMarketAppPackage(AppPackage));
     };
 

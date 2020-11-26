@@ -1,15 +1,5 @@
 import React, { Component } from "react";
-import {
-    Card,
-    Table,
-    Tag,
-    Tooltip,
-    message,
-    Button,
-    Modal,
-    Input,
-    Menu,
-} from "antd";
+import { Card, Table, Tag, Tooltip, Button, Modal, Input, Menu } from "antd";
 import {
     EyeOutlined,
     SearchOutlined,
@@ -18,42 +8,26 @@ import {
     PlusCircleOutlined,
     DeleteOutlined,
     EditOutlined,
-    KeyOutlined,
-    UserAddOutlined,
-    CheckOutlined,
-    PlusOutlined,
     UserOutlined,
-    FrownOutlined,
-    LoadingOutlined,
+    ArrowRightOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
 import UserView from "./UserView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
-import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import axios, { AxiosResponse } from "axios";
 import { connect } from "react-redux";
-import { refreshToken, signOut } from "../../../../redux/actions/Auth";
+import {
+    refreshToken,
+    signOut,
+    sendActivationCode,
+} from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { ColumnsType } from "antd/lib/table";
 import { AdminApi } from "../../../../api";
-import Utils from "../../../../utils";
-import {
-    ACTIVATION_MSG_CONTENT,
-    ACTIVATION_MSG_TITLE,
-    DONE,
-    EMAIL_CONFIRM_MSG,
-    EXPIRE_TIME,
-    INTERNAL_ERROR,
-    LOADING,
-} from "../../../../constants/Messages";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import { SortOrder } from "antd/es/table/interface";
-import { IUsers, ServerData } from "../../../../types";
-import { API_APP_URL } from "../../../../configs/AppConfig";
 
 enum status {
     inactive = 0,
@@ -96,6 +70,7 @@ interface ReduxStoreProps {
     signOut: any;
     refreshToken: any;
     loading: boolean;
+    sendActivationCode: any;
 }
 
 export class UserList extends Component<ReduxStoreProps> {
@@ -182,47 +157,67 @@ export class UserList extends Component<ReduxStoreProps> {
                 statusNumber === 0 ? "deactivate" : "activate"
             } ${row.length} ${row.length > 1 ? "users" : "user"}?`,
             onOk: async () => {
-                for (const elm of row) {
-                    await this.handleUserStatus(elm.ID, statusNumber);
-                }
+                await Promise.all(
+                    row.map(async (elm) => {
+                        await this.handleUserStatus(elm.ID, statusNumber);
+                    })
+                );
                 this.setState({ selectedRows: [], selectedKeys: [] });
                 await this.getUsersInfo();
             },
         });
     };
 
-    deleteRow = (row) => {
-        const objKey = "ID";
-        let data = this.state.users;
-        Modal.confirm({
-            title: `Are you sure you want to delete ${
-                this.state.selectedRows.length
-            } ${this.state.selectedRows.length > 1 ? "users" : "user"}?`,
-            onOk: () => {
-                if (this.state.selectedRows.length > 1) {
-                    this.state.selectedRows.forEach((elm) => {
-                        this.handleUserStatus(elm.ID, status.deleted);
-                        data = utils.deleteArrayRow(data, objKey, elm.ID);
-                        this.setState({ users: data });
-                        this.setState({ selectedRows: [] });
-                    });
-                } else {
-                    for (const elm of row) {
-                        data = utils.deleteArrayRow(data, objKey, elm.ID);
-                        this.setState({ selectedRows: [], selectedKeys: [] });
-                        this.setState({ users: data });
-                        this.handleUserStatus(elm.ID, status.deleted);
-                    }
-                }
-            },
-        });
-    };
+    // deleteRow = (row) => {
+    //     const objKey = "ID";
+    //     let data = this.state.users;
+    //     Modal.confirm({
+    //         title: `Are you sure you want to delete ${
+    //             this.state.selectedRows.length
+    //         } ${this.state.selectedRows.length > 1 ? "users" : "user"}?`,
+    //         onOk: () => {
+    //             if (this.state.selectedRows.length > 1) {
+    //                 this.state.selectedRows.forEach((elm) => {
+    //                     this.handleUserStatus(elm.ID, status.deleted);
+    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
+    //                     this.setState({ users: data });
+    //                     this.setState({ selectedRows: [] });
+    //                 });
+    //             } else {
+    //                 for (const elm of row) {
+    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
+    //                     this.setState({ selectedRows: [], selectedKeys: [] });
+    //                     this.setState({ users: data });
+    //                     this.handleUserStatus(elm.ID, status.deleted);
+    //                 }
+    //             }
+    //         },
+    //     });
+    // };
     handleUserStatus = (userId: number, status: number) => {
         return new AdminApi().ChangeUserStatus(userId, status);
     };
 
     dropdownMenu = (row) => (
         <Menu>
+            {row.Status === 0 && (
+                <Menu.Item
+                    onClick={() =>
+                        Modal.confirm({
+                            title: `Are you sure you want to send an email to ${row.FirstName} ?`,
+                            onOk: () => {
+                                this.props.sendActivationCode(row.ID);
+                            },
+                            onCancel: () => {},
+                        })
+                    }
+                >
+                    <Flex alignItems="center">
+                        <ArrowRightOutlined />
+                        <span className="ml-2">Send activation code</span>
+                    </Flex>
+                </Menu.Item>
+            )}
             <Menu.Item onClick={() => this.showUserProfile(row)}>
                 <Flex alignItems="center">
                     <EyeOutlined />
@@ -235,7 +230,7 @@ export class UserList extends Component<ReduxStoreProps> {
                     <span className="ml-2">Edit</span>
                 </Flex>
             </Menu.Item>
-            {row.Status === 0 ? (
+            {row.Status === 0 || row.Status === 2 ? (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
@@ -259,7 +254,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: `Are you sure you want to deactivate this user?`,
+                            title: `Are you sure you want to disable this user?`,
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
@@ -272,11 +267,11 @@ export class UserList extends Component<ReduxStoreProps> {
                 >
                     <Flex alignItems="center">
                         <CloseCircleOutlined />
-                        <span className="ml-2">Deactivate</span>
+                        <span className="ml-2">Disable</span>
                     </Flex>
                 </Menu.Item>
             )}
-            <Menu.Item
+            {/* <Menu.Item
                 onClick={async () => {
                     Modal.confirm({
                         title: `Are you sure you want to delete this user?`,
@@ -291,7 +286,7 @@ export class UserList extends Component<ReduxStoreProps> {
                     <DeleteOutlined />
                     <span className="ml-2">Delete</span>
                 </Flex>
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 
@@ -439,7 +434,7 @@ export class UserList extends Component<ReduxStoreProps> {
                                             ? `Deactivate (${this.state.selectedRows.length})`
                                             : "Deactivate"}
                                     </Button>
-                                    <Tooltip
+                                    {/* <Tooltip
                                         title={`${
                                             this.state.selectedRows.length > 1
                                                 ? `Delete (${this.state.selectedRows.length})`
@@ -457,7 +452,7 @@ export class UserList extends Component<ReduxStoreProps> {
                                         >
                                             <DeleteOutlined />
                                         </Button>
-                                    </Tooltip>
+                                    </Tooltip> */}
                                 </>
                             )}
                             <Button
@@ -522,6 +517,7 @@ export class UserList extends Component<ReduxStoreProps> {
 const mapDispatchToProps = {
     signOut,
     refreshToken,
+    sendActivationCode,
 };
 
 const mapStateToProps = ({ auth, theme, account }) => {

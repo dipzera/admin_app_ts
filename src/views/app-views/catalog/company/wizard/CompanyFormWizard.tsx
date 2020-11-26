@@ -57,10 +57,6 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
         reader.readAsDataURL(img);
     }
 
-    componentDidMount() {
-        console.log(this.context);
-    }
-
     render() {
         let { updateSettings, removeAvatar, locale, signOut } = this.props;
 

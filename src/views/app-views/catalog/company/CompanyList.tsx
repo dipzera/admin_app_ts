@@ -58,8 +58,8 @@ import { AdminApi, AuthApi } from "../../../../api";
 
 enum status {
     active = 1,
-    inactive = 0,
-    deleted = 2,
+    disabled = 2,
+    // deleted = 2,
 }
 
 interface CompanyStateProps {
@@ -120,7 +120,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
 
     getCompanyList = () => {
         return new AdminApi().GetCompanyList().then((data: any) => {
-            console.log(data);
             if (data.ErrorCode === 0) {
                 const filteredCompanies = data.CompanyList.filter(
                     (company) => company.ID !== this.props.CompanyID
@@ -184,12 +183,14 @@ export class CompanyList extends Component<ReduxStoreProps> {
     toggleStatusRow = async (row, statusNumber) => {
         Modal.confirm({
             title: `Are you sure you want to ${
-                statusNumber === 0 ? "deactivate" : "activate"
+                statusNumber === 0 ? "disable" : "activate"
             } ${row.length} ${row.length > 1 ? "companies" : "company"}?`,
             onOk: async () => {
-                for (const elm of row) {
-                    await this.handleUserStatus(elm.ID, statusNumber);
-                }
+                await Promise.all(
+                    row.map(async (elm) => {
+                        await this.handleUserStatus(elm.ID, statusNumber);
+                    })
+                );
                 this.setState({ selectedRows: [], selectedKeys: [] });
                 await this.getCompanyList();
             },
@@ -200,32 +201,33 @@ export class CompanyList extends Component<ReduxStoreProps> {
         return new AdminApi().ChangeCompanyStatus(userId, status);
     };
 
-    deleteRow = (row) => {
-        const objKey = "ID";
-        let data = this.state.users;
-        Modal.confirm({
-            title: `Are you sure you want to delete ${
-                this.state.selectedRows.length
-            } ${this.state.selectedRows.length > 1 ? "companies" : "company"}?`,
-            onOk: () => {
-                if (this.state.selectedRows.length > 1) {
-                    this.state.selectedRows.forEach((elm) => {
-                        this.handleUserStatus(elm.ID, status.deleted);
-                        data = utils.deleteArrayRow(data, objKey, elm.ID);
-                        this.setState({ users: data });
-                        this.setState({ selectedRows: [] });
-                    });
-                } else {
-                    for (const elm of row) {
-                        data = utils.deleteArrayRow(data, objKey, elm.ID);
-                        this.setState({ selectedRows: [], selectedKeys: [] });
-                        this.setState({ users: data });
-                        this.handleUserStatus(elm.ID, status.deleted);
-                    }
-                }
-            },
-        });
-    };
+    // deleteRow = (row) => {
+    //     const objKey = "ID";
+    //     debugger;
+    //     let data = this.state.users;
+    //     Modal.confirm({
+    //         title: `Are you sure you want to delete ${
+    //             this.state.selectedRows.length
+    //         } ${this.state.selectedRows.length > 1 ? "companies" : "company"}?`,
+    //         onOk: () => {
+    //             if (this.state.selectedRows.length > 1) {
+    //                 this.state.selectedRows.forEach((elm) => {
+    //                     this.handleUserStatus(elm.ID, status.disabled);
+    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
+    //                     this.setState({ users: data });
+    //                     this.setState({ selectedRows: [] });
+    //                 });
+    //             } else {
+    //                 for (const elm of row) {
+    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
+    //                     this.setState({ selectedRows: [], selectedKeys: [] });
+    //                     this.setState({ users: data });
+    //                     this.handleUserStatus(elm.ID, status.disabled);
+    //                 }
+    //             }
+    //         },
+    //     });
+    // };
 
     getManagedToken = (CompanyID) => {
         return new AuthApi().GetManagedToken(CompanyID).then((data: any) => {
@@ -258,7 +260,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     <span className="ml-2">Edit</span>
                 </Flex>
             </Menu.Item>
-            {row.Status === 0 ? (
+            {row.Status === 0 || row.Status === 2 ? (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
@@ -268,7 +270,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                     row.ID,
                                     status.active
                                 );
-                                this.getCompanyList();
+                                await this.getCompanyList();
                             },
                         });
                     }}
@@ -282,24 +284,24 @@ export class CompanyList extends Component<ReduxStoreProps> {
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: `Are you sure you want to deactivate this company?`,
+                            title: `Are you sure you want to disable this company?`,
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
-                                    status.inactive
+                                    status.disabled
                                 );
-                                this.getCompanyList();
+                                await this.getCompanyList();
                             },
                         });
                     }}
                 >
                     <Flex alignItems="center">
                         <CloseCircleOutlined />
-                        <span className="ml-2">Deactivate</span>
+                        <span className="ml-2">Disable</span>
                     </Flex>
                 </Menu.Item>
             )}
-            <Menu.Item
+            {/* <Menu.Item
                 onClick={async () => {
                     Modal.confirm({
                         title: `Are you sure you want to delete this company?`,
@@ -314,7 +316,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     <DeleteOutlined />
                     <span className="ml-2">Delete</span>
                 </Flex>
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
     onSearch = (e) => {
@@ -438,15 +440,15 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                         onClick={() =>
                                             this.toggleStatusRow(
                                                 this.state.selectedRows,
-                                                status.inactive
+                                                status.disabled
                                             )
                                         }
                                     >
                                         {this.state.selectedRows.length > 1
-                                            ? `Deactivate (${this.state.selectedRows.length})`
-                                            : "Deactivate"}
+                                            ? `Disable (${this.state.selectedRows.length})`
+                                            : "Disable"}
                                     </Button>
-                                    <Tooltip
+                                    {/* <Tooltip
                                         title={`${
                                             this.state.selectedRows.length > 1
                                                 ? `Delete (${this.state.selectedRows.length})`
@@ -464,7 +466,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                         >
                                             <DeleteOutlined />
                                         </Button>
-                                    </Tooltip>
+                                    </Tooltip> */}
                                 </>
                             )}
                             <Link to={`${APP_PREFIX_PATH}/wizard`}>

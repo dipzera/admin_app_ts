@@ -15,13 +15,15 @@ export const UserModalAdd = ({
     const [companies, setCompanies] = useState<any>([]);
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
-        new AdminApi().GetBasicCompanyList().then((data: any) => {
-            const { CompanyList, ErrorCode } = data;
-            if (ErrorCode === 0) {
-                setCompanies((prev) => ({ ...prev, CompanyList }));
-            }
-        });
-    }, []);
+        if (visible) {
+            new AdminApi().GetBasicCompanyList().then((data: any) => {
+                const { CompanyList, ErrorCode } = data;
+                if (ErrorCode === 0) {
+                    setCompanies(CompanyList);
+                }
+            });
+        }
+    }, [visible]);
     const onSearch = (value) => {
         if (value.length > 1) {
             setShowOptions(true);
@@ -34,7 +36,6 @@ export const UserModalAdd = ({
         new AuthApi()
             .RegisterUser({ ...values, Token, UiLanguage: 0 })
             .then((data: any) => {
-                console.log(data);
                 const { ErrorCode, ErrorMessage } = data;
                 if (ErrorCode === 0) getUsersInfo();
                 else message.error(ErrorMessage);

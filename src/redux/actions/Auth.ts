@@ -99,7 +99,6 @@ export const isUserActivated = (boolean, Token) => ({
 
 export const refreshToken = () => async (dispatch) => {
     return new AuthApi().RefreshToken().then(async (data: any) => {
-        console.log(data);
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
             await dispatch(authenticated(Token));
@@ -112,8 +111,8 @@ export const refreshToken = () => async (dispatch) => {
         }
     });
 };
-const sendActivationCode = () => async (dispatch) => {
-    return new AuthApi().SendActivationCode().then((data: any) => {
+export const sendActivationCode = (UserID?: number) => async (dispatch) => {
+    return new AuthApi().SendActivationCode(UserID).then((data: any) => {
         const { ErrorMessage, ErrorCode } = data;
         if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
         else dispatch(showAuthMessage(ErrorMessage));

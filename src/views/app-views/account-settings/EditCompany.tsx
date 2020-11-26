@@ -6,8 +6,6 @@ import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { updateSettings } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
-import AppLocale from "../../../lang";
-import axios from "axios";
 import MaskedInput from "antd-mask-input";
 import { refreshToken, signOut } from "../../../redux/actions/Auth";
 import {
@@ -17,9 +15,7 @@ import {
     UPLOADED,
     UPLOADING,
 } from "../../../constants/Messages";
-import { API_APP_URL } from "../../../configs/AppConfig";
 import { AdminApi } from "../../../api";
-const publicIp = require("react-public-ip");
 
 function beforeUpload(file) {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -34,8 +30,6 @@ function beforeUpload(file) {
 }
 
 class CompanyForm extends Component<{ [key: string]: any }> {
-    avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
-
     state = { Company: {} } as { [key: string]: any };
     formRef = React.createRef() as any;
 
@@ -56,7 +50,8 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             })
             .then(async (data) => {
                 if (data.ErrorCode === 0) {
-                    await this.getCompanyInfo();
+                    message.success({ content: DONE, key: "updatable" });
+                    return Promise;
                 } else {
                     message.error(data.ErrorMessage);
                 }
@@ -101,9 +96,12 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             if (info.file.status === "done") {
                 this.getBase64(info.file.originFileObj, async (imageUrl) => {
                     const imageToSend = { Logo: imageUrl };
-                    await this.updateCompany(imageToSend);
+                    await this.updateCompany(imageToSend).then(() => {
+                        this.setState({
+                            Company: { ...this.state.Company, ...imageToSend },
+                        });
+                    });
                 });
-                message.success({ content: UPLOADED, key });
             } else {
                 message.error({ content: ERROR, key });
             }
@@ -112,6 +110,12 @@ class CompanyForm extends Component<{ [key: string]: any }> {
         const onRemoveAvater = async () => {
             const imageToSend = { Logo: "" };
             await this.updateCompany(imageToSend);
+        };
+
+        const dummyRequest = ({ file, onSuccess }) => {
+            setTimeout(() => {
+                onSuccess("ok");
+            }, 0);
         };
 
         return (
@@ -128,10 +132,10 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     />
                     <div className="ml-md-3 mt-md-0 mt-3">
                         <Upload
+                            customRequest={dummyRequest}
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            action={this.avatarEndpoint}
-                            beforeUpload={beforeUpload}
+                            beforeUpload={(info) => beforeUpload(info)}
                         >
                             <Button type="primary">
                                 <IntlMessage
@@ -377,7 +381,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                             name="VATCode"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     message:
                                                         "Please input your VAT code!",
                                                 },
@@ -403,7 +407,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                                             name="Email"
                                             rules={[
                                                 {
-                                                    required: true,
+                                                    required: false,
                                                     type: "email",
                                                     message:
                                                         "Please enter a valid email!",
