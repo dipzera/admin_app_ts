@@ -28,6 +28,7 @@ import { AdminApi } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import "./table.scss";
 
 enum status {
     inactive = 0,
@@ -61,6 +62,7 @@ interface UserListStateProps {
     registerUserModalVisible: boolean;
     loading: boolean;
     usersChanged: boolean;
+    status: number | null;
 }
 interface ReduxStoreProps {
     token: string;
@@ -88,6 +90,7 @@ export class UserList extends Component<ReduxStoreProps> {
         registerUserModalVisible: false,
         loading: false,
         usersChanged: false,
+        status: null,
     };
 
     getUsersInfo = () => {
@@ -159,19 +162,25 @@ export class UserList extends Component<ReduxStoreProps> {
                     : "activate"
             } ${row.length} ${row.length > 1 ? "users" : "user"}?`,
             onOk: async () => {
-                debugger;
+                console.log(this.state.users);
+                console.log(row);
                 await Promise.all(
                     row.map(async (elm) => {
                         await this.handleUserStatus(elm.ID, statusNumber);
-                        const updatedUsers = row.map(
-                            (user) => (user.Status = statusNumber)
-                        );
-                        this.setState({
-                            users: this.state.users.concat(updatedUsers),
-                        });
                     })
                 );
+                this.getUsersInfo();
+                // let updatedUsers = row.map((user) => {
+                //     user.Status = statusNumber;
+                //     console.log(user);
+                //     return user;
+                // });
+                // this.setState((prevState: any) => ({
+                //     users: [...prevState.users, updatedUsers],
+                // }));
+
                 this.setState({ selectedRows: [], selectedKeys: [] });
+                setTimeout(() => console.log(this.state.users), 1500);
             },
         });
     };
@@ -247,20 +256,8 @@ export class UserList extends Component<ReduxStoreProps> {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.active
-                                );
-                                this.setState({
-                                    users: [
-                                        ...this.state.users,
-                                        this.state.users
-                                            .filter(
-                                                (user) => user.ID === row.ID
-                                            )
-                                            .map(
-                                                (user) =>
-                                                    (user.Status =
-                                                        status.active)
-                                            ),
-                                    ],
+                                ).then((data: any) => {
+                                    this.getUsersInfo();
                                 });
                             },
                         });
@@ -281,20 +278,7 @@ export class UserList extends Component<ReduxStoreProps> {
                                     row.ID,
                                     status.disabled
                                 );
-                                this.setState({
-                                    users: [
-                                        ...this.state.users,
-                                        this.state.users
-                                            .filter(
-                                                (user) => user.ID === row.ID
-                                            )
-                                            .map(
-                                                (user) =>
-                                                    (user.Status =
-                                                        status.disabled)
-                                            ),
-                                    ],
-                                });
+                                this.getUsersInfo();
                             },
                         });
                     }}
@@ -324,6 +308,11 @@ export class UserList extends Component<ReduxStoreProps> {
         </Menu>
     );
 
+    sortData = (arr) => {
+        console.log(arr.slice());
+        return arr.slice().sort((a: any, b: any) => a.dataIndex - b.dataIndex);
+    };
+
     render() {
         const {
             users,
@@ -340,7 +329,7 @@ export class UserList extends Component<ReduxStoreProps> {
             this.setState({ users: data });
         };
 
-        const tableColumns: ColumnsType<UsersProps> = [
+        let tableColumns: any = [
             {
                 title: "User",
                 dataIndex: "FirstName",
@@ -354,6 +343,8 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
+                sorter: (a, b) => a.ID - b.ID,
+                defaultSortOrder: "ascend",
             },
             {
                 title: "Company",
@@ -415,7 +406,11 @@ export class UserList extends Component<ReduxStoreProps> {
                     </div>
                 ),
             },
-        ];
+        ].sort((a: any, b: any) => {
+            if (a.ID < b.ID) return -1;
+            if (a.ID > b.ID) return 1;
+            return 0;
+        });
         return (
             <Card>
                 <Flex
@@ -497,11 +492,11 @@ export class UserList extends Component<ReduxStoreProps> {
                 <div className="table-responsive">
                     <Table
                         loading={this.state.loading}
-                        columns={tableColumns}
+                        columns={this.sortData(tableColumns)}
+                        /* TODO: FILTER THIS BY ID BEFORE MOUNTING */
                         dataSource={this.state.users}
                         rowKey="ID"
                         style={{ position: "relative" }}
-                        sortDirections={["ascend", "descend", "ascend"]}
                         rowSelection={{
                             onChange: (key, rows) => {
                                 this.setState({ selectedKeys: key });

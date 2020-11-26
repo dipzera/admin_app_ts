@@ -75,16 +75,19 @@ class HttpClient {
                             ...error.config.params,
                             Token,
                         };
+                        return axios
+                            .request(error.config)
+                            .then((response) => response.data);
                     }
                     if (error.config.method === "post") {
                         error.config.data = {
                             ...JSON.parse(error.config.data),
                             Token,
                         };
+                        return axios
+                            .request(error.config)
+                            .then((response) => response.data);
                     }
-                    return axios
-                        .request(error.config)
-                        .then((response) => response.data);
                 } else {
                     const key = "updatable";
                     message

@@ -191,8 +191,8 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         await this.handleUserStatus(elm.ID, statusNumber);
                     })
                 );
+                this.getCompanyList();
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                await this.getCompanyList();
             },
         });
     };
@@ -269,8 +269,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.active
-                                );
-                                await this.getCompanyList();
+                                ).then(() => {
+                                    this.getCompanyList();
+                                });
                             },
                         });
                     }}
@@ -289,8 +290,9 @@ export class CompanyList extends Component<ReduxStoreProps> {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.disabled
-                                );
-                                await this.getCompanyList();
+                                ).then(() => {
+                                    this.getCompanyList();
+                                });
                             },
                         });
                     }}
@@ -345,13 +347,8 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
-                sorter: {
-                    compare: (a: any, b: any) => {
-                        a = a.JuridicalName.toLowerCase();
-                        b = b.JuridicalName.toLowerCase();
-                        return a > b ? -1 : b > a ? 1 : 0;
-                    },
-                },
+                sorter: (a, b) => a.ID - b.ID,
+                defaultSortOrder: "ascend",
             },
             {
                 title: "IDNO",
@@ -486,6 +483,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
                     <Table
                         loading={this.state.loading}
                         columns={tableColumns}
+                        /* TODO: FILTER THIS BY ID BEFORE MOUNTING */
                         dataSource={users}
                         rowKey="ID"
                         style={{ position: "relative" }}
