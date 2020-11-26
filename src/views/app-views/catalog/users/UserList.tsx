@@ -32,7 +32,7 @@ import EllipsisDropdown from "../../../../components/shared-components/EllipsisD
 enum status {
     inactive = 0,
     active = 1,
-    deleted = 2,
+    disabled = 2,
 }
 export interface UsersProps {
     CompanyID: number;
@@ -154,16 +154,24 @@ export class UserList extends Component<ReduxStoreProps> {
     toggleStatusRow = async (row, statusNumber) => {
         Modal.confirm({
             title: `Are you sure you want to ${
-                statusNumber === 0 ? "deactivate" : "activate"
+                statusNumber === 0 || statusNumber === 2
+                    ? "disable"
+                    : "activate"
             } ${row.length} ${row.length > 1 ? "users" : "user"}?`,
             onOk: async () => {
+                debugger;
                 await Promise.all(
                     row.map(async (elm) => {
                         await this.handleUserStatus(elm.ID, statusNumber);
+                        const updatedUsers = row.map(
+                            (user) => (user.Status = statusNumber)
+                        );
+                        this.setState({
+                            users: this.state.users.concat(updatedUsers),
+                        });
                     })
                 );
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                await this.getUsersInfo();
             },
         });
     };
@@ -240,7 +248,20 @@ export class UserList extends Component<ReduxStoreProps> {
                                     row.ID,
                                     status.active
                                 );
-                                await this.getUsersInfo();
+                                this.setState({
+                                    users: [
+                                        ...this.state.users,
+                                        this.state.users
+                                            .filter(
+                                                (user) => user.ID === row.ID
+                                            )
+                                            .map(
+                                                (user) =>
+                                                    (user.Status =
+                                                        status.active)
+                                            ),
+                                    ],
+                                });
                             },
                         });
                     }}
@@ -258,9 +279,22 @@ export class UserList extends Component<ReduxStoreProps> {
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
-                                    status.inactive
+                                    status.disabled
                                 );
-                                await this.getUsersInfo();
+                                this.setState({
+                                    users: [
+                                        ...this.state.users,
+                                        this.state.users
+                                            .filter(
+                                                (user) => user.ID === row.ID
+                                            )
+                                            .map(
+                                                (user) =>
+                                                    (user.Status =
+                                                        status.disabled)
+                                            ),
+                                    ],
+                                });
                             },
                         });
                     }}
@@ -307,15 +341,9 @@ export class UserList extends Component<ReduxStoreProps> {
         };
 
         const tableColumns: ColumnsType<UsersProps> = [
-            // {
-            //     title: "ID",
-            //     dataIndex: "ID",
-            //     sorter: { compare: (a, b) => a.ID - b.ID },
-            //     defaultSortOrder: "ascend" as SortOrder,
-            // },
             {
                 title: "User",
-                dataIndex: "name",
+                dataIndex: "FirstName",
                 render: (_, record: UsersProps) => (
                     <div className="d-flex">
                         <AvatarStatus
@@ -426,13 +454,13 @@ export class UserList extends Component<ReduxStoreProps> {
                                         onClick={() =>
                                             this.toggleStatusRow(
                                                 this.state.selectedRows,
-                                                status.inactive
+                                                status.disabled
                                             )
                                         }
                                     >
                                         {this.state.selectedRows.length > 1
-                                            ? `Deactivate (${this.state.selectedRows.length})`
-                                            : "Deactivate"}
+                                            ? `Disable (${this.state.selectedRows.length})`
+                                            : "Disable"}
                                     </Button>
                                     {/* <Tooltip
                                         title={`${
@@ -473,6 +501,7 @@ export class UserList extends Component<ReduxStoreProps> {
                         dataSource={this.state.users}
                         rowKey="ID"
                         style={{ position: "relative" }}
+                        sortDirections={["ascend", "descend", "ascend"]}
                         rowSelection={{
                             onChange: (key, rows) => {
                                 this.setState({ selectedKeys: key });

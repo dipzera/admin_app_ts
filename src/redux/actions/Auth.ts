@@ -139,6 +139,9 @@ export const authorizeUser = (data) => async (dispatch) => {
                     dispatch(sendActivationCode());
                 },
             });
+        } else {
+            dispatch(hideLoading());
+            dispatch(showAuthMessage(ErrorMessage));
         }
     });
 };

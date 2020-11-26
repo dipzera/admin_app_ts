@@ -72,8 +72,8 @@ class HttpClient {
                     store.dispatch(authenticated(Token));
                     if (error.config.method === "get") {
                         error.config.params = {
+                            ...error.config.params,
                             Token,
-                            ...JSON.parse(error.config.params),
                         };
                     }
                     if (error.config.method === "post") {
@@ -82,11 +82,10 @@ class HttpClient {
                             Token,
                         };
                     }
-                    /* If it's a post request this doesn't seem to work correctly. */
                     return axios
                         .request(error.config)
                         .then((response) => response.data);
-                } else if (ErrorCode === 105) {
+                } else {
                     const key = "updatable";
                     message
                         .loading({ content: EXPIRE_TIME, key })
