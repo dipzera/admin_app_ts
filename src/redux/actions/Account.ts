@@ -1,8 +1,9 @@
 import { UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { DONE } from "../../constants/Messages";
+import { DONE, ERROR } from "../../constants/Messages";
 import { AdminApi } from "../../api";
+import { showAuthMessage } from "./Auth";
 
 export const updateSettings = (payload) => ({
     type: UPDATE_SETTINGS,
@@ -23,6 +24,8 @@ export const getProfileInfo = () => {
                     } else {
                         dispatch(onLocaleChange("en"));
                     }
+                } else {
+                    dispatch(showAuthMessage(ERROR));
                 }
             }
         });

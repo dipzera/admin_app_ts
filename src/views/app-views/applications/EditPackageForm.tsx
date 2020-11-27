@@ -32,8 +32,8 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
             ...packages,
             ValidFrom,
             ValidTo,
-            MinValue: Range[0],
-            MaxValue: Range[1],
+            // MinValue: Range[0],
+            // MaxValue: Range[1],
             ...values,
             Status,
         };
@@ -100,11 +100,47 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                             <Input prefix={"MDL"} />
                         </Form.Item>
                     </Col>
-                    <Col xs={24} sm={24} md={24}>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label="Min value"
+                            name="MinValue"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please insert minimum value!",
+                                },
+                                {
+                                    pattern: /[0-9]/,
+                                    message: "Digits only allowed!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label="Max value"
+                            name="MaxValue"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please insert maximum value!",
+                                },
+                                {
+                                    pattern: /[0-9]/,
+                                    message: "Digits only allowed!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    {/* <Col xs={24} sm={24} md={24}>
                         <Form.Item label="Range" name="Range">
                             <Slider range max={500} />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
                             label="Valid date"

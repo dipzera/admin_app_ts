@@ -46,8 +46,6 @@ function beforeUpload(file) {
 }
 
 class CompanyFormWizard extends Component<{ [key: string]: any }> {
-    avatarEndpoint = "https://www.mocky.io/v2/5cc8019d300000980a055e76";
-
     static contextType = WizardContext;
     formRef = React.createRef() as any;
 
@@ -120,6 +118,11 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             });
         };
 
+        const dummyRequest = ({ file, onSuccess }) => {
+            setTimeout(() => {
+                onSuccess("ok");
+            }, 0);
+        };
         return (
             <>
                 <Flex
@@ -139,8 +142,8 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                         <Upload
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            action={this.avatarEndpoint}
-                            // beforeUpload={beforeUpload}
+                            customRequest={dummyRequest}
+                            beforeUpload={(info) => beforeUpload(info)}
                         >
                             <Button type="primary">Upload Avatar</Button>
                         </Upload>

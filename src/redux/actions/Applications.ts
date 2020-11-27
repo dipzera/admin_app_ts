@@ -20,9 +20,9 @@ export const getMarketApps = () => async (dispatch) => {
     });
 };
 export const updateMarketApp = (App) => async (dispatch) => {
-    return new AdminApi().UpdateMarketApp(App).then((data: any) => {
+    return new AdminApi().UpdateMarketApp(App).then(async (data: any) => {
         if (data) {
-            if (data.ErrorCode === 0) dispatch(getMarketApps());
+            if (data.ErrorCode === 0) await dispatch(getMarketApps());
         }
     });
 };

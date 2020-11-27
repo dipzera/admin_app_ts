@@ -31,25 +31,19 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete values.ValidDate;
         delete values.Range;
-        return new AdminApi()
-            .CreateMarketAppPackage(
+        dispatch(
+            createMarketAppPackage(
                 {
                     ...values,
                     ValidFrom,
                     ValidTo,
-                    MinValue: Range[0],
-                    MaxValue: Range[1],
+                    // MinValue: Range[0],
+                    // MaxValue: Range[1],
                     Status,
                 },
                 appID
             )
-            .then((data: any) => {
-                if (data) {
-                    if (data.ErrorCode === 0) {
-                        dispatch(getMarketApps());
-                    }
-                }
-            });
+        );
     };
 
     const onOk = () => {
@@ -110,11 +104,48 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
                             <Input prefix={"MDL"} />
                         </Form.Item>
                     </Col>
-                    <Col xs={24} sm={24} md={24}>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label="Min value"
+                            name="MinValue"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please insert minimum value!",
+                                },
+                                {
+                                    pattern: /[0-9]/,
+                                    message: "Digits only allowed!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label="Max value"
+                            name="MaxValue"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please insert maximum value!",
+                                },
+                                {
+                                    pattern: /[0-9]/,
+                                    message: "Digits only allowed!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    {/* Slider to get MinValue and MaxValue of package */}
+                    {/* <Col xs={24} sm={24} md={24}>
                         <Form.Item label="Range" name="Range">
                             <Slider range max={500} />
                         </Form.Item>
-                    </Col>
+                    </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
                             label="Valid date"
