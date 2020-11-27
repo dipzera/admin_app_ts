@@ -13,22 +13,12 @@ import {
     SIGNIN_WITH_FACEBOOK,
     SIGNIN_WITH_FACEBOOK_AUTHENTICATED,
     HIDE_LOADING,
-    VALIDATE_USER,
-    SET_TOKEN,
 } from "../constants/Auth";
-import axios from "axios";
 import { message, Modal } from "antd";
 import { IS_USER_ACTIVATED } from "../constants/Auth";
 import { getProfileInfo } from "./Account";
-import { onLocaleChange } from "./Theme";
-import {
-    EMAIL_CONFIRM_MSG,
-    EXPIRE_TIME,
-    PASSWORD_SENT,
-} from "../../constants/Messages";
-import { API_AUTH_URL } from "../../configs/AppConfig";
+import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../constants/Messages";
 import { AuthApi } from "../../api";
-const publicIp = require("react-public-ip");
 
 export const signIn = (user) => ({
     type: SIGNIN,
@@ -99,49 +89,56 @@ export const isUserActivated = (boolean, Token) => ({
 
 export const refreshToken = () => async (dispatch) => {
     return new AuthApi().RefreshToken().then(async (data: any) => {
-        const { ErrorCode, ErrorMessage, Token } = data;
-        if (ErrorCode === 0) {
-            await dispatch(authenticated(Token));
-            window.location.reload();
-        } else if (ErrorCode === 105) {
-            const key = "updatable";
-            message
-                .loading({ content: EXPIRE_TIME, key })
-                .then(() => dispatch(signOut()));
+        if (data) {
+            const { ErrorCode, ErrorMessage, Token } = data;
+            if (ErrorCode === 0) {
+                await dispatch(authenticated(Token));
+                window.location.reload();
+            } else if (ErrorCode === 105) {
+                const key = "updatable";
+                message
+                    .loading({ content: EXPIRE_TIME, key })
+                    .then(() => dispatch(signOut()));
+            }
         }
     });
 };
 export const sendActivationCode = (UserID?: number) => async (dispatch) => {
     return new AuthApi().SendActivationCode(UserID).then((data: any) => {
-        const { ErrorMessage, ErrorCode } = data;
-        if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
-        else dispatch(showAuthMessage(ErrorMessage));
+        if (data) {
+            const { ErrorMessage, ErrorCode } = data;
+            if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
+            else dispatch(showAuthMessage(ErrorMessage));
+        }
     });
 };
 export const authorizeUser = (data) => async (dispatch) => {
     return new AuthApi().Login(data).then((data) => {
         dispatch(hideLoading());
-        const { ErrorCode, ErrorMessage, Token } = data;
-        if (ErrorCode === 0) {
-            dispatch(authenticated(Token));
-            dispatch(getProfileInfo());
-        }
-        if (ErrorCode === 102) {
-            dispatch(hideLoading());
-            dispatch(showAuthMessage(ErrorMessage));
-        } else if (ErrorCode === 108) {
-            dispatch(hideLoading());
-            Modal.confirm({
-                title: "Confirm registration",
-                content:
-                    "Press the OK button down below if you want us to send you a new activation code!",
-                onOk: () => {
-                    dispatch(sendActivationCode());
-                },
-            });
-        } else {
-            dispatch(hideLoading());
-            dispatch(showAuthMessage(ErrorMessage));
+        /* Handle errors here */
+        if (data) {
+            const { ErrorCode, ErrorMessage, Token } = data;
+            if (ErrorCode === 0) {
+                dispatch(authenticated(Token));
+                dispatch(getProfileInfo());
+            }
+            if (ErrorCode === 102) {
+                dispatch(hideLoading());
+                dispatch(showAuthMessage(ErrorMessage));
+            } else if (ErrorCode === 108) {
+                dispatch(hideLoading());
+                Modal.confirm({
+                    title: "Confirm registration",
+                    content:
+                        "Press the OK button down below if you want us to send you a new activation code!",
+                    onOk: () => {
+                        dispatch(sendActivationCode());
+                    },
+                });
+            } else {
+                dispatch(hideLoading());
+                dispatch(showAuthMessage(ErrorMessage));
+            }
         }
     });
 };

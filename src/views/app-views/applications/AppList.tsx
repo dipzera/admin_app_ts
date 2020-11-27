@@ -71,7 +71,9 @@ const GridItem = ({ data }) => {
 const AppList = ({ getMarketApps, loading, apps }) => {
     const dispatch = useDispatch();
     useEffect(() => {
-        getMarketApps();
+        try {
+            getMarketApps();
+        } catch {}
         dispatch(hideLoading());
     }, []);
 

@@ -1,15 +1,5 @@
 import React, { Component } from "react";
-import {
-    Card,
-    Table,
-    Tag,
-    Tooltip,
-    message,
-    Button,
-    Modal,
-    Input,
-    Menu,
-} from "antd";
+import { Card, Table, Tag, Button, Modal, Input, Menu } from "antd";
 import {
     EyeOutlined,
     PlayCircleOutlined,
@@ -17,40 +7,19 @@ import {
     CloseCircleOutlined,
     PlusCircleOutlined,
     SearchOutlined,
-    DeleteOutlined,
-    KeyOutlined,
     EditOutlined,
-    UserAddOutlined,
-    CheckOutlined,
-    PlusOutlined,
     UserOutlined,
-    FrownOutlined,
-    LoadingOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
 import UserView from "./CompanyView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
-import userData from "../../../../assets/data/user-list.data.json";
 import "../hand_gesture.scss";
-import axios from "axios";
 import { connect } from "react-redux";
 import { signOut, refreshToken } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
 import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
-import {
-    DONE,
-    EMAIL_CONFIRM_MSG,
-    EXPIRE_TIME,
-    INTERNAL_ERROR,
-    LOADING,
-} from "../../../../constants/Messages";
 import { Link } from "react-router-dom";
-import {
-    API_APP_URL,
-    APP_PREFIX_PATH,
-    CLIENT_URL,
-} from "../../../../configs/AppConfig";
+import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
@@ -59,7 +28,6 @@ import { AdminApi, AuthApi } from "../../../../api";
 enum status {
     active = 1,
     disabled = 2,
-    // deleted = 2,
 }
 
 interface CompanyStateProps {
@@ -118,18 +86,26 @@ export class CompanyList extends Component<ReduxStoreProps> {
         loading: false,
     };
 
+    sortData = (arr) => {
+        return arr.slice().sort((a: any, b: any) => a.ID - b.ID);
+    };
     getCompanyList = () => {
-        return new AdminApi().GetCompanyList().then((data: any) => {
-            if (data.ErrorCode === 0) {
-                const filteredCompanies = data.CompanyList.filter(
-                    (company) => company.ID !== this.props.CompanyID
-                );
-                this.setState({ users: [...filteredCompanies] });
-                this.setState({
-                    companiesToSearch: [...filteredCompanies],
-                });
-            }
-        });
+        try {
+            return new AdminApi().GetCompanyList().then((data: any) => {
+                if (data) {
+                    if (data.ErrorCode === 0) {
+                        const filteredCompanies = data.CompanyList.filter(
+                            (company) => company.ID !== this.props.CompanyID
+                        );
+                        const evaluatedArray = this.sortData(filteredCompanies);
+                        this.setState({ users: [...evaluatedArray] });
+                        this.setState({
+                            companiesToSearch: [...evaluatedArray],
+                        });
+                    }
+                }
+            });
+        } catch {}
     };
 
     componentDidMount() {
@@ -347,8 +323,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
-                sorter: (a, b) => a.ID - b.ID,
-                defaultSortOrder: "ascend",
             },
             {
                 title: "IDNO",

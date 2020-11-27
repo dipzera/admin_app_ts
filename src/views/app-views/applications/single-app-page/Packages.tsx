@@ -1,5 +1,5 @@
 import { Button, Card, Col, Empty, Menu, Row, Tag } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Flex from "../../../../components/shared-components/Flex";
 import {
     CheckCircleOutlined,
@@ -89,6 +89,13 @@ const Packages = ({
     deletePackage,
     showAddPackageModal,
 }) => {
+    const [sortedPackages, setSortedPackages] = useState<any>(packages);
+    const sortData = (arr) => {
+        return arr.slice().sort((a, b) => a.SortIndex - b.SortIndex);
+    };
+    useEffect(() => {
+        setSortedPackages(sortData(packages));
+    }, [packages]);
     return (
         <>
             <Flex justifyContent="between" alignItems="center" className="py-2">
@@ -105,8 +112,8 @@ const Packages = ({
             </Flex>
             <div className="my-4 container-fluid">
                 <Row gutter={16}>
-                    {packages.length > 0 ? (
-                        packages.map((elm) => (
+                    {sortedPackages.length > 0 ? (
+                        sortedPackages.map((elm) => (
                             <Col
                                 xs={24}
                                 sm={24}

@@ -34,11 +34,13 @@ export const UserModalAdd = ({
     const onFinish = (values) => {
         form.resetFields();
         new AuthApi()
-            .RegisterUser({ ...values, Token, UiLanguage: 0 })
+            .RegisterUser({ ...values, UiLanguage: 0 })
             .then((data: any) => {
-                const { ErrorCode, ErrorMessage } = data;
-                if (ErrorCode === 0) getUsersInfo();
-                else message.error(ErrorMessage);
+                if (data) {
+                    const { ErrorCode, ErrorMessage } = data;
+                    if (ErrorCode === 0) getUsersInfo();
+                    else message.error(ErrorMessage);
+                }
             });
     };
 

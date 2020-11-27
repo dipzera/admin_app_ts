@@ -92,24 +92,34 @@ export class UserList extends Component<ReduxStoreProps> {
         usersChanged: false,
         status: null,
     };
+    sortData = (arr) => {
+        return arr.slice().sort((a: any, b: any) => a.ID - b.ID);
+    };
 
     getUsersInfo = () => {
-        return new AdminApi().GetAllUsers().then((data: any) => {
-            const { ErrorCode } = data;
-            if (ErrorCode === 0) {
-                const filteredUsers = data.Users.filter(
-                    (user) => user.ID !== this.props.ID
-                );
-                this.setState((prev) => ({
-                    ...prev,
-                    usersToSearch: [...filteredUsers],
-                }));
-                this.setState((prev) => ({
-                    ...prev,
-                    users: [...filteredUsers],
-                }));
-            }
-        });
+        try {
+            return new AdminApi().GetAllUsers().then((data: any) => {
+                if (data) {
+                    const { ErrorCode } = data;
+                    if (ErrorCode === 0) {
+                        const filteredUsers = data.Users.filter(
+                            (user) => user.ID !== this.props.ID
+                        );
+                        const evaluatedArray = this.sortData(
+                            filteredUsers
+                        ); /* Add .reverse() here if you want a reverse sort */
+                        this.setState((prev) => ({
+                            ...prev,
+                            usersToSearch: [...evaluatedArray],
+                        }));
+                        this.setState((prev) => ({
+                            ...prev,
+                            users: [...evaluatedArray],
+                        }));
+                    }
+                }
+            });
+        } catch {}
     };
 
     componentDidMount() {
@@ -170,17 +180,8 @@ export class UserList extends Component<ReduxStoreProps> {
                     })
                 );
                 this.getUsersInfo();
-                // let updatedUsers = row.map((user) => {
-                //     user.Status = statusNumber;
-                //     console.log(user);
-                //     return user;
-                // });
-                // this.setState((prevState: any) => ({
-                //     users: [...prevState.users, updatedUsers],
-                // }));
 
                 this.setState({ selectedRows: [], selectedKeys: [] });
-                setTimeout(() => console.log(this.state.users), 1500);
             },
         });
     };
@@ -308,11 +309,6 @@ export class UserList extends Component<ReduxStoreProps> {
         </Menu>
     );
 
-    sortData = (arr) => {
-        console.log(arr.slice());
-        return arr.slice().sort((a: any, b: any) => a.dataIndex - b.dataIndex);
-    };
-
     render() {
         const {
             users,
@@ -343,8 +339,6 @@ export class UserList extends Component<ReduxStoreProps> {
                         />
                     </div>
                 ),
-                sorter: (a, b) => a.ID - b.ID,
-                defaultSortOrder: "ascend",
             },
             {
                 title: "Company",

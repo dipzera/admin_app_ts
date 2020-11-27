@@ -13,13 +13,17 @@ export const getMarketApps = () => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi().GetMarketAppList().then((data: any) => {
         dispatch(hideLoading());
-        const { ErrorCode, ErrorMessage, MarketAppList } = data;
-        if (ErrorCode === 0) dispatch(setApps(MarketAppList));
+        if (data) {
+            const { ErrorCode, ErrorMessage, MarketAppList } = data;
+            if (ErrorCode === 0) dispatch(setApps(MarketAppList));
+        }
     });
 };
 export const updateMarketApp = (App) => async (dispatch) => {
     return new AdminApi().UpdateMarketApp(App).then((data: any) => {
-        if (data.ErrorCode === 0) dispatch(getMarketApps());
+        if (data) {
+            if (data.ErrorCode === 0) dispatch(getMarketApps());
+        }
     });
 };
 
@@ -29,23 +33,32 @@ export const createMarketAppPackage = (middlewareData, MarketAppID) => async (
     dispatch(showLoading());
     return new AdminApi()
         .CreateMarketAppPackage(middlewareData, MarketAppID)
-        .then((data: any) => {
-            if (data.ErrorCode === 0) dispatch(getMarketApps());
+        .then(async (data: any) => {
+            dispatch(hideLoading());
+            if (data) {
+                if (data.ErrorCode === 0) await dispatch(getMarketApps());
+            }
         });
 };
 export const updateMarketAppPackage = (AppPackage) => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()
         .UpdateMarketAppPackage(AppPackage)
-        .then((data: any) => {
-            if (data.ErrorCode === 0) dispatch(getMarketApps());
+        .then(async (data: any) => {
+            dispatch(hideLoading());
+            if (data) {
+                if (data.ErrorCode === 0) await dispatch(getMarketApps());
+            }
         });
 };
 
 export const deleteMarketAppPackage = (ID) => async (dispatch) => {
     dispatch(showLoading());
-    return new AdminApi().DeleteMarketAppPackage(ID).then((data: any) => {
-        if (data.ErrorCode === 0) dispatch(getMarketApps());
+    return new AdminApi().DeleteMarketAppPackage(ID).then(async (data: any) => {
+        dispatch(hideLoading());
+        if (data) {
+            if (data.ErrorCode === 0) await dispatch(getMarketApps());
+        }
     });
 };
 
@@ -56,7 +69,9 @@ export const changeMarketAppStatus = (AppID, Status) => async (dispatch) => {
         return new AdminApi()
             .ChangeMarketAppStatus(AppID, Status)
             .then((data: any) => {
-                if (data.ErrorCode === 0) message.success(DONE, 1);
+                if (data) {
+                    if (data.ErrorCode === 0) message.success(DONE, 1);
+                }
             });
     }, 1000);
 };

@@ -35,11 +35,13 @@ class CompanyForm extends Component<{ [key: string]: any }> {
 
     getCompanyInfo = () => {
         return new AdminApi().GetCompanyInfo().then((data: any) => {
-            if (data.ErrorCode === 0) {
-                this.setState({ Company: { ...data.Company } });
-                this.formRef["current"].setFieldsValue(data.Company);
-            } else {
-                message.error(data.ErrorMessage);
+            if (data) {
+                if (data.ErrorCode === 0) {
+                    this.setState({ Company: { ...data.Company } });
+                    this.formRef["current"].setFieldsValue(data.Company);
+                } else {
+                    message.error(data.ErrorMessage);
+                }
             }
         });
     };
@@ -49,11 +51,13 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 Company: { ...this.state.Company, ...values },
             })
             .then(async (data) => {
-                if (data.ErrorCode === 0) {
-                    message.success({ content: DONE, key: "updatable" });
-                    return Promise;
-                } else {
-                    message.error(data.ErrorMessage);
+                if (data) {
+                    if (data.ErrorCode === 0) {
+                        message.success({ content: DONE, key: "updatable" });
+                        return Promise;
+                    } else {
+                        message.error(data.ErrorMessage);
+                    }
                 }
             });
     };

@@ -50,6 +50,12 @@ class HttpClient {
                     ...config.params,
                 };
             }
+            if (config.method === "post") {
+                config.data = {
+                    ...config.data,
+                    Token: this._token,
+                };
+            }
             return config;
         });
     };
@@ -75,7 +81,7 @@ class HttpClient {
                             ...error.config.params,
                             Token,
                         };
-                        return axios
+                        return await axios
                             .request(error.config)
                             .then((response) => response.data);
                     }
@@ -84,7 +90,7 @@ class HttpClient {
                             ...JSON.parse(error.config.data),
                             Token,
                         };
-                        return axios
+                        return await axios
                             .request(error.config)
                             .then((response) => response.data);
                     }
@@ -97,7 +103,6 @@ class HttpClient {
             });
         }
         store.dispatch(hideLoading());
-        return Promise.reject(error);
     };
 }
 export class AuthApi extends HttpClient {
@@ -170,21 +175,18 @@ export class AdminApi extends HttpClient {
     public UpdateUser = async (data) =>
         this.instance.post("/UpdateUser", {
             ...data,
-            Token: this._token,
             info: await publicIp.v4(),
         });
 
     public RegisterClientCompany = async (data) =>
         this.instance.post("/RegisterClientCompany", {
             ...data,
-            Token: this._token,
             info: (await publicIp.v4()) || "",
         });
 
     public UpdateCompany = async (data) =>
         this.instance.post("/UpdateCompany", {
             ...data,
-            Token: this._token,
             info: (await publicIp.v4()) || "",
         });
 
@@ -197,7 +199,6 @@ export class AdminApi extends HttpClient {
     public UpdateMarketApp = (App) =>
         this.instance.post("/UpdateMarketApp", {
             App,
-            Token: this._token,
         });
 
     public CreateMarketAppPackage = (data, MarketAppID) =>
@@ -206,13 +207,11 @@ export class AdminApi extends HttpClient {
                 ...data,
             },
             MarketAppID,
-            Token: this._token,
         });
 
     public UpdateMarketAppPackage = (AppPackage) =>
         this.instance.post("/UpdateMarketAppPackage", {
             AppPackage,
-            Token: this._token,
         });
 
     public DeleteMarketAppPackage = (ID) =>

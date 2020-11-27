@@ -22,7 +22,6 @@ import {
 import Packages from "./Packages";
 import TermsOfUse from "./TermsOfUse";
 import General from "./general";
-import { AdminApi } from "../../../../api";
 
 const getBase64 = (img, callback) => {
     const reader = new FileReader();

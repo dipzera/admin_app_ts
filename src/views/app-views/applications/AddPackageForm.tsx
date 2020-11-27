@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { Col, Form, Input, Modal, Row, Switch, DatePicker, Slider } from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import { createMarketAppPackage } from "../../../redux/actions/Applications";
+import {
+    createMarketAppPackage,
+    getMarketApps,
+} from "../../../redux/actions/Applications";
+import { AdminApi } from "../../../api";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
@@ -27,8 +31,8 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete values.ValidDate;
         delete values.Range;
-        dispatch(
-            createMarketAppPackage(
+        return new AdminApi()
+            .CreateMarketAppPackage(
                 {
                     ...values,
                     ValidFrom,
@@ -39,7 +43,13 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
                 },
                 appID
             )
-        );
+            .then((data: any) => {
+                if (data) {
+                    if (data.ErrorCode === 0) {
+                        dispatch(getMarketApps());
+                    }
+                }
+            });
     };
 
     const onOk = () => {

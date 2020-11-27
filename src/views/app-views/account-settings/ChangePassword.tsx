@@ -4,11 +4,8 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import { connect } from "react-redux";
 import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
-import axios from "axios";
-import AppLocale from "../../../lang";
-import { DONE, EXPIRE_TIME } from "../../../constants/Messages";
+import { DONE } from "../../../constants/Messages";
 import { refreshToken } from "../../../redux/actions/Auth";
-import { API_AUTH_URL } from "../../../configs/AppConfig";
 import { AuthApi } from "../../../api";
 interface IChangePassword {
     token: string;
@@ -38,9 +35,11 @@ export class ChangePassword extends Component<IChangePassword> {
                     Token: this.props["token"],
                 })
                 .then((data: any) => {
-                    const { ErrorCode, ErrorMessage } = data;
-                    if (ErrorCode === 0) message.success(DONE, 1.5);
-                    else message.error(ErrorMessage, 1.5);
+                    if (data) {
+                        const { ErrorCode, ErrorMessage } = data;
+                        if (ErrorCode === 0) message.success(DONE, 1.5);
+                        else message.error(ErrorMessage, 1.5);
+                    }
                 });
         }, 1500);
         this.onReset();

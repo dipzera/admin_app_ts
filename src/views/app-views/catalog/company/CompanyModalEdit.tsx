@@ -259,6 +259,41 @@ export const CompanyModalEdit = ({
                             <Input />
                         </Form.Item>
                     </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage id={"account.EditProfile.Email"} />
+                            }
+                            name="Email"
+                            rules={[
+                                {
+                                    required: false,
+                                    type: "email",
+                                    message: "Please enter a valid email!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label={
+                                <IntlMessage
+                                    id={"account.company.PostalCode"}
+                                />
+                            }
+                            name="PostalCode"
+                            rules={[
+                                {
+                                    required: false,
+                                    message: "Please enter a postal code!",
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
                 </Row>
             </Form>
         </Modal>
