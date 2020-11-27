@@ -94,10 +94,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
             return new AdminApi().GetCompanyList().then((data: any) => {
                 if (data) {
                     if (data.ErrorCode === 0) {
-                        const filteredCompanies = data.CompanyList.filter(
-                            (company) => company.ID !== this.props.CompanyID
-                        );
-                        const evaluatedArray = this.sortData(filteredCompanies);
+                        const evaluatedArray = this.sortData(data.CompanyList);
                         this.setState({ users: [...evaluatedArray] });
                         this.setState({
                             companiesToSearch: [...evaluatedArray],
