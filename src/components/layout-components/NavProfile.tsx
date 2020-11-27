@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import Icon from "../util-components/Icon";
 import { signOut } from "../../redux/actions/Auth";
+import { clearSettings } from "../../redux/actions/Account";
 import { NavLink } from "react-router-dom";
 import { IntlProvider } from "react-intl";
 import IntlMessage from "../util-components/IntlMessage";
@@ -47,6 +48,7 @@ const NavProfile = ({
     Photo,
     locale,
     isAuth,
+    clearSettings,
 }) => {
     const currentAppLocale = AppLocale[locale];
     const { confirm } = Modal;
@@ -62,8 +64,11 @@ const NavProfile = ({
             ),
             onOk: () => {
                 return new Promise((resolve) => {
-                    setTimeout(() => resolve(signOut()), 1000);
-                }).catch(() => console.log("Oops errors!"));
+                    setTimeout(() => {
+                        resolve(signOut());
+                        resolve(clearSettings());
+                    }, 1000);
+                });
             },
             onCancel: () => {},
         });
@@ -132,4 +137,4 @@ const mapStateToProps = ({ auth, account, theme }) => {
     return { token, FirstName, Photo, locale, isAuth };
 };
 
-export default connect(mapStateToProps, { signOut })(NavProfile);
+export default connect(mapStateToProps, { signOut, clearSettings })(NavProfile);

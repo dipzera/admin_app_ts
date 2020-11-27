@@ -1,4 +1,4 @@
-import { UPDATE_SETTINGS } from "../constants/Account";
+import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
 import { DONE, ERROR } from "../../constants/Messages";
@@ -8,6 +8,10 @@ import { showAuthMessage } from "./Auth";
 export const updateSettings = (payload) => ({
     type: UPDATE_SETTINGS,
     payload,
+});
+
+export const clearSettings = () => ({
+    type: CLEAR_SETTINGS,
 });
 
 export const getProfileInfo = () => {
@@ -37,7 +41,11 @@ export const setProfileInfo = (accountInfo) => {
             if (data) {
                 if (data.ErrorCode === 0) {
                     dispatch(getProfileInfo());
-                    message.success({ content: DONE, key: "updatable" });
+                    message.success({
+                        content: DONE,
+                        key: "updatable",
+                        duration: 2.5,
+                    });
                 } else {
                     message.error({
                         content: data.ErrorMessage,

@@ -1,4 +1,4 @@
-import { UPDATE_SETTINGS } from "../constants/Account";
+import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { REMOVE_AVATAR } from "../constants/Account";
 
 /* TODO: WRITE TYPES FOR REDUX REDUCERS STATE AND ACTIONS
@@ -13,7 +13,7 @@ const initialState = {
     PhoneNumber: null,
     Photo: null,
     UiLanguage: 0,
-};
+} as any;
 
 const account = (state = initialState, action) => {
     switch (action.type) {
@@ -22,6 +22,8 @@ const account = (state = initialState, action) => {
                 ...state,
                 ...action.payload,
             };
+        case CLEAR_SETTINGS:
+            state = null;
         default:
             return state;
     }

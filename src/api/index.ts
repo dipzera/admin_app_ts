@@ -6,6 +6,7 @@ import {
     EXPIRE_TIME,
     INTERNAL_ERROR,
 } from "../constants/Messages";
+import { updateSettings } from "../redux/actions/Account";
 import {
     authenticated,
     hideLoading,
@@ -96,9 +97,10 @@ class HttpClient {
                     }
                 } else {
                     const key = "updatable";
-                    message
-                        .loading({ content: EXPIRE_TIME, key })
-                        .then(() => store.dispatch(signOut()));
+                    message.loading({ content: EXPIRE_TIME, key }).then(() => {
+                        store.dispatch(signOut());
+                        store.dispatch(updateSettings({}));
+                    });
                 }
             });
         }
