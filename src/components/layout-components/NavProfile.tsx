@@ -66,7 +66,6 @@ const NavProfile = ({
                 return new Promise((resolve) => {
                     setTimeout(() => {
                         resolve(signOut());
-                        resolve(clearSettings());
                     }, 1000);
                 });
             },
@@ -134,6 +133,7 @@ const mapStateToProps = ({ auth, account, theme }) => {
     const { token, isAuth } = auth;
     const { locale } = theme;
     const { FirstName, Photo } = account;
+
     return { token, FirstName, Photo, locale, isAuth };
 };
 
