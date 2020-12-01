@@ -1,6 +1,16 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Form, Input, Modal, Row, Switch, DatePicker, Slider } from "antd";
+import {
+    Col,
+    Form,
+    InputNumber,
+    Input,
+    Modal,
+    Row,
+    Switch,
+    DatePicker,
+    Slider,
+} from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import {
@@ -31,6 +41,7 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
         const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
         delete values.ValidDate;
         delete values.Range;
+        console.log({ ...values, ValidFrom, ValidTo });
         dispatch(
             createMarketAppPackage(
                 {
@@ -158,6 +169,11 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
                             ]}
                         >
                             <DatePicker.RangePicker format={"DD/MM/YYYY"} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item label="Sort index" name="SortIndex">
+                            <InputNumber />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>

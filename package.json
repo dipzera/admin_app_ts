@@ -78,6 +78,7 @@
     "reqwest": "^2.0.5",
     "save": "^2.4.0",
     "typescript": "^4.0.3",
+    "uuid": "^8.3.1",
     "velocity-react": "^1.4.3"
   },
   "eslintConfig": {

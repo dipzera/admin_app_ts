@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Col, Slider, Form, Input, Modal, Row, Switch, DatePicker } from "antd";
+import {
+    Col,
+    InputNumber,
+    Form,
+    Input,
+    Modal,
+    Row,
+    Switch,
+    DatePicker,
+} from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { updateMarketAppPackage } from "../../../redux/actions/Applications";
@@ -16,6 +25,7 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
 
         form.resetFields();
     }, [visible, form]);
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const Token = useSelector((state) => state["auth"].token);
     const dispatch = useDispatch();
@@ -153,6 +163,19 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                             ]}
                         >
                             <DatePicker.RangePicker format={"DD/MM/YYYY"} />
+                        </Form.Item>
+                    </Col>
+                    <Col xs={24} sm={24} md={12}>
+                        <Form.Item
+                            label="Sort index"
+                            name="SortIndex"
+                            rules={[
+                                {
+                                    required: false,
+                                },
+                            ]}
+                        >
+                            <InputNumber />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>

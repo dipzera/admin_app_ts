@@ -91,7 +91,7 @@ const Packages = ({
 }) => {
     const [sortedPackages, setSortedPackages] = useState<any>(packages);
     const sortData = (arr) => {
-        return arr.slice().sort((a, b) => a.ID - b.ID);
+        return arr.slice().sort((a, b) => a.SortIndex - b.SortIndex);
     };
     useEffect(() => {
         setSortedPackages(sortData(packages));
