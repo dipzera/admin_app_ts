@@ -79,9 +79,7 @@ export const UserModalEdit = ({
                     },
                 })
                 .then((data: any) => {
-                    data.ErrorCode === 0
-                        ? getUsersInfo()
-                        : message.error(data.ErrorMessage);
+                    data.ErrorCode === 0 && getUsersInfo();
                 });
         }, 1000);
     };

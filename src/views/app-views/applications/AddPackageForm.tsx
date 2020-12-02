@@ -9,21 +9,22 @@ import {
     Row,
     Switch,
     DatePicker,
-    Slider,
 } from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import {
-    createMarketAppPackage,
-    getMarketApps,
-} from "../../../redux/actions/Applications";
-import { AdminApi } from "../../../api";
+import { createMarketAppPackage } from "../../../redux/actions/Applications";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
     close: () => any;
+    packages: any;
 }
-const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
+const AddPackageForm = ({
+    appID,
+    visible,
+    close,
+    packages,
+}: IAddPackageForm) => {
     const [form] = Form.useForm();
 
     /*  Destroy initialValues of form after Modal is closed */
@@ -80,7 +81,10 @@ const AddPackageForm = ({ appID, visible, close }: IAddPackageForm) => {
                 form={form}
                 name="basicInformation"
                 layout="vertical"
-                initialValues={{ Range: [69, 420] }}
+                initialValues={{
+                    Range: [69, 420],
+                    SortIndex: packages.length + 1,
+                }}
             >
                 <Row gutter={ROW_GUTTER}>
                     <Col xs={24} sm={24} md={12}>

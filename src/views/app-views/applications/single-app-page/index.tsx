@@ -152,7 +152,6 @@ const SingleAppPage = ({ match }) => {
                 dispatch(updateMarketApp(App));
                 setEdit(false);
             })
-            .then(() => message.success(DONE, 1.5));
     };
 
     if (!app) {
@@ -162,6 +161,7 @@ const SingleAppPage = ({ match }) => {
     return (
         <>
             <AddPackageForm
+                packages={app.Packages}
                 appID={appID}
                 close={closeAddPackageModal}
                 visible={addPackageModalVisible}

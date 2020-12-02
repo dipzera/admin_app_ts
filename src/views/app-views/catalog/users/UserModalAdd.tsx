@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AdminApi, AuthApi } from "../../../../api";
+import { DONE } from "../../../../constants/Messages";
 
 export const UserModalAdd = ({
     onCancel,
@@ -38,8 +39,10 @@ export const UserModalAdd = ({
             .then((data: any) => {
                 if (data) {
                     const { ErrorCode, ErrorMessage } = data;
-                    if (ErrorCode === 0) getUsersInfo();
-                    else message.error(ErrorMessage);
+                    if (ErrorCode === 0) {
+                        message.success(DONE, 1.5);
+                        getUsersInfo();
+                    }
                 }
             });
     };

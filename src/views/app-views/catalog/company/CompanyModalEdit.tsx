@@ -28,9 +28,7 @@ export const CompanyModalEdit = ({
         new AdminApi()
             .UpdateCompany({ Company: { ...data, ...values } })
             .then((data) => {
-                data.ErrorCode === 0
-                    ? getCompanyList()
-                    : message.error(data.ErrorMessage);
+                data.ErrorCode === 0 && getCompanyList();
             });
     };
     const onFinishFailed = () => {};

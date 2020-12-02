@@ -38,7 +38,6 @@ export class ChangePassword extends Component<IChangePassword> {
                     if (data) {
                         const { ErrorCode, ErrorMessage } = data;
                         if (ErrorCode === 0) message.success(DONE, 1.5);
-                        else message.error(ErrorMessage, 1.5);
                     }
                 });
         }, 1500);

@@ -28,7 +28,6 @@ const ForgotPassword = () => {
                 if (data) {
                     const { ErrorCode, ErrorMessage } = data;
                     if (ErrorCode === 0) message.success(PASSWORD_SENT);
-                    else message.error(ErrorMessage);
                 }
             });
         }, 1500);

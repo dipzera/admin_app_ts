@@ -39,8 +39,6 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                 if (data.ErrorCode === 0) {
                     this.setState({ Company: { ...data.Company } });
                     this.formRef["current"].setFieldsValue(data.Company);
-                } else {
-                    message.error(data.ErrorMessage);
                 }
             }
         });
@@ -55,8 +53,6 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     if (data.ErrorCode === 0) {
                         message.success({ content: DONE, key: "updatable" });
                         return Promise;
-                    } else {
-                        message.error(data.ErrorMessage);
                     }
                 }
             });

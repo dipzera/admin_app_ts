@@ -22,7 +22,10 @@ export const getMarketApps = () => async (dispatch) => {
 export const updateMarketApp = (App) => async (dispatch) => {
     return new AdminApi().UpdateMarketApp(App).then(async (data: any) => {
         if (data) {
-            if (data.ErrorCode === 0) await dispatch(getMarketApps());
+            if (data.ErrorCode === 0) {
+                await dispatch(getMarketApps());
+                message.success(DONE, 1.5);
+            }
         }
     });
 };
@@ -36,7 +39,10 @@ export const createMarketAppPackage = (middlewareData, MarketAppID) => async (
         .then(async (data: any) => {
             dispatch(hideLoading());
             if (data) {
-                if (data.ErrorCode === 0) await dispatch(getMarketApps());
+                if (data.ErrorCode === 0) {
+                    await dispatch(getMarketApps());
+                    message.success(DONE, 1.5);
+                }
             }
         });
 };
@@ -47,7 +53,10 @@ export const updateMarketAppPackage = (AppPackage) => async (dispatch) => {
         .then(async (data: any) => {
             dispatch(hideLoading());
             if (data) {
-                if (data.ErrorCode === 0) await dispatch(getMarketApps());
+                if (data.ErrorCode === 0) {
+                    await dispatch(getMarketApps());
+                    message.success(DONE, 1.5);
+                }
             }
         });
 };
@@ -57,7 +66,10 @@ export const deleteMarketAppPackage = (ID) => async (dispatch) => {
     return new AdminApi().DeleteMarketAppPackage(ID).then(async (data: any) => {
         dispatch(hideLoading());
         if (data) {
-            if (data.ErrorCode === 0) await dispatch(getMarketApps());
+            if (data.ErrorCode === 0) {
+                await dispatch(getMarketApps());
+                message.success(DONE, 1.5);
+            }
         }
     });
 };
@@ -70,7 +82,10 @@ export const changeMarketAppStatus = (AppID, Status) => async (dispatch) => {
             .ChangeMarketAppStatus(AppID, Status)
             .then((data: any) => {
                 if (data) {
-                    if (data.ErrorCode === 0) message.success(DONE, 1);
+                    if (data.ErrorCode === 0) {
+                        message.success(DONE, 1);
+                        dispatch(getMarketApps());
+                    }
                 }
             });
     }, 1000);

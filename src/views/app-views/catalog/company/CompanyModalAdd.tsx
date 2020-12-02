@@ -15,9 +15,7 @@ export const CompanyModalAdd = ({ onCancel, visible, getCompanyList }) => {
         new AdminApi()
             .RegisterClientCompany({ Company: { ...values } })
             .then((data: any) => {
-                data.ErrorCode === 0
-                    ? getCompanyList()
-                    : message.error(data.ErrorMessage);
+                data.ErrorCode === 0 && getCompanyList();
             });
     };
     return (

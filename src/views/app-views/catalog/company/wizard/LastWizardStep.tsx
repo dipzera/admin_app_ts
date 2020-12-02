@@ -37,7 +37,7 @@ const LastWizardStep = () => {
                         }
                     })
                     .catch((err) => {
-                        message.error(err.toString());
+                        // message.error(err.toString());
                         context.setCurrent(context.current - 1);
                     });
             } else {
@@ -66,13 +66,13 @@ const LastWizardStep = () => {
                                         }
                                     })
                                     .catch((err) => {
-                                        message.error(err.toString());
+                                        // message.error(err.toString());
                                         context.setCurrent(context.current - 1);
                                     });
                             });
                     })
                     .catch((err) => {
-                        message.error(err.toString());
+                        // message.error(err.toString());
                         context.setCurrent(context.current - 2);
                     });
             }

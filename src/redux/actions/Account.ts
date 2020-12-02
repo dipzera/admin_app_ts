@@ -28,8 +28,6 @@ export const getProfileInfo = () => {
                     } else {
                         dispatch(onLocaleChange("en"));
                     }
-                } else {
-                    dispatch(showAuthMessage(ERROR));
                 }
             }
         });
@@ -45,11 +43,6 @@ export const setProfileInfo = (accountInfo) => {
                         content: DONE,
                         key: "updatable",
                         duration: 2.5,
-                    });
-                } else {
-                    message.error({
-                        content: data.ErrorMessage,
-                        key: "updatable",
                     });
                 }
             }
