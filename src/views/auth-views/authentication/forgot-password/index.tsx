@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Form, Input, Button, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
-import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { PASSWORD_SENT } from "../../../../constants/Messages";
-import { API_AUTH_URL } from "../../../../configs/AppConfig";
 import { AuthApi } from "../../../../api";
-const publicIp = require("react-public-ip");
 
 const backgroundStyle = {
     backgroundImage: `url(${process.env.PUBLIC_URL}/img/others/img-17.jpg)`,
@@ -20,7 +17,7 @@ const ForgotPassword = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    const onSend = async ({ email }) => {
+    const onSend = async ({ email }: { [key: string]: string }) => {
         setLoading(true);
         setTimeout(async () => {
             setLoading(false);

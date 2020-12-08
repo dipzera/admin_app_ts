@@ -16,6 +16,9 @@ import { NavLink } from "react-router-dom";
 import { IntlProvider } from "react-intl";
 import IntlMessage from "../util-components/IntlMessage";
 import AppLocale from "../../lang";
+import Localization from "../../utils/Localization";
+import { IState } from "../../redux/reducers";
+import { IAccount } from "../../redux/reducers/Account";
 const menuItem = [
     // {
     // 	title: "Edit Profile",
@@ -40,28 +43,11 @@ const menuItem = [
     },
 ];
 
-const NavProfile = ({
-    signOut,
-    token,
-    history,
-    FirstName,
-    Photo,
-    locale,
-    isAuth,
-    clearSettings,
-}) => {
-    const currentAppLocale = AppLocale[locale];
+const NavProfile = ({ signOut, FirstName, Photo }: any) => {
     const { confirm } = Modal;
     const confirmLogout = () => {
         confirm({
-            title: (
-                <IntlProvider
-                    locale={currentAppLocale.locale}
-                    messages={currentAppLocale.messages}
-                >
-                    <IntlMessage id={"header.logout.message"} />
-                </IntlProvider>
-            ),
+            title: <Localization msg="header.logout.message" />,
             onOk: () => {
                 return new Promise((resolve) => {
                     setTimeout(() => {
@@ -129,12 +115,10 @@ const NavProfile = ({
     );
 };
 
-const mapStateToProps = ({ auth, account, theme }) => {
-    const { token, isAuth } = auth;
-    const { locale } = theme;
-    const { FirstName, Photo } = account;
+const mapStateToProps = ({ account }: IState) => {
+    const { FirstName, Photo } = account as IAccount;
 
-    return { token, FirstName, Photo, locale, isAuth };
+    return { FirstName, Photo };
 };
 
 export default connect(mapStateToProps, { signOut, clearSettings })(NavProfile);

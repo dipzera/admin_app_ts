@@ -7,7 +7,6 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import { updateSettings } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
 import MaskedInput from "antd-mask-input";
-import { refreshToken, signOut } from "../../../redux/actions/Auth";
 import {
     DONE,
     ERROR,
@@ -16,20 +15,9 @@ import {
     UPLOADING,
 } from "../../../constants/Messages";
 import { AdminApi } from "../../../api";
+import Utils from "../../../utils";
 
-function beforeUpload(file) {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-}
-
-class CompanyForm extends Component<{ [key: string]: any }> {
+class CompanyForm extends Component {
     state = { Company: {} } as { [key: string]: any };
     formRef = React.createRef() as any;
 
@@ -43,7 +31,7 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             }
         });
     };
-    updateCompany = (values) => {
+    updateCompany = (values: any) => {
         return new AdminApi()
             .UpdateCompany({
                 Company: { ...this.state.Company, ...values },
@@ -61,17 +49,11 @@ class CompanyForm extends Component<{ [key: string]: any }> {
         this.getCompanyInfo();
     }
 
-    getBase64(img, callback) {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => callback(reader.result));
-        reader.readAsDataURL(img);
-    }
-
     render() {
-        const onChangeMask = (e) => {
+        const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
             this.setState({ [e.target.name]: e.target.value });
         };
-        const onFinish = async (values) => {
+        const onFinish = async (values: any) => {
             const key = "updatable";
             message.loading({
                 content: UPDATING,
@@ -83,25 +65,31 @@ class CompanyForm extends Component<{ [key: string]: any }> {
             }, 1000);
         };
 
-        const onFinishFailed = (errorInfo) => {
+        const onFinishFailed = (errorInfo: any) => {
             console.log("Failed:", errorInfo);
         };
 
-        const onUploadAavater = (info) => {
+        const onUploadAavater = (info: any) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({ content: UPLOADING, key });
                 return;
             }
             if (info.file.status === "done") {
-                this.getBase64(info.file.originFileObj, async (imageUrl) => {
-                    const imageToSend = { Logo: imageUrl };
-                    await this.updateCompany(imageToSend).then(() => {
-                        this.setState({
-                            Company: { ...this.state.Company, ...imageToSend },
+                Utils.getBase64(
+                    info.file.originFileObj,
+                    async (imageUrl: string) => {
+                        const imageToSend = { Logo: imageUrl };
+                        await this.updateCompany(imageToSend).then(() => {
+                            this.setState({
+                                Company: {
+                                    ...this.state.Company,
+                                    ...imageToSend,
+                                },
+                            });
                         });
-                    });
-                });
+                    }
+                );
             } else {
                 message.error({ content: ERROR, key });
             }
@@ -110,12 +98,6 @@ class CompanyForm extends Component<{ [key: string]: any }> {
         const onRemoveAvater = async () => {
             const imageToSend = { Logo: "" };
             await this.updateCompany(imageToSend);
-        };
-
-        const dummyRequest = ({ file, onSuccess }) => {
-            setTimeout(() => {
-                onSuccess("ok");
-            }, 0);
         };
 
         return (
@@ -132,10 +114,10 @@ class CompanyForm extends Component<{ [key: string]: any }> {
                     />
                     <div className="ml-md-3 mt-md-0 mt-3">
                         <Upload
-                            customRequest={dummyRequest}
+                            customRequest={Utils.dummyRequest}
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            beforeUpload={(info) => beforeUpload(info)}
+                            beforeUpload={(info) => Utils.beforeUpload(info)}
                         >
                             <Button type="primary">
                                 <IntlMessage
@@ -432,26 +414,4 @@ class CompanyForm extends Component<{ [key: string]: any }> {
     }
 }
 
-const mapDispatchToProps = {
-    updateSettings,
-    signOut,
-    refreshToken,
-};
-
-const mapStateToProps = ({ account, theme, auth }) => {
-    const { name, userName, avatar, dateOfBirth, email, phoneNumber } = account;
-    const { token } = auth;
-    const { locale } = theme;
-    return {
-        name,
-        userName,
-        token,
-        avatar,
-        dateOfBirth,
-        email,
-        phoneNumber,
-        locale,
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(CompanyForm);
+export default connect(null, { updateSettings })(CompanyForm);

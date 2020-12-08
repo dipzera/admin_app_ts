@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from "react";
 // import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { NAV_TYPE_TOP } from "../../constants/ThemeConstant";
+import { IState } from "../../redux/reducers";
+import { ITheme } from "../../redux/reducers/Theme";
 
 interface IStyle {
     [key: string]: string | number;
@@ -67,8 +69,8 @@ export const PageHeaderAlt = ({
 // 	overlap: PropTypes.bool
 // };
 
-const mapStateToProps = ({ theme }) => {
-    const { navType } = theme;
+const mapStateToProps = ({ theme }: IState) => {
+    const { navType } = theme as ITheme;
     return { navType };
 };
 

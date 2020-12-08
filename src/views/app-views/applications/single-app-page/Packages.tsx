@@ -9,8 +9,9 @@ import {
     DeleteOutlined,
 } from "@ant-design/icons";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
+import Utils from "../../../../utils";
 
-const ItemHeader = ({ packages }) => (
+const ItemHeader = ({ packages }: any) => (
     <>
         <Flex>
             <h4 className="mb-0">{packages.Name}</h4>
@@ -31,7 +32,7 @@ const ItemHeader = ({ packages }) => (
     </>
 );
 
-const ItemFooter = ({ packages }) => (
+const ItemFooter = ({ packages }: any) => (
     <div>
         <h5>Pricing</h5>
         <Flex justifyContent="center">
@@ -45,7 +46,7 @@ const ItemFooter = ({ packages }) => (
     </div>
 );
 
-const ItemAction = ({ packages, showEditPackageModal, deletePackage }) => (
+const ItemAction = ({ packages, showEditPackageModal, deletePackage }: any) => (
     <EllipsisDropdown
         menu={
             <Menu>
@@ -65,7 +66,7 @@ const ItemAction = ({ packages, showEditPackageModal, deletePackage }) => (
         }
     />
 );
-const CardItem = ({ packages, showEditPackageModal, deletePackage }) => {
+const CardItem = ({ packages, showEditPackageModal, deletePackage }: any) => {
     return (
         <Card>
             <Flex alignItems="center" justifyContent="between">
@@ -88,13 +89,10 @@ const Packages = ({
     showEditPackageModal,
     deletePackage,
     showAddPackageModal,
-}) => {
+}: any) => {
     const [sortedPackages, setSortedPackages] = useState<any>(packages);
-    const sortData = (arr) => {
-        return arr.slice().sort((a, b) => a.SortIndex - b.SortIndex);
-    };
     useEffect(() => {
-        setSortedPackages(sortData(packages));
+        setSortedPackages(Utils.sortData(packages, "SortIndex"));
     }, [packages]);
     return (
         <>
@@ -113,7 +111,7 @@ const Packages = ({
             <div className="my-4 container-fluid">
                 <Row gutter={16}>
                     {sortedPackages.length > 0 ? (
-                        sortedPackages.map((elm) => (
+                        sortedPackages.map((elm: any) => (
                             <Col
                                 xs={24}
                                 sm={24}

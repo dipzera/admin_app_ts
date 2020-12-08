@@ -4,19 +4,19 @@ import React from "react";
 import Dragger from "antd/lib/upload/Dragger";
 import CustomIcon from "../../../../../components/util-components/CustomIcon";
 import { ImageSvg } from "../../../../../assets/svg/icon";
+import Utils from "../../../../../utils";
 
 const MediaEdit = ({
     imageUploadProps,
-    beforeUpload,
     handleUploadChange,
     uploadedImg,
     uploadLoading,
-}) => {
+}: any) => {
     return (
         <Card title="Media">
             <Dragger
                 {...imageUploadProps}
-                beforeUpload={beforeUpload}
+                beforeUpload={(info) => Utils.beforeUpload(info)}
                 onChange={(e) => handleUploadChange(e)}
             >
                 {uploadedImg ? (

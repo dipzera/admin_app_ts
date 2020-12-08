@@ -1,6 +1,11 @@
 import React from "react";
 import { Layout, Grid } from "antd";
-import { Switch, Route, withRouter } from "react-router-dom";
+import {
+    Switch,
+    Route,
+    withRouter,
+    RouteComponentProps,
+} from "react-router-dom";
 import { connect } from "react-redux";
 import SideNav from "../../components/layout-components/SideNav";
 import TopNav from "../../components/layout-components/TopNav";
@@ -17,11 +22,13 @@ import {
     NAV_TYPE_TOP,
 } from "../../constants/ThemeConstant";
 import Utils from "../../utils";
+import { IState } from "../../redux/reducers";
+import { ITheme } from "../../redux/reducers/Theme";
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
-
-export const AppLayout = ({ navCollapsed, navType, location }) => {
+interface IAppLayout extends RouteComponentProps, ITheme {}
+export const AppLayout = ({ navCollapsed, navType, location }: any) => {
     const currentRouteInfo = Utils.getRouteInfo(
         navigationConfig,
         location.pathname
@@ -72,8 +79,8 @@ export const AppLayout = ({ navCollapsed, navType, location }) => {
     );
 };
 
-const mapStateToProps = ({ theme }) => {
-    const { navCollapsed, navType, locale } = theme;
+const mapStateToProps = ({ theme }: IState) => {
+    const { navCollapsed, navType, locale } = theme as ITheme;
     return { navCollapsed, navType, locale };
 };
 

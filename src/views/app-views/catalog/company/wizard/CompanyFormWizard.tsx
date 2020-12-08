@@ -31,39 +31,19 @@ import {
     UPLOADING,
 } from "../../../../../constants/Messages";
 import { WizardContext } from "./WizardContext";
+import Utils from "../../../../../utils";
 const publicIp = require("react-public-ip");
-
-function beforeUpload(file) {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-}
 
 class CompanyFormWizard extends Component<{ [key: string]: any }> {
     static contextType = WizardContext;
     formRef = React.createRef() as any;
 
-    getBase64(img, callback) {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => callback(reader.result));
-        reader.readAsDataURL(img);
-    }
-
     render() {
-        let { updateSettings, removeAvatar, locale, signOut } = this.props;
-
-        const onChangeMask = (e) => {
+        const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
             this.setState({ [e.target.name]: e.target.value });
         };
 
-        const currentAppLocale = AppLocale[locale];
-        const onFinish = async (values) => {
+        const onFinish = async (values: any) => {
             this.context.setWizardData({
                 ...this.context.wizardData,
                 CompanyData: {
@@ -78,28 +58,32 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             this.context.setCurrent(this.context.current + 1);
         };
 
-        const onFinishFailed = (errorInfo) => {
+        const onFinishFailed = (errorInfo: any) => {
             console.log("Failed:", errorInfo);
         };
 
-        const onUploadAavater = (info) => {
+        const onUploadAavater = (info: any) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({ content: UPLOADING, key });
                 return;
             }
             if (info.file.status === "done") {
-                this.getBase64(info.file.originFileObj, async (imageUrl) => {
-                    this.context.setWizardData({
-                        ...this.context.wizardData,
-                        CompanyData: {
-                            Company: {
-                                ...this.context.wizardData.CompanyData.Company,
-                                Logo: imageUrl,
+                Utils.getBase64(
+                    info.file.originFileObj,
+                    async (imageUrl: string) => {
+                        this.context.setWizardData({
+                            ...this.context.wizardData,
+                            CompanyData: {
+                                Company: {
+                                    ...this.context.wizardData.CompanyData
+                                        .Company,
+                                    Logo: imageUrl,
+                                },
                             },
-                        },
-                    });
-                });
+                        });
+                    }
+                );
                 message.success({ content: UPLOADED, key });
             } else {
                 message.error({ content: ERROR, key });
@@ -118,11 +102,6 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             });
         };
 
-        const dummyRequest = ({ file, onSuccess }) => {
-            setTimeout(() => {
-                onSuccess("ok");
-            }, 0);
-        };
         return (
             <>
                 <Flex
@@ -142,8 +121,8 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                         <Upload
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            customRequest={dummyRequest}
-                            beforeUpload={(info) => beforeUpload(info)}
+                            customRequest={Utils.dummyRequest}
+                            beforeUpload={(info) => Utils.beforeUpload(info)}
                         >
                             <Button type="primary">Upload Avatar</Button>
                         </Upload>
@@ -468,26 +447,4 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
     }
 }
 
-const mapDispatchToProps = {
-    updateSettings,
-    signOut,
-    refreshToken,
-};
-
-const mapStateToProps = ({ account, theme, auth }) => {
-    const { name, userName, avatar, dateOfBirth, email, phoneNumber } = account;
-    const { token } = auth;
-    const { locale } = theme;
-    return {
-        name,
-        userName,
-        token,
-        avatar,
-        dateOfBirth,
-        email,
-        phoneNumber,
-        locale,
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(CompanyFormWizard);
+export default CompanyFormWizard;

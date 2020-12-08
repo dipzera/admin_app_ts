@@ -2,14 +2,16 @@ import { message } from "antd";
 import { AdminApi } from "../../api";
 import { DONE } from "../../constants/Messages";
 import { SET_APPS } from "../constants/Applications";
+import { ThunkResult } from "../reducers";
+import { IApps, IPackages } from "../reducers/Applications";
 import { hideLoading, showLoading } from "./Auth";
 
-const setApps = (payload) => ({
+const setApps = (payload: IApps) => ({
     type: SET_APPS,
     payload,
 });
 
-export const getMarketApps = () => async (dispatch) => {
+export const getMarketApps = (): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi().GetMarketAppList().then((data: any) => {
         dispatch(hideLoading());
@@ -19,7 +21,9 @@ export const getMarketApps = () => async (dispatch) => {
         }
     });
 };
-export const updateMarketApp = (App) => async (dispatch) => {
+export const updateMarketApp = (App: {
+    [key: string]: any;
+}): ThunkResult<void> => async (dispatch) => {
     return new AdminApi().UpdateMarketApp(App).then(async (data: any) => {
         if (data) {
             if (data.ErrorCode === 0) {
@@ -30,9 +34,10 @@ export const updateMarketApp = (App) => async (dispatch) => {
     });
 };
 
-export const createMarketAppPackage = (middlewareData, MarketAppID) => async (
-    dispatch
-) => {
+export const createMarketAppPackage = (
+    middlewareData: { [key: string]: any },
+    MarketAppID: number
+): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()
         .CreateMarketAppPackage(middlewareData, MarketAppID)
@@ -46,7 +51,9 @@ export const createMarketAppPackage = (middlewareData, MarketAppID) => async (
             }
         });
 };
-export const updateMarketAppPackage = (AppPackage) => async (dispatch) => {
+export const updateMarketAppPackage = (
+    AppPackage: IPackages
+): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()
         .UpdateMarketAppPackage(AppPackage)
@@ -61,7 +68,9 @@ export const updateMarketAppPackage = (AppPackage) => async (dispatch) => {
         });
 };
 
-export const deleteMarketAppPackage = (ID) => async (dispatch) => {
+export const deleteMarketAppPackage = (ID: number): ThunkResult<void> => async (
+    dispatch
+) => {
     dispatch(showLoading());
     return new AdminApi().DeleteMarketAppPackage(ID).then(async (data: any) => {
         dispatch(hideLoading());
@@ -74,7 +83,10 @@ export const deleteMarketAppPackage = (ID) => async (dispatch) => {
     });
 };
 
-export const changeMarketAppStatus = (AppID, Status) => async (dispatch) => {
+export const changeMarketAppStatus = (
+    AppID: number,
+    Status: number
+): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     setTimeout(() => {
         dispatch(hideLoading());

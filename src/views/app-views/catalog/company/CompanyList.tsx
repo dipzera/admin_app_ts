@@ -16,7 +16,6 @@ import "../hand_gesture.scss";
 import { connect } from "react-redux";
 import { signOut, refreshToken } from "../../../../redux/actions/Auth";
 import { CompanyModalEdit } from "./CompanyModalEdit";
-import { CompanyModalAdd } from "./CompanyModalAdd";
 import { ColumnsType } from "antd/lib/table";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
@@ -24,6 +23,8 @@ import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import { AdminApi, AuthApi } from "../../../../api";
+import { IState } from "../../../../redux/reducers";
+import { IAccount } from "../../../../redux/reducers/Account";
 
 enum status {
     active = 1,
@@ -64,14 +65,7 @@ export interface CompanyProps {
     WebSite: string;
 }
 
-export interface ReduxStoreProps {
-    token: string;
-    locale: string;
-    CompanyID: number;
-    signOut: () => any;
-    refreshToken: any;
-}
-export class CompanyList extends Component<ReduxStoreProps> {
+export class CompanyList extends Component {
     state: CompanyStateProps = {
         users: [],
         selectedRows: [],
@@ -86,15 +80,15 @@ export class CompanyList extends Component<ReduxStoreProps> {
         loading: false,
     };
 
-    sortData = (arr) => {
-        return arr.slice().sort((a: any, b: any) => a.ID - b.ID);
-    };
     getCompanyList = () => {
         try {
             return new AdminApi().GetCompanyList().then((data: any) => {
                 if (data) {
                     if (data.ErrorCode === 0) {
-                        const evaluatedArray = this.sortData(data.CompanyList);
+                        const evaluatedArray = utils.sortData(
+                            data.CompanyList,
+                            "ID"
+                        );
                         this.setState({ users: [...evaluatedArray] });
                         this.setState({
                             companiesToSearch: [...evaluatedArray],
@@ -147,20 +141,20 @@ export class CompanyList extends Component<ReduxStoreProps> {
         });
     };
     rowSelection = {
-        onChange: (key, rows) => {
+        onChange: (key: any, rows: any) => {
             this.setState({ selectedKeys: key });
             this.setState({ selectedRows: rows });
         },
     };
 
-    toggleStatusRow = async (row, statusNumber) => {
+    toggleStatusRow = async (row: any, statusNumber: number) => {
         Modal.confirm({
             title: `Are you sure you want to ${
                 statusNumber === 0 ? "disable" : "activate"
             } ${row.length} ${row.length > 1 ? "companies" : "company"}?`,
             onOk: async () => {
                 await Promise.all(
-                    row.map(async (elm) => {
+                    row.map(async (elm: any) => {
                         await this.handleUserStatus(elm.ID, statusNumber);
                     })
                 );
@@ -174,41 +168,13 @@ export class CompanyList extends Component<ReduxStoreProps> {
         return new AdminApi().ChangeCompanyStatus(userId, status);
     };
 
-    // deleteRow = (row) => {
-    //     const objKey = "ID";
-    //     debugger;
-    //     let data = this.state.users;
-    //     Modal.confirm({
-    //         title: `Are you sure you want to delete ${
-    //             this.state.selectedRows.length
-    //         } ${this.state.selectedRows.length > 1 ? "companies" : "company"}?`,
-    //         onOk: () => {
-    //             if (this.state.selectedRows.length > 1) {
-    //                 this.state.selectedRows.forEach((elm) => {
-    //                     this.handleUserStatus(elm.ID, status.disabled);
-    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
-    //                     this.setState({ users: data });
-    //                     this.setState({ selectedRows: [] });
-    //                 });
-    //             } else {
-    //                 for (const elm of row) {
-    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
-    //                     this.setState({ selectedRows: [], selectedKeys: [] });
-    //                     this.setState({ users: data });
-    //                     this.handleUserStatus(elm.ID, status.disabled);
-    //                 }
-    //             }
-    //         },
-    //     });
-    // };
-
-    getManagedToken = (CompanyID) => {
+    getManagedToken = (CompanyID: number) => {
         return new AuthApi().GetManagedToken(CompanyID).then((data: any) => {
             if (data.ErrorCode === 0) return data.Token;
         });
     };
 
-    dropdownMenu = (row) => (
+    dropdownMenu = (row: any) => (
         <Menu>
             <Menu.Item
                 onClick={async () => {
@@ -294,7 +260,7 @@ export class CompanyList extends Component<ReduxStoreProps> {
             </Menu.Item> */}
         </Menu>
     );
-    onSearch = (e) => {
+    onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         const searchArray = value
             ? this.state.users
@@ -473,11 +439,6 @@ export class CompanyList extends Component<ReduxStoreProps> {
                         this.closeUserViewProfile();
                     }}
                 />
-                <CompanyModalAdd
-                    onCancel={this.closeNewUserModal}
-                    visible={this.state.newUserModalVisible}
-                    getCompanyList={this.getCompanyList}
-                />
                 <CompanyModalEdit
                     getCompanyList={this.getCompanyList}
                     data={selectedUser}
@@ -491,14 +452,8 @@ export class CompanyList extends Component<ReduxStoreProps> {
     }
 }
 
-const mapStateToProps = ({ auth, theme, account }) => {
-    const { token } = auth;
-    const { CompanyID } = account;
-    const { locale } = theme;
-    return { token, locale, CompanyID };
+const mapStateToProps = ({ account }: IState) => {
+    const { CompanyID } = account as IAccount;
+    return { CompanyID };
 };
-const mapDispatchToProps = {
-    signOut,
-    refreshToken,
-};
-export default connect(mapStateToProps, mapDispatchToProps)(CompanyList);
+export default connect(mapStateToProps, null)(CompanyList);

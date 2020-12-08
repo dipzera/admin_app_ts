@@ -10,7 +10,7 @@ export const CompanyModalEdit = ({
     visible,
     onCancel,
     getCompanyList,
-}) => {
+}: any) => {
     const [form] = Form.useForm();
 
     const [mask, setMask] = useState<any>();
@@ -20,11 +20,12 @@ export const CompanyModalEdit = ({
         form.resetFields();
     }, [visible, form]);
 
-    const onChangeMask = (e) => {
+    /* Above Type may not work, to be tested */
+    const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMask({ [e.target.name]: e.target.value });
     };
 
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         new AdminApi()
             .UpdateCompany({ Company: { ...data, ...values } })
             .then((data) => {

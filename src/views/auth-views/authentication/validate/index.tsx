@@ -2,8 +2,9 @@ import React, { useState, useLayoutEffect } from "react";
 import ErrorOne from "../../errors/error-page-1/index";
 import Success from "../success/index";
 import { AuthApi } from "../../../../api";
+import { RouteComponentProps } from "react-router-dom";
 
-const Validate = ({ history }) => {
+const Validate = ({ history }: RouteComponentProps) => {
     const [isValidated, setIsValidated] = useState(false);
     useLayoutEffect(() => {
         new AuthApi()

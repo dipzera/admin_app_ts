@@ -5,12 +5,7 @@ import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AdminApi, AuthApi } from "../../../../api";
 import { DONE } from "../../../../constants/Messages";
 
-export const UserModalAdd = ({
-    onCancel,
-    visible,
-    token: Token,
-    getUsersInfo,
-}) => {
+export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [companies, setCompanies] = useState<any>([]);
@@ -25,14 +20,14 @@ export const UserModalAdd = ({
             });
         }
     }, [visible]);
-    const onSearch = (value) => {
+    const onSearch = (value: any) => {
         if (value.length > 1) {
             setShowOptions(true);
         } else {
             setShowOptions(false);
         }
     };
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         form.resetFields();
         new AuthApi()
             .RegisterUser({ ...values, UiLanguage: 0 })
@@ -160,7 +155,7 @@ export const UserModalAdd = ({
                                 }
                             >
                                 {showOptions
-                                    ? companies.map((company) => (
+                                    ? companies.map((company: any) => (
                                           <Option
                                               value={company.ID}
                                               key={company.ID}

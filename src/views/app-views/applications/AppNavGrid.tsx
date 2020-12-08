@@ -11,10 +11,10 @@ const MenuItemStyles = {
     flexDirection: "column",
     justifyContent: "center",
 } as CSSProperties;
-export const AppNavGrid = (/* { apps }: { apps: IApps[] }, */ props) => {
+export const AppNavGrid = (/* { apps }: { apps: IApps[] }, */ props: any) => {
     return (
         <>
-            {props.apps.map((app) => (
+            {props.apps.map((app: any) => (
                 <Menu.Item key={app.Name} {...props} className="app-list__item">
                     <Link to={`${APP_PREFIX_PATH}/applications/${app.ID}`}>
                         <div className="text-center">

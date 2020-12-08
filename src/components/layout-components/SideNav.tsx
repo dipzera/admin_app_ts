@@ -8,6 +8,8 @@ import {
 } from "../../constants/ThemeConstant";
 import { Scrollbars } from "react-custom-scrollbars";
 import MenuContent from "./MenuContent";
+import { IState } from "../../redux/reducers";
+import { ITheme } from "../../redux/reducers/Theme";
 
 const { Sider } = Layout;
 
@@ -38,8 +40,8 @@ export const SideNav = ({
     );
 };
 
-const mapStateToProps = ({ theme }) => {
-    const { navCollapsed, sideNavTheme } = theme;
+const mapStateToProps = ({ theme }: IState) => {
+    const { navCollapsed, sideNavTheme } = theme as ITheme;
     return { navCollapsed, sideNavTheme };
 };
 

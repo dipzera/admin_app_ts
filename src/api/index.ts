@@ -19,11 +19,6 @@ const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
 }
-const REFRESH_TOKEN = (Token) => {
-    return axios.get(`${API_AUTH_URL}/RefreshToken`, {
-        params: { Token },
-    });
-};
 class HttpClient {
     public readonly instance: AxiosInstance;
     public _token: string;
@@ -121,7 +116,7 @@ export class AuthApi extends HttpClient {
         super(`${API_AUTH_URL}`);
     }
 
-    public Login = async (data) =>
+    public Login = async (data: { [key: string]: any }) =>
         this.instance.post("/AuthorizeUser", {
             ...data,
             info: (await publicIp.v4()) || ("" as string),
@@ -134,23 +129,24 @@ export class AuthApi extends HttpClient {
             params: { UserID },
         });
 
-    public ResetPassword = async (Email) =>
+    public ResetPassword = async (Email: string) =>
         this.instance.post("/ResetPassword", {
             Email,
             info: (await publicIp.v4()) || "",
         });
 
-    public RegisterUser = (data) => this.instance.post("/RegisterUser", data);
+    public RegisterUser = (data: { [key: string]: string | number }) =>
+        this.instance.post("/RegisterUser", data);
 
-    public GetManagedToken = (CompanyID) =>
+    public GetManagedToken = (CompanyID: number) =>
         this.instance.get("/GetManagedToken", {
             params: { CompanyID },
         });
 
-    public ChangePassword = (data) =>
+    public ChangePassword = (data: { [key: string]: string }) =>
         this.instance.post("/ChangePassword", data);
 
-    public ActivateUser = (params) =>
+    public ActivateUser = (params: { [key: string]: string }) =>
         this.instance.get("/ActivateUser", {
             params /* Param is a token took from the browser url */,
         });
@@ -168,7 +164,7 @@ export class AdminApi extends HttpClient {
     public GetBasicCompanyList = () =>
         this.instance.get("/GetBasicCompaniesList");
 
-    public ChangeCompanyStatus = (ID, Status) =>
+    public ChangeCompanyStatus = (ID: number, Status: number) =>
         this.instance.get("/ChangeCompanyStatus", {
             params: {
                 ID,
@@ -176,26 +172,28 @@ export class AdminApi extends HttpClient {
             },
         });
 
-    public ChangeUserStatus = (ID, Status) =>
+    public ChangeUserStatus = (ID: number, Status: number) =>
         this.instance.get("/ChangeUserStatus", {
             params: {
                 ID,
                 Status,
             },
         });
-    public UpdateUser = async (data) =>
+    public UpdateUser = async (data: { [key: string]: any }) =>
         this.instance.post("/UpdateUser", {
             ...data,
             info: await publicIp.v4(),
         });
 
-    public RegisterClientCompany = async (data) =>
+    public RegisterClientCompany = async (data: {
+        [key: string]: string | number;
+    }) =>
         this.instance.post("/RegisterClientCompany", {
             ...data,
             info: (await publicIp.v4()) || "",
         });
 
-    public UpdateCompany = async (data) =>
+    public UpdateCompany = async (data: { [key: string]: string | number }) =>
         this.instance.post("/UpdateCompany", {
             ...data,
             info: (await publicIp.v4()) || "",
@@ -207,12 +205,15 @@ export class AdminApi extends HttpClient {
 
     public GetMarketAppList = () => this.instance.get("/GetMarketAppList");
 
-    public UpdateMarketApp = (App) =>
+    public UpdateMarketApp = (App: { [key: string]: any }) =>
         this.instance.post("/UpdateMarketApp", {
             App,
         });
 
-    public CreateMarketAppPackage = (data, MarketAppID) =>
+    public CreateMarketAppPackage = (
+        data: { [key: string]: any },
+        MarketAppID: number
+    ) =>
         this.instance.post("/CreateMarketAppPackage", {
             AppPackage: {
                 ...data,
@@ -220,17 +221,17 @@ export class AdminApi extends HttpClient {
             MarketAppID,
         });
 
-    public UpdateMarketAppPackage = (AppPackage) =>
+    public UpdateMarketAppPackage = (AppPackage: { [key: string]: any }) =>
         this.instance.post("/UpdateMarketAppPackage", {
             AppPackage,
         });
 
-    public DeleteMarketAppPackage = (ID) =>
+    public DeleteMarketAppPackage = (ID: number) =>
         this.instance.post("/DeleteMarketAppPackage", {
             ID,
         });
 
-    public ChangeMarketAppStatus = (ID, Status) =>
+    public ChangeMarketAppStatus = (ID: number, Status: number) =>
         this.instance.get("/ChangeMarketAppStatus", {
             params: { ID, Status },
         });

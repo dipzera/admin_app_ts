@@ -19,13 +19,9 @@ import { IS_USER_ACTIVATED } from "../constants/Auth";
 import { getProfileInfo } from "./Account";
 import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../constants/Messages";
 import { AuthApi } from "../../api";
+import { ThunkResult } from "../reducers";
 
-export const signIn = (user) => ({
-    type: SIGNIN,
-    payload: user,
-});
-
-export const authenticated = (token) => ({
+export const authenticated = (token: string) => ({
     type: AUTHENTICATED,
     token,
 });
@@ -34,39 +30,7 @@ export const signOut = () => ({
     type: SIGNOUT,
 });
 
-export const signOutSuccess = () => ({
-    type: SIGNOUT_SUCCESS,
-});
-
-export const signUp = (user) => ({
-    type: SIGNUP,
-    payload: user,
-});
-
-export const signUpSuccess = (token) => ({
-    type: SIGNUP_SUCCESS,
-    token,
-});
-
-export const signInWithGoogle = () => ({
-    type: SIGNIN_WITH_GOOGLE,
-});
-
-export const signInWithGoogleAuthenticated = (token) => ({
-    type: SIGNIN_WITH_GOOGLE_AUTHENTICATED,
-    token,
-});
-
-export const signInWithFacebook = () => ({
-    type: SIGNIN_WITH_FACEBOOK,
-});
-
-export const signInWithFacebookAuthenticated = (token) => ({
-    type: SIGNIN_WITH_FACEBOOK_AUTHENTICATED,
-    token,
-});
-
-export const showAuthMessage = (message) => ({
+export const showAuthMessage = (message: string) => ({
     type: SHOW_AUTH_MESSAGE,
     message,
 });
@@ -81,13 +45,8 @@ export const showLoading = () => ({
 export const hideLoading = () => ({
     type: HIDE_LOADING,
 });
-export const isUserActivated = (boolean, Token) => ({
-    type: IS_USER_ACTIVATED,
-    userActivated: boolean,
-    activationToken: Token,
-});
 
-export const refreshToken = () => async (dispatch) => {
+export const refreshToken = (): ThunkResult<void> => async (dispatch) => {
     return new AuthApi().RefreshToken().then(async (data: any) => {
         if (data) {
             const { ErrorCode, ErrorMessage, Token } = data;
@@ -103,7 +62,9 @@ export const refreshToken = () => async (dispatch) => {
         }
     });
 };
-export const sendActivationCode = (UserID?: number) => async (dispatch) => {
+export const sendActivationCode = (
+    UserID?: number
+): ThunkResult<void> => async (dispatch) => {
     return new AuthApi().SendActivationCode(UserID).then((data: any) => {
         if (data) {
             const { ErrorMessage, ErrorCode } = data;
@@ -112,7 +73,9 @@ export const sendActivationCode = (UserID?: number) => async (dispatch) => {
         }
     });
 };
-export const authorizeUser = (data) => async (dispatch) => {
+export const authorizeUser = (data: {
+    [key: string]: any;
+}): ThunkResult<void> => async (dispatch) => {
     return new AuthApi().Login(data).then((data) => {
         dispatch(hideLoading());
         /* Handle errors here */

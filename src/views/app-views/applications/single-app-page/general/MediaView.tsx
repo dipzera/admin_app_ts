@@ -3,7 +3,7 @@ import { Avatar, Card } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { ExperimentOutlined } from "@ant-design/icons";
 
-const MediaView = ({ app }) => {
+const MediaView = ({ app }: any) => {
     return (
         <Card title="Media">
             <Dragger disabled>

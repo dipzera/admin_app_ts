@@ -9,44 +9,13 @@ import { connect } from "react-redux";
 import { IntlProvider } from "react-intl";
 import AppLocale from "../../../lang";
 import { ERROR, UPLOADED, UPLOADING } from "../../../constants/Messages";
+import Utils from "../../../utils";
+import { IState } from "../../../redux/reducers";
+import { IAccount } from "../../../redux/reducers/Account";
+import { ITheme } from "../../../redux/reducers/Theme";
+import { IAuth } from "../../../redux/reducers/Auth";
 
-interface EditProfileProps {
-    CompanyID: number;
-    Email: string;
-    FirstName: string;
-    ID: number;
-    LastName: string;
-    Password: string;
-    PhoneNumber: string;
-    Photo: any;
-    Token: string;
-    UiLanguage: number;
-    locale: string;
-    account: {};
-    token: string;
-    setProfileInfo: any;
-}
-
-function beforeUpload(file) {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error("Image must smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-}
-
-class EditProfile extends Component<EditProfileProps> {
-    getBase64(img, callback) {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => callback(reader.result));
-
-        reader.readAsDataURL(img);
-    }
-
+class EditProfile extends Component {
     render() {
         let {
             account,
@@ -60,11 +29,11 @@ class EditProfile extends Component<EditProfileProps> {
             locale,
             setProfileInfo,
             token: Token,
-        } = this.props;
+        } = this.props as any;
 
         const currentAppLocale = AppLocale[locale];
 
-        const onFinish = (values) => {
+        const onFinish = (values: any) => {
             const key = "updatable";
             message.loading({
                 content: (
@@ -87,11 +56,11 @@ class EditProfile extends Component<EditProfileProps> {
             }, 1000);
         };
 
-        const onFinishFailed = (errorInfo) => {
+        const onFinishFailed = (errorInfo: any) => {
             console.log("Failed:", errorInfo);
         };
 
-        const onUploadAavater = (info) => {
+        const onUploadAavater = (info: any) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({
@@ -102,11 +71,14 @@ class EditProfile extends Component<EditProfileProps> {
                 return;
             }
             if (info.file.status === "done") {
-                this.getBase64(info.file.originFileObj, async (imageUrl) => {
-                    await setProfileInfo({
-                        User: { ...account, Photo: imageUrl },
-                    });
-                });
+                Utils.getBase64(
+                    info.file.originFileObj,
+                    async (imageUrl: string) => {
+                        await setProfileInfo({
+                            User: { ...account, Photo: imageUrl },
+                        });
+                    }
+                );
             } else {
                 message.error({
                     content: ERROR,
@@ -121,11 +93,6 @@ class EditProfile extends Component<EditProfileProps> {
                 User: { ...account, Photo: "" },
             });
         };
-        const dummyRequest = ({ file, onSuccess }) => {
-            setTimeout(() => {
-                onSuccess("ok");
-            }, 0);
-        };
 
         return (
             <>
@@ -137,10 +104,10 @@ class EditProfile extends Component<EditProfileProps> {
                     <Avatar size={90} src={Photo} icon={<UserOutlined />} />
                     <div className="ml-md-3 mt-md-0 mt-3">
                         <Upload
-                            customRequest={dummyRequest}
+                            customRequest={Utils.dummyRequest}
                             onChange={onUploadAavater}
                             showUploadList={false}
-                            beforeUpload={(info) => beforeUpload(info)}
+                            beforeUpload={(info) => Utils.beforeUpload(info)}
                         >
                             <Button type="primary">
                                 <IntlMessage
@@ -275,7 +242,7 @@ const mapDispatchToProps = {
     setProfileInfo,
 };
 
-const mapStateToProps = ({ account, theme, auth }) => {
+const mapStateToProps = ({ account, theme, auth }: IState) => {
     const {
         CompanyID,
         Email,
@@ -284,9 +251,9 @@ const mapStateToProps = ({ account, theme, auth }) => {
         LastName,
         PhoneNumber,
         Photo,
-    } = account;
-    const { locale } = theme;
-    const { token } = auth;
+    } = account as IAccount;
+    const { locale } = theme as ITheme;
+    const { token } = auth as IAuth;
     return {
         account,
         CompanyID,

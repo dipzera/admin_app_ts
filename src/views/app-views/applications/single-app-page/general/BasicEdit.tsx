@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
 import Flex from "../../../../../components/shared-components/Flex";
+import { IState } from "../../../../../redux/reducers";
 const rules = {
     name: [
         {
@@ -24,7 +25,13 @@ const rules = {
         },
     ],
 };
-const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
+const BasicEdit = ({
+    app,
+    longDesc,
+    setLongDesc,
+    setShortDesc,
+    shortDesc,
+}: any) => {
     const fields = [
         {
             title: "English",
@@ -39,13 +46,15 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
             locale: "ru",
         },
     ];
-    const globalLanguage = useSelector((state) => state["theme"].locale);
+    const globalLanguage = useSelector(
+        (state: IState) => state["theme"].locale
+    );
     const [shortDescLang, setShortDescLang] = useState(globalLanguage);
     const [longDescLang, setLongDescLang] = useState(globalLanguage);
     const [selectedShortDesc, setSelectedShortDesc] = useState<any>();
     const [selectedLongDesc, setSelectedLongDesc] = useState<any>();
-    const onChange = (name, value) => {
-        setShortDesc((prevState) => ({
+    const onChange = (name: any, value: any) => {
+        setShortDesc((prevState: any) => ({
             ...prevState,
             [name]: value,
         }));
@@ -85,7 +94,7 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
                     </div>
                 </Flex>
                 {selectedShortDesc &&
-                    selectedShortDesc.map(({ title, locale }) => (
+                    selectedShortDesc.map(({ title, locale }: any) => (
                         <div key={locale}>
                             {/* <h6>{title}</h6> */}
                             <Input.TextArea
@@ -120,13 +129,13 @@ const BasicEdit = ({ app, longDesc, setLongDesc, setShortDesc, shortDesc }) => {
                     </div>
                 </Flex>
                 {selectedLongDesc &&
-                    selectedLongDesc.map(({ title, locale }) => (
+                    selectedLongDesc.map(({ title, locale }: any) => (
                         <div key={locale} className="mb-3">
                             {/* <h4>{title}</h4> */}
                             <TextEditor
                                 apps={longDesc ? longDesc[locale] : null}
-                                handleEditorChange={(e) =>
-                                    setLongDesc((prevState) => ({
+                                handleEditorChange={(e: any) =>
+                                    setLongDesc((prevState: any) => ({
                                         ...prevState,
                                         [locale]: e,
                                     }))

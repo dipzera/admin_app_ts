@@ -17,10 +17,12 @@ import {
 import utils from "../../utils";
 import AppStoreNav from "../../views/app-views/applications/AppNav";
 import NavProfile from "./NavProfile";
+import { IState } from "../../redux/reducers";
+import { ITheme } from "../../redux/reducers/Theme";
 
 const { Header } = Layout;
 
-const HeaderNav = (props) => {
+const HeaderNav = (props: any) => {
     const {
         navCollapsed,
         mobileNav,
@@ -106,8 +108,13 @@ const HeaderNav = (props) => {
     );
 };
 
-const mapStateToProps = ({ theme }) => {
-    const { navCollapsed, navType, headerNavColor, mobileNav } = theme;
+const mapStateToProps = ({ theme }: IState) => {
+    const {
+        navCollapsed,
+        navType,
+        headerNavColor,
+        mobileNav,
+    } = theme as ITheme;
     return { navCollapsed, navType, headerNavColor, mobileNav };
 };
 

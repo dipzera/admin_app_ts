@@ -1,6 +1,5 @@
-import { Button, Col, Form, Input, message, Row } from "antd";
+import { Button, Col, Form, Input, Row } from "antd";
 import React from "react";
-import { UPDATING } from "../../../../../constants/Messages";
 import { ROW_GUTTER } from "../../../../../constants/ThemeConstant";
 import { WizardContext } from "./WizardContext";
 
@@ -8,7 +7,7 @@ class UserFormWizard extends React.Component {
     formRef = React.createRef() as any;
     static contextType = WizardContext;
     render() {
-        const onFinish = async (values) => {
+        const onFinish = async (values: any) => {
             this.context.setWizardData({
                 ...this.context.wizardData,
                 UserData: { ...values },
@@ -17,7 +16,7 @@ class UserFormWizard extends React.Component {
             this.context.setCurrent(this.context.current + 1);
         };
 
-        const onFinishFailed = (errorInfo) => {
+        const onFinishFailed = (errorInfo: any) => {
             console.log("Failed", errorInfo);
         };
         return (

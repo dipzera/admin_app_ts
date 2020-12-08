@@ -15,6 +15,15 @@ import {
     SET_TOKEN,
 } from "../constants/Auth";
 
+export interface IAuth {
+    loading?: boolean;
+    message?: string;
+    showMessage?: boolean;
+    redirect?: string;
+    token?: string;
+    isAuth?: boolean;
+}
+
 const initState = {
     loading: false,
     message: "",
@@ -22,11 +31,9 @@ const initState = {
     redirect: "",
     token: "",
     isAuth: false,
-    userActivated: false,
-    activationToken: "",
-} as { [key: string]: any };
+};
 
-const auth = (state = initState, action) => {
+const auth = (state = initState, action: any) => {
     switch (action.type) {
         case AUTHENTICATED:
             return {
@@ -99,19 +106,10 @@ const auth = (state = initState, action) => {
                 token: action.token,
             };
         }
-        case IS_USER_ACTIVATED:
-            return {
-                ...state,
-                userActivated: action.userActivated,
-                activationToken: action.activationToken,
-            };
         case SET_TOKEN:
             return {
                 ...state,
                 token: action.token,
-            };
-            return {
-                ...state,
             };
         default:
             return state;

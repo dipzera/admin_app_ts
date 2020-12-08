@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Button, Form, Input, Divider, Alert } from "antd";
+import { Button, Form, Input, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
-import { GoogleSVG, FacebookSVG } from "../../../assets/svg/icon";
-import CustomIcon from "../../../components/util-components/CustomIcon";
 import {
     showLoading,
     showAuthMessage,
@@ -19,6 +17,7 @@ import { hideLoading } from "../../../redux/actions/Auth";
 import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
+import { IState } from "../../../redux/reducers";
 const LoginForm = ({
     authorizeUser,
     showForgetPassword,
@@ -31,9 +30,9 @@ const LoginForm = ({
     message,
     token,
     redirect,
-}) => {
+}: any) => {
     const history = useHistory();
-    const onLogin = ({ email, password }) => {
+    const onLogin = ({ email, password }: { [key: string]: string }) => {
         showLoading();
         setTimeout(() => {
             authorizeUser({
@@ -163,22 +162,14 @@ LoginForm.defaultProps = {
     showForgetPassword: false,
 };
 
-const mapStateToProps = ({ auth, account }) => {
-    const {
-        loading,
-        message,
-        showMessage,
-        token,
-        redirect,
-        userActivated,
-    } = auth;
+const mapStateToProps = ({ auth }: IState) => {
+    const { loading, message, showMessage, token, redirect } = auth;
     return {
         loading,
         message,
         showMessage,
         token,
         redirect,
-        userActivated,
     };
 };
 

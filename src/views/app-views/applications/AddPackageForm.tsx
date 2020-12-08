@@ -13,6 +13,7 @@ import {
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { createMarketAppPackage } from "../../../redux/actions/Applications";
+import { IState } from "../../../redux/reducers";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
@@ -33,9 +34,9 @@ const AddPackageForm = ({
         form.resetFields();
     }, [visible, form]);
 
-    const loading = useSelector((state) => state["auth"].loading);
+    const loading = useSelector((state: IState) => state["auth"].loading);
     const dispatch = useDispatch();
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         const Status = values.Status ? 1 : 0;
         const { ValidDate, Range } = values;
         const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");

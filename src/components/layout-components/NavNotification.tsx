@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import Flex from "../../components/shared-components/Flex";
 
-const getIcon = (icon) => {
+const getIcon = (icon: string) => {
     switch (icon) {
         case "mail":
             return <MailOutlined />;
@@ -21,7 +21,7 @@ const getIcon = (icon) => {
     }
 };
 
-const getNotificationBody = (list) => {
+const getNotificationBody = (list: any) => {
     return list.length > 0 ? (
         <List
             size="small"
@@ -67,7 +67,7 @@ export const NavNotification = () => {
 
     const [data, setData] = useState<any[]>([]); /* Data from API */
 
-    const handleVisibleChange = (flag) => {
+    const handleVisibleChange = (flag: any) => {
         setVisible(flag);
     };
 

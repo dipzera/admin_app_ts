@@ -5,21 +5,23 @@ import Flex from "../../../../components/shared-components/Flex";
 import { DONE, LOADING } from "../../../../constants/Messages";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
+import { IState } from "../../../../redux/reducers";
+import { IApps } from "../../../../redux/reducers/Applications";
 import TextEditor from "./TextEditor";
 
-const EditApp = ({ app }) => {
+const EditApp = ({ app }: { [key: string]: IApps }) => {
     const [form] = Form.useForm();
-    const Token = useSelector((state) => state["auth"].token);
+    const Token = useSelector((state: IState) => state["auth"].token);
     const dispatch = useDispatch();
     const [TermsOfUse, setTermsOfUse] = useState(app.TermsOfUse);
     const [LongDescription, setLongDescription] = useState(app.LongDescription);
-    const handleTermsOfUse = (content) => {
+    const handleTermsOfUse = (content: any) => {
         setTermsOfUse(content);
     };
-    const handleLongDescription = (content) => {
+    const handleLongDescription = (content: any) => {
         setLongDescription(content);
     };
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         const Status = values.Status ? 1 : 0;
         const App = {
             ...app,

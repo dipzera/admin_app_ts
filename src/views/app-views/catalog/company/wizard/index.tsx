@@ -38,7 +38,7 @@ const RegisterWizard = () => {
     const [apiSuccess, setApiSuccess] = useState(false);
     const [companyID, setCompanyID] = useState<any>();
 
-    useBeforeunload((e) => e.preventDefault());
+    useBeforeunload((e: any) => e.preventDefault());
 
     return (
         <WizardContext.Provider

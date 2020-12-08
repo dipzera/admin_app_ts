@@ -13,6 +13,7 @@ import {
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { updateMarketAppPackage } from "../../../redux/actions/Applications";
+import { IState } from "../../../redux/reducers";
 interface IEditPackageForm {
     packages: any;
     visible: boolean;
@@ -27,9 +28,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
     }, [visible, form]);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const Token = useSelector((state) => state["auth"].token);
+    const Token = useSelector((state: IState) => state["auth"].token);
     const dispatch = useDispatch();
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         const { ValidDate, Range } = values;
         const Status = values.Status ? 1 : 0;
         const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");

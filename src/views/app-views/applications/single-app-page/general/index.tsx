@@ -9,6 +9,8 @@ import BasicView from "./BasicView";
 import BasicEdit from "./BasicEdit";
 import { useDispatch, useSelector } from "react-redux";
 import { changeMarketAppStatus } from "../../../../../redux/actions/Applications";
+import { IState } from "../../../../../redux/reducers";
+import Utils from "../../../../../utils";
 const imageUploadProps: any = {
     name: "file",
     multiple: false,
@@ -17,17 +19,6 @@ const imageUploadProps: any = {
     action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
 };
 
-const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-        message.error("You can only upload JPG/PNG file!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error("Image must be smaller than 2MB!");
-    }
-    return isJpgOrPng && isLt2M;
-};
 const General = ({
     app,
     edit,
@@ -40,8 +31,8 @@ const General = ({
     shortDesc,
     setShortDesc,
     longDesc,
-}) => {
-    const loading = useSelector((state) => state["auth"].loading);
+}: any) => {
+    const loading = useSelector((state: IState) => state["auth"].loading);
     const dispatch = useDispatch();
     return (
         <>
@@ -82,7 +73,7 @@ const General = ({
                     <Card title="Media">
                         <Dragger
                             {...imageUploadProps}
-                            beforeUpload={beforeUpload}
+                            beforeUpload={(info) => Utils.beforeUpload(info)}
                             onChange={(e) => handleUploadChange(e)}
                         >
                             {uploadedImg ? (

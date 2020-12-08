@@ -12,7 +12,7 @@ const backgroundStyle = {
 };
 // Use LoginOne if it's Admin Portal App
 
-const LoginOne = (props) => {
+const LoginOne = (props: any) => {
     return (
         <div className="h-100" style={backgroundStyle}>
             <div className="container d-flex flex-column justify-content-center h-100">

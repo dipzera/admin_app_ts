@@ -14,6 +14,15 @@ import {
     FormOutlined,
 } from "@ant-design/icons";
 
+export interface INavTree {
+    key: string;
+    path: string;
+    title: string;
+    icon: any;
+    breadcrumb: boolean;
+    submenu: INavTree[];
+}
+
 const dashBoardNavTree = [
     {
         key: "dashboard",

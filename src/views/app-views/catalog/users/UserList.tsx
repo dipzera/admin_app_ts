@@ -29,6 +29,9 @@ import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import "./table.scss";
+import { IState } from "../../../../redux/reducers";
+import { IAuth } from "../../../../redux/reducers/Auth";
+import { IAccount } from "../../../../redux/reducers/Account";
 
 enum status {
     inactive = 0,
@@ -64,19 +67,14 @@ interface UserListStateProps {
     usersChanged: boolean;
     status: number | null;
 }
-interface ReduxStoreProps {
-    token: string;
-    locale: string;
-    ID: number;
-    CompanyID: number;
-    signOut: any;
-    refreshToken: any;
-    loading: boolean;
-    sendActivationCode: any;
-}
 
-export class UserList extends Component<ReduxStoreProps> {
-    /* MAKE THIS FROM API CALL */
+interface StoreProps {
+    sendActivationCode?: any;
+    CompanyID?: number;
+    ID?: number;
+    loading?: boolean;
+}
+export class UserList extends Component<StoreProps> {
     state: UserListStateProps = {
         users: [],
         selectedRows: [],
@@ -92,9 +90,6 @@ export class UserList extends Component<ReduxStoreProps> {
         usersChanged: false,
         status: null,
     };
-    sortData = (arr) => {
-        return arr.slice().sort((a: any, b: any) => a.ID - b.ID);
-    };
 
     getUsersInfo = () => {
         try {
@@ -103,10 +98,11 @@ export class UserList extends Component<ReduxStoreProps> {
                     const { ErrorCode } = data;
                     if (ErrorCode === 0) {
                         const filteredUsers = data.Users.filter(
-                            (user) => user.ID !== this.props.ID
+                            (user: any) => user.ID !== this.props.ID
                         );
-                        const evaluatedArray = this.sortData(
-                            filteredUsers
+                        const evaluatedArray = utils.sortData(
+                            filteredUsers,
+                            "ID"
                         ); /* Add .reverse() here if you want a reverse sort */
                         this.setState((prev) => ({
                             ...prev,
@@ -164,7 +160,7 @@ export class UserList extends Component<ReduxStoreProps> {
         });
     };
 
-    toggleStatusRow = async (row, statusNumber) => {
+    toggleStatusRow = async (row: any, statusNumber: any) => {
         Modal.confirm({
             title: `Are you sure you want to ${
                 statusNumber === 0 || statusNumber === 2
@@ -175,7 +171,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 console.log(this.state.users);
                 console.log(row);
                 await Promise.all(
-                    row.map(async (elm) => {
+                    row.map(async (elm: any) => {
                         await this.handleUserStatus(elm.ID, statusNumber);
                     })
                 );
@@ -185,38 +181,11 @@ export class UserList extends Component<ReduxStoreProps> {
             },
         });
     };
-
-    // deleteRow = (row) => {
-    //     const objKey = "ID";
-    //     let data = this.state.users;
-    //     Modal.confirm({
-    //         title: `Are you sure you want to delete ${
-    //             this.state.selectedRows.length
-    //         } ${this.state.selectedRows.length > 1 ? "users" : "user"}?`,
-    //         onOk: () => {
-    //             if (this.state.selectedRows.length > 1) {
-    //                 this.state.selectedRows.forEach((elm) => {
-    //                     this.handleUserStatus(elm.ID, status.deleted);
-    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
-    //                     this.setState({ users: data });
-    //                     this.setState({ selectedRows: [] });
-    //                 });
-    //             } else {
-    //                 for (const elm of row) {
-    //                     data = utils.deleteArrayRow(data, objKey, elm.ID);
-    //                     this.setState({ selectedRows: [], selectedKeys: [] });
-    //                     this.setState({ users: data });
-    //                     this.handleUserStatus(elm.ID, status.deleted);
-    //                 }
-    //             }
-    //         },
-    //     });
-    // };
     handleUserStatus = (userId: number, status: number) => {
         return new AdminApi().ChangeUserStatus(userId, status);
     };
 
-    dropdownMenu = (row) => (
+    dropdownMenu = (row: any) => (
         <Menu>
             {row.Status === 0 && (
                 <Menu.Item
@@ -290,22 +259,6 @@ export class UserList extends Component<ReduxStoreProps> {
                     </Flex>
                 </Menu.Item>
             )}
-            {/* <Menu.Item
-                onClick={async () => {
-                    Modal.confirm({
-                        title: `Are you sure you want to delete this user?`,
-                        onOk: async () => {
-                            await this.handleUserStatus(row.ID, status.deleted);
-                            await this.getUsersInfo();
-                        },
-                    });
-                }}
-            >
-                <Flex alignItems="center">
-                    <DeleteOutlined />
-                    <span className="ml-2">Delete</span>
-                </Flex>
-            </Menu.Item> */}
         </Menu>
     );
 
@@ -316,9 +269,8 @@ export class UserList extends Component<ReduxStoreProps> {
             userProfileVisible,
             selectedUser,
         } = this.state;
-        const { token } = this.props;
 
-        const onSearch = (e) => {
+        const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
             const value = e.currentTarget.value;
             const searchArray = value ? users : usersToSearch;
             const data = utils.wildCardSearch(searchArray, value);
@@ -329,7 +281,7 @@ export class UserList extends Component<ReduxStoreProps> {
             {
                 title: "User",
                 dataIndex: "FirstName",
-                render: (_, record: UsersProps) => (
+                render: (_: any, record: UsersProps) => (
                     <div className="d-flex">
                         <AvatarStatus
                             src={record.Photo}
@@ -343,7 +295,7 @@ export class UserList extends Component<ReduxStoreProps> {
             {
                 title: "Company",
                 dataIndex: "Company",
-                render: (Company) => <span>{Company}</span>,
+                render: (Company: string) => <span>{Company}</span>,
             },
             {
                 title: "Role",
@@ -352,7 +304,7 @@ export class UserList extends Component<ReduxStoreProps> {
             {
                 title: "Last online",
                 dataIndex: "LastAuthorize",
-                render: (LastAuthorize) => (
+                render: (LastAuthorize: any) => (
                     <span>
                         {LastAuthorize
                             ? moment
@@ -365,12 +317,14 @@ export class UserList extends Component<ReduxStoreProps> {
             {
                 title: "Last Authorize IP",
                 dataIndex: "LastAuthorizeIP",
-                render: (LastAuthorizeIP) => <span>{LastAuthorizeIP}</span>,
+                render: (LastAuthorizeIP: string) => (
+                    <span>{LastAuthorizeIP}</span>
+                ),
             },
             {
                 title: "Status",
                 dataIndex: "Status",
-                render: (Status) => (
+                render: (Status: number) => (
                     <Tag
                         className="text-capitalize"
                         color={
@@ -389,12 +343,12 @@ export class UserList extends Component<ReduxStoreProps> {
                     </Tag>
                 ),
                 sorter: {
-                    compare: (a, b) => a.Status - b.Status,
+                    compare: (a: any, b: any) => a.Status - b.Status,
                 },
             },
             {
                 dataIndex: "actions",
-                render: (_, elm: UsersProps) => (
+                render: (_: any, elm: UsersProps) => (
                     <div className="text-right">
                         <EllipsisDropdown menu={this.dropdownMenu(elm)} />
                     </div>
@@ -486,7 +440,7 @@ export class UserList extends Component<ReduxStoreProps> {
                 <div className="table-responsive">
                     <Table
                         loading={this.state.loading}
-                        columns={this.sortData(tableColumns)}
+                        columns={tableColumns}
                         /* TODO: FILTER THIS BY ID BEFORE MOUNTING */
                         dataSource={this.state.users}
                         rowKey="ID"
@@ -512,19 +466,16 @@ export class UserList extends Component<ReduxStoreProps> {
                 <UserModalAdd
                     onCancel={this.closeNewUserModal}
                     visible={this.state.newUserModalVisible}
-                    token={this.props.token}
                     getUsersInfo={this.getUsersInfo}
                 />
                 <UserModalEdit
                     signOut={signOut}
                     getUsersInfo={this.getUsersInfo}
-                    locale={this.props.locale}
                     data={selectedUser}
                     visible={this.state.editModalVisible}
                     onCancel={() => {
                         this.closeEditModal();
                     }}
-                    token={this.props.token}
                 />
                 {/* Choose between Cascadia Code and MonoLisa fonts for VSCode */}
             </Card>
@@ -532,17 +483,10 @@ export class UserList extends Component<ReduxStoreProps> {
     }
 }
 
-const mapDispatchToProps = {
-    signOut,
-    refreshToken,
-    sendActivationCode,
+const mapStateToProps = ({ auth, account }: IState) => {
+    const { loading } = auth as IAuth;
+    const { CompanyID, ID } = account as IAccount;
+    return { ID, CompanyID, loading };
 };
 
-const mapStateToProps = ({ auth, theme, account }) => {
-    const { token, loading } = auth;
-    const { CompanyID, ID } = account;
-    const { locale } = theme;
-    return { token, ID, locale, CompanyID, loading };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+export default connect(mapStateToProps, { sendActivationCode })(UserList);

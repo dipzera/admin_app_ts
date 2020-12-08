@@ -5,14 +5,11 @@ import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import AppLocale from "../../../../lang";
 import { AdminApi } from "../../../../api";
 export const UserModalEdit = ({
-    signOut,
     data,
     visible,
     onCancel,
-    locale,
-    token,
     getUsersInfo,
-}) => {
+}: any) => {
     const [form] = Form.useForm();
     const [companies, setCompanies] = useState<any>();
     const [showOptions, setShowOptions] = useState<boolean>(false);
@@ -45,7 +42,7 @@ export const UserModalEdit = ({
     //         );
     //     }
     // }, [companies]);
-    const onSearch = (value) => {
+    const onSearch = (value: any) => {
         if (value.length > 1) {
             setShowOptions(true);
         } else {
@@ -55,8 +52,7 @@ export const UserModalEdit = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const currentAppLocale = AppLocale[locale];
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         setIsLoading(true);
         setTimeout(() => {
             setIsLoading(false);

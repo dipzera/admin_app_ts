@@ -5,6 +5,7 @@ import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
+import { IState } from "../../../../redux/reducers";
 
 const textarea = [
     {
@@ -20,10 +21,11 @@ const textarea = [
         locale: "ru",
     },
 ];
-const TermsOfUse = ({ app }) => {
+const TermsOfUse = ({ app }: any) => {
     const [edit, setEdit] = useState(false);
     const [terms, setTerms] = useState<any>();
-    const locale = useSelector((state) => state["theme"].locale);
+    const locale =
+        useSelector((state: IState) => state["theme"].locale) ?? "en";
     const dispatch = useDispatch();
     useEffect(() => {
         try {
@@ -76,8 +78,8 @@ const TermsOfUse = ({ app }) => {
                             <h4>{title}</h4>
                             <TextEditor
                                 apps={terms ? terms[locale] : null}
-                                handleEditorChange={(content) => {
-                                    setTerms((prevState) => ({
+                                handleEditorChange={(content: any) => {
+                                    setTerms((prevState: any) => ({
                                         ...prevState,
                                         [locale]: content,
                                     }));

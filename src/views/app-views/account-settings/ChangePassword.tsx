@@ -7,18 +7,21 @@ import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import { DONE } from "../../../constants/Messages";
 import { refreshToken } from "../../../redux/actions/Auth";
 import { AuthApi } from "../../../api";
-interface IChangePassword {
-    token: string;
-    locale: string;
-    refreshToken: any;
-}
-export class ChangePassword extends Component<IChangePassword> {
+import { IState } from "../../../redux/reducers";
+import { IAuth } from "../../../redux/reducers/Auth";
+import { ITheme } from "../../../redux/reducers/Theme";
+export class ChangePassword extends Component {
     private changePasswordFormRef = React.createRef<any>();
     state = {
         loading: false,
     };
 
-    onFinish = ({ currentPassword, newPassword }) => {
+    onFinish = ({
+        currentPassword,
+        newPassword,
+    }: {
+        [key: string]: string;
+    }) => {
         this.setState({ loading: true });
         setTimeout(() => {
             this.setState({ loading: false });
@@ -32,7 +35,6 @@ export class ChangePassword extends Component<IChangePassword> {
                         currentPassword,
                         API_PUBLIC_KEY
                     ),
-                    Token: this.props["token"],
                 })
                 .then((data: any) => {
                     if (data) {
@@ -166,9 +168,9 @@ export class ChangePassword extends Component<IChangePassword> {
     }
 }
 
-const mapStateToProps = ({ auth, theme }) => {
-    const { token } = auth;
-    const { locale } = theme;
+const mapStateToProps = ({ auth, theme }: IState) => {
+    const { token } = auth as IAuth;
+    const { locale } = theme as ITheme;
     return { token, locale };
 };
 export default connect(mapStateToProps, { refreshToken })(ChangePassword);

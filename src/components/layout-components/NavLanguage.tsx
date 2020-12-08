@@ -5,6 +5,9 @@ import { connect } from "react-redux";
 import { lang } from "../../assets/data/language.data.json";
 import { onLocaleChange } from "../../redux/actions/Theme";
 import { setProfileInfo } from "../../redux/actions/Account";
+import { IState } from "../../redux/reducers";
+import { IAuth } from "../../redux/reducers/Auth";
+import { ITheme } from "../../redux/reducers/Theme";
 interface NavLanguageProps {
     locale?: string;
     configDisplay?: any;
@@ -15,12 +18,12 @@ interface NavLanguageProps {
     token?: string;
 }
 
-function getLanguageDetail(locale) {
+function getLanguageDetail(locale: string) {
     const data = lang.filter((elm) => elm.langId === locale);
     return data[0];
 }
 
-export const SelectedLanguage = ({ locale }) => {
+export const SelectedLanguage = ({ locale }: { [key: string]: string }) => {
     const language = getLanguageDetail(locale);
     const { langName, icon } = language;
 
@@ -107,7 +110,7 @@ const NavLanguage = ({
                     className="text-gray"
                     onClick={(e) => e.preventDefault()}
                 >
-                    <SelectedLanguage locale={locale} />
+                    <SelectedLanguage locale={locale ?? "en"} />
                 </a>
             ) : (
                 <Menu style={{ border: "none" }}>
@@ -120,9 +123,9 @@ const NavLanguage = ({
     );
 };
 
-const mapStateToProps = ({ theme, account, auth }) => {
-    const { locale } = theme;
-    const { token } = auth;
+const mapStateToProps = ({ theme, account, auth }: IState) => {
+    const { locale } = theme as ITheme;
+    const { token } = auth as IAuth;
     return { locale, account, token };
 };
 const mapDispatchToProps = {

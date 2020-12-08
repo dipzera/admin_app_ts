@@ -6,6 +6,7 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import { AppNavGrid } from "./AppNavGrid";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../../components/shared-components/Loading";
+import { IState } from "../../../redux/reducers";
 export interface IApps {
     CustomerPrice: number;
     DataBaseServer: string;
@@ -18,13 +19,13 @@ export interface IApps {
     ReferalPercent: number;
 }
 const AppStoreNav = () => {
-    const loading = useSelector((state) => state["auth"].loading);
-    const apps: IApps[] = useSelector((state) => state["apps"]);
+    const loading = useSelector((state: IState) => state["auth"].loading);
+    const apps = useSelector((state: IState) => state["apps"]);
     const menu = (
         <Menu
             style={{
                 width: "330px",
-                minHeight: loading && "300px",
+                minHeight: loading ? "300px" : "auto",
             }}
         >
             {loading ? (
@@ -32,7 +33,7 @@ const AppStoreNav = () => {
             ) : (
                 <AppNavGrid apps={apps} />
             )}
-            {apps.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
+            {apps!.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </Menu>
     );
 

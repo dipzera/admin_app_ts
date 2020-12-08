@@ -12,10 +12,13 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { getMarketApps } from "../../../redux/actions/Applications";
 import { hideLoading, signOut } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
+import { IState } from "../../../redux/reducers";
+import { IAuth } from "../../../redux/reducers/Auth";
 
-const GridItem = ({ data }) => {
+const GridItem = ({ data }: any) => {
     const [shortDescription, setShortDescription] = useState<any>();
-    const locale = useSelector((state) => state["theme"].locale);
+    const locale =
+        useSelector((state: IState) => state["theme"].locale) ?? "en";
     useEffect(() => {
         try {
             setShortDescription(JSON.parse(window.atob(data.ShortDescription)));
@@ -68,7 +71,7 @@ const GridItem = ({ data }) => {
     );
 };
 
-const AppList = ({ getMarketApps, loading, apps }) => {
+const AppList = ({ getMarketApps, loading, apps }: any) => {
     const dispatch = useDispatch();
     useEffect(() => {
         try {
@@ -88,7 +91,7 @@ const AppList = ({ getMarketApps, loading, apps }) => {
                     container-fluid`}
                     >
                         <Row gutter={16}>
-                            {apps.map((elm) => (
+                            {apps.map((elm: any) => (
                                 <Col
                                     xs={24}
                                     sm={24}
@@ -108,8 +111,8 @@ const AppList = ({ getMarketApps, loading, apps }) => {
     );
 };
 
-const mapStateToProps = ({ apps, auth }) => {
-    const { loading, token } = auth;
+const mapStateToProps = ({ apps, auth }: IState) => {
+    const { loading, token } = auth as IAuth;
     return { apps, loading, token };
 };
 

@@ -1,5 +1,5 @@
 import { applyMiddleware, compose, createStore } from "redux";
-import reducers from "../reducers";
+import reducers, { IState } from "../reducers";
 import { loadState, saveState } from "../../utils/localStorage";
 import throttle from "lodash/throttle";
 import thunk from "redux-thunk";
@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-function configureStore(preLoadedState) {
+function configureStore(preLoadedState: any) {
     // const composeEnhancers =
     //   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
     return createStore(

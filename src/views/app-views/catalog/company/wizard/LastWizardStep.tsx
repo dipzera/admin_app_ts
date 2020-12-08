@@ -1,24 +1,17 @@
 import { message } from "antd";
-import Axios, { AxiosResponse } from "axios";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
 import { AdminApi, AuthApi } from "../../../../../api";
-import { API_APP_URL, API_AUTH_URL } from "../../../../../configs/AppConfig";
-import { refreshToken } from "../../../../../redux/actions/Auth";
 import { WizardContext } from "./WizardContext";
 
 const LastWizardStep = () => {
     const context = React.useContext(WizardContext);
-    const dispatch = useDispatch();
-    const Token = useSelector((state) => state["auth"].token);
-    /* Above might be stored inside the Wizard Context */
 
     const handleCompanyRegister = (): any => {
         return new AdminApi()
             .RegisterClientCompany({ ...context.wizardData.CompanyData })
             .then((data: any) => data);
     };
-    const handleUserRegister = (CompanyID) => {
+    const handleUserRegister = (CompanyID: number) => {
         return new AuthApi()
             .RegisterUser({ ...context.wizardData.UserData, CompanyID })
             .then((data) => data);
@@ -42,7 +35,7 @@ const LastWizardStep = () => {
                     });
             } else {
                 await handleCompanyRegister()
-                    .then((result) => {
+                    .then((result: any): number => {
                         if (result.ErrorCode === 0) {
                             context.setApiSuccess(true);
                             context.setCompanyID(+result.CompanyID);
@@ -51,7 +44,7 @@ const LastWizardStep = () => {
                             throw result.ErrorMessage;
                         }
                     }) /* Maybe place an if statement below */
-                    .then((CompanyID) => {
+                    .then((CompanyID: number) => {
                         message
                             .loading("Proceeding to send user data...", 1.5)
                             .then(async () => {
@@ -65,14 +58,12 @@ const LastWizardStep = () => {
                                             throw result.ErrorMessage;
                                         }
                                     })
-                                    .catch((err) => {
-                                        // message.error(err.toString());
+                                    .catch(() => {
                                         context.setCurrent(context.current - 1);
                                     });
                             });
                     })
-                    .catch((err) => {
-                        // message.error(err.toString());
+                    .catch(() => {
                         context.setCurrent(context.current - 2);
                     });
             }

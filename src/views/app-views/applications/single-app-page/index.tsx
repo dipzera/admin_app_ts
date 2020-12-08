@@ -22,18 +22,14 @@ import {
 import Packages from "./Packages";
 import TermsOfUse from "./TermsOfUse";
 import General from "./general";
+import { IState } from "../../../../redux/reducers";
+import Utils from "../../../../utils";
 
-const getBase64 = (img, callback) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-};
-
-const SingleAppPage = ({ match }) => {
+const SingleAppPage = ({ match }: any) => {
     const { appID } = match.params;
     const { confirm } = Modal;
-    const app = useSelector((state) =>
-        state["apps"].find((data) => data.ID == appID)
+    const app = useSelector((state: IState) =>
+        state["apps"]!.find((data) => data.ID == appID)
     );
     const dispatch = useDispatch();
     const [edit, setEdit] = useState(false);
@@ -46,7 +42,7 @@ const SingleAppPage = ({ match }) => {
     const [addPackageModalVisible, setAddPackageModalVisible] = useState<
         boolean
     >(false);
-    const showEditPackageModal = (selected) => {
+    const showEditPackageModal = (selected: any) => {
         setSelectedPackage({
             ...selected,
             Range: [selected.MinValue, selected.MaxValue],
@@ -65,7 +61,7 @@ const SingleAppPage = ({ match }) => {
         setAddPackageModalVisible(false);
     };
 
-    const deletePackage = (ID) => {
+    const deletePackage = (ID: number) => {
         confirm({
             title: DELETE_PACKAGE_MSG(ID),
             onOk: () => {
@@ -75,44 +71,44 @@ const SingleAppPage = ({ match }) => {
     };
     const [uploadLoading, setUploadLoading] = useState(false);
     const [form] = Form.useForm();
-    const [uploadedImg, setImage] = useState();
+    const [uploadedImg, setImage] = useState<any>();
     const [shortDesc, setShortDesc] = useState<any>();
     const [longDesc, setLongDesc] = useState<any>();
-    const [status, setStatus] = useState<number>(app.Status);
+    const [status, setStatus] = useState<number>(app!.Status);
     useEffect(() => {
         try {
-            setShortDesc(JSON.parse(window.atob(app.ShortDescription)));
+            setShortDesc(JSON.parse(window.atob(app!.ShortDescription)));
         } catch {
             setShortDesc({ en: "", ru: "", ro: "" });
         }
     }, []);
     useEffect(() => {
         try {
-            setLongDesc(JSON.parse(window.atob(app.LongDescription)));
+            setLongDesc(JSON.parse(window.atob(app!.LongDescription)));
         } catch {
             setLongDesc({ en: "", ru: "", ro: "" });
         }
     }, []);
     useEffect(() => {
-        setImage(app.Photo);
+        setImage(app!.Photo);
         if (edit) {
             form.setFieldsValue(app);
         }
     }, [edit, setEdit]);
 
-    const handleUploadChange = (info) => {
+    const handleUploadChange = (info: any) => {
         if (info.file.status === "uploading") {
             setUploadLoading(true);
             return;
         }
         if (info.file.status === "done") {
-            getBase64(info.file.originFileObj, (Photo) => {
+            Utils.getBase64(info.file.originFileObj, (Photo: string) => {
                 const {
                     Name,
                     ShortDescription,
                     TermsOfUse,
                     LongDescription,
-                } = app;
+                } = app as any;
                 dispatch(
                     updateMarketApp({
                         ID: appID,
@@ -132,11 +128,11 @@ const SingleAppPage = ({ match }) => {
         }
     };
 
-    const onFinish = (values) => {
+    const onFinish = (values: any) => {
         const App = {
             ID: appID,
-            TermsOfUse: app.TermsOfUse,
-            Status: app.Status,
+            TermsOfUse: app!.TermsOfUse,
+            Status: app!.Status,
             Name: values.Name,
             ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
                 "base64"
@@ -144,14 +140,12 @@ const SingleAppPage = ({ match }) => {
             LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
                 "base64"
             ),
-            Photo: uploadedImg ? uploadedImg : app.Photo,
+            Photo: uploadedImg ? uploadedImg : app!.Photo,
         };
-        message
-            .loading(LOADING, 1.5)
-            .then(() => {
-                dispatch(updateMarketApp(App));
-                setEdit(false);
-            })
+        message.loading(LOADING, 1.5).then(() => {
+            dispatch(updateMarketApp(App));
+            setEdit(false);
+        });
     };
 
     if (!app) {
