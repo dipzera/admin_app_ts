@@ -14,6 +14,9 @@ const BasicView = ({ app, shortDesc, longDesc }: any) => {
             <Form.Item label="Application Name">
                 <div style={BasicValuesStyles}>{app.Name}</div>
             </Form.Item>
+            <Form.Item label="Back Office URI">
+                <div style={BasicValuesStyles}>{app.BackOfficeURI}</div>
+            </Form.Item>
             <Form.Item label="Short description">
                 <div style={BasicValuesStyles}>
                     {shortDesc ? shortDesc[locale] : null}
