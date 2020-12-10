@@ -100,7 +100,7 @@ export const UserModalEdit = ({
     return (
         <Modal
             destroyOnClose
-            title={"Edit user"}
+            title={<IntlMessage id="user.edit.title" />}
             visible={visible}
             okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
             onCancel={onCancel}

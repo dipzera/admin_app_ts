@@ -4,14 +4,9 @@ import {
     MobileOutlined,
     MailOutlined,
     UserOutlined,
-    CompassOutlined,
-    CalendarOutlined,
-    FacebookOutlined,
-    InstagramOutlined,
-    TwitterOutlined,
-    GlobalOutlined,
     ApartmentOutlined,
 } from "@ant-design/icons";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
 
 interface UserViewProps {
     data: any;
@@ -42,24 +37,25 @@ export class UserView extends Component<UserViewProps> {
                             : " "}
                     </h3>
                     <span className="text-muted">
-                        {/* {data?.personalInfo.title} */}User
+                        <IntlMessage id="user.Title" />
                     </span>
                 </div>
                 <Divider dashed />
                 <div className="">
                     <h6 className="text-muted text-uppercase mb-3">
-                        Account details
+                        <IntlMessage id="user.AccountDetails" />
                     </h6>
                     <p>
                         <UserOutlined />
                         <span className="ml-3 text-dark">
-                            Personal ID: {data?.ID}
+                            <IntlMessage id="user.PersonalID" /> {data?.ID}
                         </span>
                     </p>
                     <p>
                         <ApartmentOutlined />
                         <span className="ml-3 text-dark">
-                            Company ID: {data?.CompanyID}
+                            <IntlMessage id="user.CompanyID" />{" "}
+                            {data?.CompanyID}
                         </span>
                     </p>
                     {/* <p>
@@ -70,7 +66,9 @@ export class UserView extends Component<UserViewProps> {
           </p> */}
                 </div>
                 <div className="mt-5">
-                    <h6 className="text-muted text-uppercase mb-3">CONTACT</h6>
+                    <h6 className="text-muted text-uppercase mb-3">
+                        <IntlMessage id="app.Contact" />
+                    </h6>
                     <p>
                         <MobileOutlined />
                         <span className="ml-3 text-dark">

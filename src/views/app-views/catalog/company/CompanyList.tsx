@@ -25,6 +25,8 @@ import EllipsisDropdown from "../../../../components/shared-components/EllipsisD
 import { AdminApi, AuthApi } from "../../../../api";
 import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
+import Translate from "../../../../utils/translate";
 
 enum status {
     active = 1,
@@ -77,12 +79,13 @@ export class CompanyList extends Component {
         editModalVisible: false,
         newUserModalVisible: false,
         registerUserModalVisible: false,
-        loading: false,
+        loading: true,
     };
 
     getCompanyList = () => {
         try {
             return new AdminApi().GetCompanyList().then((data: any) => {
+                this.setState({ loading: false });
                 if (data) {
                     if (data.ErrorCode === 0) {
                         const evaluatedArray = utils.sortData(
@@ -184,19 +187,25 @@ export class CompanyList extends Component {
             >
                 <Flex alignItems="center">
                     <PlayCircleOutlined />
-                    <span className="ml-2">Manage</span>
+                    <span className="ml-2">
+                        <IntlMessage id={"dropdown.Manage"} />
+                    </span>
                 </Flex>
             </Menu.Item>
             <Menu.Item onClick={() => this.showUserProfile(row)}>
                 <Flex alignItems="center">
                     <EyeOutlined />
-                    <span className="ml-2">View Details</span>
+                    <span className="ml-2">
+                        <IntlMessage id={"dropdown.ViewDetails"} />
+                    </span>
                 </Flex>
             </Menu.Item>
             <Menu.Item onClick={() => this.showEditModal(row)}>
                 <Flex alignItems="center">
                     <EditOutlined />
-                    <span className="ml-2">Edit</span>
+                    <span className="ml-2">
+                        <IntlMessage id={"dropdown.Edit"} />
+                    </span>
                 </Flex>
             </Menu.Item>
             {row.Status === 0 || row.Status === 2 ? (
@@ -217,7 +226,9 @@ export class CompanyList extends Component {
                 >
                     <Flex alignItems="center">
                         <CheckCircleOutlined />
-                        <span className="ml-2">Activate</span>
+                        <span className="ml-2">
+                            <IntlMessage id={"dropdown.Activate"} />
+                        </span>
                     </Flex>
                 </Menu.Item>
             ) : (
@@ -238,26 +249,12 @@ export class CompanyList extends Component {
                 >
                     <Flex alignItems="center">
                         <CloseCircleOutlined />
-                        <span className="ml-2">Disable</span>
+                        <span className="ml-2">
+                            <IntlMessage id={"dropdown.Disable"} />
+                        </span>
                     </Flex>
                 </Menu.Item>
             )}
-            {/* <Menu.Item
-                onClick={async () => {
-                    Modal.confirm({
-                        title: `Are you sure you want to delete this company?`,
-                        onOk: async () => {
-                            await this.handleUserStatus(row.ID, status.deleted);
-                            this.getCompanyList();
-                        },
-                    });
-                }}
-            >
-                <Flex alignItems="center">
-                    <DeleteOutlined />
-                    <span className="ml-2">Delete</span>
-                </Flex>
-            </Menu.Item> */}
         </Menu>
     );
     onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,7 +271,7 @@ export class CompanyList extends Component {
 
         const tableColumns: ColumnsType<CompanyProps> = [
             {
-                title: "Company",
+                title: <IntlMessage id="company.Title" />,
                 dataIndex: "",
                 render: (_, record: CompanyProps) => (
                     <div className="d-flex">
@@ -288,14 +285,15 @@ export class CompanyList extends Component {
                 ),
             },
             {
-                title: "IDNO",
+                title: <IntlMessage id="company.IDNO" />,
                 dataIndex: "",
                 render: (_, record) => (
                     <Tag className="text-capitalize">{record.IDNO}</Tag>
                 ),
             },
             {
-                title: "Address",
+                title: <IntlMessage id="company.Address" />,
+
                 dataIndex: "",
                 render: (_, record) => (
                     <p className="text-capitalize">{record.JuridicalAddress}</p>
@@ -303,7 +301,7 @@ export class CompanyList extends Component {
             },
 
             {
-                title: "Status",
+                title: <IntlMessage id="company.Status" />,
                 dataIndex: "Status",
                 render: (Status, record) => (
                     <Tag
@@ -316,11 +314,13 @@ export class CompanyList extends Component {
                                 : "orange"
                         }
                     >
-                        {Status === 1
-                            ? "Active"
-                            : Status === 2
-                            ? "Disabled"
-                            : "Inactive"}
+                        {Status === 1 ? (
+                            <IntlMessage id="company.status.Active" />
+                        ) : Status === 2 ? (
+                            <IntlMessage id="company.status.Disabled" />
+                        ) : (
+                            <IntlMessage id="company.status.Inactive" />
+                        )}
                     </Tag>
                 ),
                 sorter: {
@@ -345,7 +345,7 @@ export class CompanyList extends Component {
                 >
                     <div className="mr-md-3 mb-3">
                         <Input
-                            placeholder="Search"
+                            placeholder={Translate("app.Search")}
                             prefix={<SearchOutlined />}
                             onChange={(e) => this.onSearch(e)}
                         />
@@ -382,25 +382,6 @@ export class CompanyList extends Component {
                                             ? `Disable (${this.state.selectedRows.length})`
                                             : "Disable"}
                                     </Button>
-                                    {/* <Tooltip
-                                        title={`${
-                                            this.state.selectedRows.length > 1
-                                                ? `Delete (${this.state.selectedRows.length})`
-                                                : "Delete"
-                                        }`}
-                                    >
-                                        <Button
-                                            className="mr-3"
-                                            danger
-                                            onClick={() =>
-                                                this.deleteRow(
-                                                    this.state.selectedRows
-                                                )
-                                            }
-                                        >
-                                            <DeleteOutlined />
-                                        </Button>
-                                    </Tooltip> */}
                                 </>
                             )}
                             <Link to={`${APP_PREFIX_PATH}/wizard`}>
@@ -410,7 +391,8 @@ export class CompanyList extends Component {
                                     block
                                     // onClick={() => this.showNewUserModal()}
                                 >
-                                    Register company
+                                    {" "}
+                                    <IntlMessage id="company.Register" />
                                 </Button>
                             </Link>
                         </Flex>
@@ -420,7 +402,6 @@ export class CompanyList extends Component {
                     <Table
                         loading={this.state.loading}
                         columns={tableColumns}
-                        /* TODO: FILTER THIS BY ID BEFORE MOUNTING */
                         dataSource={users}
                         rowKey="ID"
                         style={{ position: "relative" }}

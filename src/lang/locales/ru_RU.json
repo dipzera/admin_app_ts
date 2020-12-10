@@ -1,6 +1,8 @@
 {
 
 
+    "app.Search": "Поиск",
+    "app.Contact": "Контактные данные",
   "auth.SignIn": "Войти",
   "auth.DontHaveAnAccountYet": "У вас нет аккаунта?",
   "auth.SignUp": "Регистрация",
@@ -79,11 +81,12 @@
 
 
   "message.language.success": "Вы успешно сменили язык!",
-  "message.AccountSettings.Uploading": "Загружается...",
-  "message.AccountSettings.Uploaded": "Загрузилось!",
-  "message.AccountSettings.Updating": "Обновляется...",
-  "message.AccountSettings.Done": "Готово!",
-  "message.AccountSettings.Error": "Что-то пошло не так! Попробуйте еще раз!",
+  "message.Uploading": "Загружается...",
+  "message.Uploaded": "Загрузилось!",
+  "message.Updating": "Обновляется...",
+  "message.Done": "Готово!",
+  "message.Error": "Что-то пошло не так! Попробуйте еще раз!",
+  "message.ExpireTime": "Время истекло... Перенаправляем вас на страницу аутентификации!",
 
 
 
@@ -136,6 +139,7 @@
   "account.Billing.Modal.SaveCard": "Сохранить карту",
 
 
+  "account.company.General": "Общее",
   "account.company.BIC": "BIC",
   "account.company.Bank": "Банк",
   "account.company.CommercialName": "Коммерческое название",
@@ -168,5 +172,38 @@
   "theme.Language": "Язык",
 
     "news.title": "Новости",
-    "news.AddButton": "Добавить"
+    "news.AddButton": "Добавить",
+
+    "company.Title": "Компания",
+    "company.IDNO": "IDNO",
+    "company.Address": "Адрес",
+    "company.Status": "Статус",
+    "company.Register": "Зарегистрировать компанию",
+    "company.status.Active": "Активная",
+    "company.status.Inactive": "Инактивная",
+    "company.status.Disabled": "Деактивированная",
+    "company.edit.title": "Редактировать компанию",
+
+    "user.edit.title": "Редактировать пользователя",
+    "user.Title": "Пользователь",
+    "user.Invite": "Пригласить пользователя",
+    "user.sendCodeModal.title": "Вы уверены что хотите отправить почтовое сообщение пользователю",
+    "user.activate.title": "Вы уверены что хотите активировать этого пользователя?",
+    "user.disable.title": "Вы уверены что хотите деактивировать этого пользователя?",
+    "user.AccountDetails": "Данные аккаунта",
+    "user.PersonalID": "Персональный ID",
+    "user.CompanyID": "ID компании",
+    "user.Role": "Роль",
+    "user.LastOnline": "Посл. визит",
+    "user.LastAuthorizeIP": "Посл. IP адрес",
+    "user.Status": "Статус",
+    "user.status.Active": "Активный",
+    "user.status.Inactive": "Инактивный",
+    "user.status.Disabled": "Деактивированный",
+    "dropdown.Manage": "Управлять",
+    "dropdown.SendActivationCode": "Отправить код активации",
+    "dropdown.ViewDetails": "Деталии",
+    "dropdown.Edit": "Редактировать",
+    "dropdown.Activate": "Активировать",
+    "dropdown.Disable": "Деактивировать"
 }

@@ -1,5 +1,6 @@
 {
-
+    "app.Search": "Caută",
+    "app.Contact": "Date de contact",
   "auth.SignIn": "Intră în cont",
   "auth.DontHaveAnAccountYet": "Nu dețineți un cont?",
   "auth.SignUp": "Înregistrare",
@@ -44,7 +45,7 @@
     "sidenav.news": "Noutăți",
 
   "sidenav.catalog": "Catalog",
-    "sidenav.applications": "Aplicatii",
+    "sidenav.applications": "Aplicații",
   "sidenav.catalog.companies": "Companii",
   "sidenav.catalog.group": "Grupuri",
   "sidenav.catalog.users": "Utilizatori",
@@ -80,11 +81,12 @@
   "header.profile.SignOut": "Deconectați-vă",
 
   "message.language.success": "Ați schimbat limba cu succes!",
-  "message.AccountSettings.Uploading": "Se încarcă...",
-  "message.AccountSettings.Uploaded": "Încărcat!",
-  "message.AccountSettings.Updating": "Se actualizează...",
-  "message.AccountSettings.Done": "Succes!",
-  "message.AccountSettings.Error": "A apărut o problemă! Încercați din nou!",
+  "message.Uploading": "Se încarcă...",
+  "message.Uploaded": "Încărcat!",
+  "message.Updating": "Se actualizează...",
+  "message.Done": "Succes!",
+  "message.Error": "A apărut o problemă! Încercați din nou!",
+  "message.ExpireTime": "Timpul a expirat... Vă redirecționăm pe pagina de logare!",
 
     "account.sidenav.EditCompany": "Editează Compania",
   "account.sidenav.EditProfile": "Editează Profilul",
@@ -108,6 +110,7 @@
   "account.EditProfile.Remove": "Elimină",
 
 
+  "account.company.General": "General",
   "account.company.BIC": "BIC",
   "account.company.Bank": "Banca",
   "account.company.CommercialName": "Denumire comercială",
@@ -163,5 +166,38 @@
   "theme.Language": "Limbă",
 
     "news.title": "Noutăți",
-    "news.AddButton": "Adaugă"
+    "news.AddButton": "Adaugă",
+
+    "company.Title": "Compania",
+    "company.IDNO": "IDNO",
+    "company.Address": "Adresa",
+    "company.Status": "Status",
+    "company.Register": "Înregistrează companie",
+    "company.status.Active": "Activ",
+    "company.status.Inactive": "Inactiv",
+    "company.status.Disabled": "Deactivat",
+    "company.edit.title": "Editează compania",
+
+    "user.edit.title": "Editează utilizator",
+    "user.Title": "Utilizator",
+    "user.Invite": "Invită utilizator",
+    "user.sendCodeModal.title": "Sunteți sigur(ă) că doriți să transmiteți un mesaj poștal către utilizatorul",
+    "user.activate.title": "Sunteți sigur(ă) că doriți să activați acest utilizator?",
+    "user.disable.title": "Sunteți sigur(ă) că doriți să deactivați acest utilizator?",
+    "user.AccountDetails": "Datele contului",
+    "user.PersonalID": "ID personal",
+    "user.CompanyID": "ID companiei",
+    "user.Role": "Rol",
+    "user.LastOnline": "Ultima vizită",
+    "user.LastAuthorizeIP": "Ultima adresă IP",
+    "user.Status": "Status",
+    "user.status.Active": "Activ",
+    "user.status.Inactive": "Inactiv",
+    "user.status.Disabled": "Deactivat",
+    "dropdown.Manage": "Administrează",
+    "dropdown.SendActivationCode": "Trimite cod activare",
+    "dropdown.ViewDetails": "Detalii",
+    "dropdown.Edit": "Editează",
+    "dropdown.Activate": "Activează",
+    "dropdown.Disable": "Deactivează"
 }

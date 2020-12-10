@@ -14,6 +14,7 @@ import { IState } from "../../../redux/reducers";
 import { IAccount } from "../../../redux/reducers/Account";
 import { ITheme } from "../../../redux/reducers/Theme";
 import { IAuth } from "../../../redux/reducers/Auth";
+import Localization from "../../../utils/Localization";
 
 class EditProfile extends Component {
     render() {
@@ -31,19 +32,10 @@ class EditProfile extends Component {
             token: Token,
         } = this.props as any;
 
-        const currentAppLocale = AppLocale[locale];
-
         const onFinish = (values: any) => {
             const key = "updatable";
             message.loading({
-                content: (
-                    <IntlProvider
-                        locale={currentAppLocale.locale}
-                        messages={currentAppLocale.messages}
-                    >
-                        <IntlMessage id={"message.AccountSettings.Updating"} />
-                    </IntlProvider>
-                ),
+                content: <Localization msg={"message.Updating"} />,
                 key,
             });
             setTimeout(async () => {

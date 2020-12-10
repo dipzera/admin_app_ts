@@ -4,15 +4,9 @@ import {
     MobileOutlined,
     MailOutlined,
     UserOutlined,
-    CompassOutlined,
-    CalendarOutlined,
-    FacebookOutlined,
-    InstagramOutlined,
-    TwitterOutlined,
     GlobalOutlined,
-    ApartmentOutlined,
-    BankOutlined,
 } from "@ant-design/icons";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
 
 interface UserViewProps {
     data: any;
@@ -40,75 +34,86 @@ export class CompanyView extends Component<UserViewProps> {
                     />
                     <h3 className="mt-2 mb-0">{data?.JuridicalName}</h3>
                     <span className="text-muted">
-                        {/* {data?.personalInfo.title} */}Company
+                        <IntlMessage id="company.Title" />
                     </span>
                 </div>
                 <Divider dashed />
                 <div className="">
-                    <h6 className="text-muted text-uppercase mb-3">General</h6>
+                    <h6 className="text-muted text-uppercase mb-3">
+                        <IntlMessage id="account.company.General" />
+                    </h6>
                     <p>
-                        <span className=" text-dark">IDNO: {data?.IDNO}</span>
+                        <span className=" text-dark">
+                            <IntlMessage id="account.company.IDNO" />{" "}
+                            {data?.IDNO}
+                        </span>
                     </p>
                     <p>
                         <span className=" text-dark">
-                            Juridical name: {data?.JuridicalName}
+                            <IntlMessage id="account.company.JuridicalName" />{" "}
+                            {data?.JuridicalName}
                         </span>
                     </p>
 
                     <p>
                         <span className=" text-dark">
-                            Commercial name: {data?.CommercialName}
+                            <IntlMessage id="account.company.CommercialName" />{" "}
+                            {data?.CommercialName}
                         </span>
                     </p>
 
                     {data?.VATCode && (
                         <p>
                             <span className=" text-dark">
-                                VAT Code: {data?.VATCode}
+                                <IntlMessage id="account.company.VATCode" />{" "}
+                                {data?.VATCode}
                             </span>
                         </p>
                     )}
-                    {/* <p>
-            <CalendarOutlined />
-            <span className="ml-3 text-dark">
-              Born in {data?.personalInfo.birthday}
-            </span>
-          </p> */}
                 </div>
                 <div className="mt-5">
-                    <h6 className="text-muted text-uppercase mb-3">Bank</h6>
-                    <p>
-                        <span className=" text-dark">Bank: {data?.Bank}</span>
-                    </p>
-                    <p>
-                        <span className=" text-dark">IBAN: {data?.IBAN}</span>
-                    </p>
-                    <p>
-                        <span className=" text-dark">BIC: {data?.BIC}</span>
-                    </p>
-
-                    {/* <p>
-            <CompassOutlined />
-            <span className="ml-3 text-dark">
-              {data?.personalInfo.location}
-            </span>
-          </p> */}
-                </div>
-                <div className="mt-5">
-                    <h6 className="text-muted text-uppercase mb-3">Address</h6>
+                    <h6 className="text-muted text-uppercase mb-3">
+                        <IntlMessage id="account.company.Bank" />{" "}
+                    </h6>
                     <p>
                         <span className=" text-dark">
-                            Juridical address: {data?.JuridicalAddress}
+                            <IntlMessage id="account.company.Bank" />{" "}
+                            {data?.Bank}
                         </span>
                     </p>
                     <p>
                         <span className=" text-dark">
-                            Office Address: {data?.OfficeAddress}
+                            <IntlMessage id="account.company.IBAN" />{" "}
+                            {data?.IBAN}
+                        </span>
+                    </p>
+                    <p>
+                        <span className=" text-dark">
+                            <IntlMessage id="account.company.BIC" /> {data?.BIC}
                         </span>
                     </p>
                 </div>
                 <div className="mt-5">
-                    <h6 className="text-muted text-uppercase mb-3">Contact</h6>
+                    <h6 className="text-muted text-uppercase mb-3">
+                        <IntlMessage id="company.Address" />
+                    </h6>
+                    <p>
+                        <span className=" text-dark">
+                            <IntlMessage id="account.company.JuridicalAddress" />{" "}
+                            {data?.JuridicalAddress}
+                        </span>
+                    </p>
+                    <p>
+                        <span className=" text-dark">
+                            <IntlMessage id="account.company.OfficeAddress" />{" "}
+                            {data?.OfficeAddress}
+                        </span>
+                    </p>
+                </div>
+                <div className="mt-5">
+                    <h6 className="text-muted text-uppercase mb-3">
+                        <IntlMessage id="app.Contact" />
+                    </h6>
                     <p>
                         <MobileOutlined />
                         <span className="ml-3 text-dark">

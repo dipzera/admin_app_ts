@@ -5,6 +5,8 @@ import { IState } from "../../redux/reducers";
 import { ITheme } from "../../redux/reducers/Theme";
 import utils from "../../utils";
 import MenuContent from "./MenuContent";
+import ReactDOMServer from "react-dom/server";
+import Localization from "../../utils/Localization";
 
 interface TopNavProps {
     topNavColor?: any;
@@ -21,9 +23,10 @@ export const TopNav = ({
 
     useEffect(() => {
         if (routeInfo) {
-            const title =
-                routeInfo.key.charAt(0).toUpperCase() + routeInfo.key.slice(1);
-            document.title = title;
+            const title = routeInfo.title;
+            document.title = ReactDOMServer.renderToString(
+                <Localization msg={title} />
+            );
         } else {
             document.title = "Admin Portal App";
         }

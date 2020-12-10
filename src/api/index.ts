@@ -7,14 +7,10 @@ import {
     EXPIRE_TIME,
     INTERNAL_ERROR,
 } from "../constants/Messages";
-import { clearSettings, updateSettings } from "../redux/actions/Account";
-import {
-    authenticated,
-    hideLoading,
-    refreshToken,
-    signOut,
-} from "../redux/actions/Auth";
+import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
+import ReactDOMServer from "react-dom/server";
+import Localization from "../utils/Localization";
 const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
@@ -103,10 +99,14 @@ class HttpClient {
                     } else {
                         const key = "updatable";
                         message
-                            .loading({ content: EXPIRE_TIME, key })
+                            .loading({
+                                content: ReactDOMServer.renderToString(
+                                    EXPIRE_TIME()
+                                ),
+                                key,
+                            })
                             .then(() => {
                                 store.dispatch(signOut());
-                                // store.dispatch(clearSettings());
                             });
                     }
                 }

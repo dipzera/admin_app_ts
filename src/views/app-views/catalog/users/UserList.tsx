@@ -32,6 +32,9 @@ import "./table.scss";
 import { IState } from "../../../../redux/reducers";
 import { IAuth } from "../../../../redux/reducers/Auth";
 import { IAccount } from "../../../../redux/reducers/Account";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
+import Localization from "../../../../utils/Localization";
+import WithStringTranslate from "../../../../utils/translate";
 
 enum status {
     inactive = 0,
@@ -86,7 +89,7 @@ export class UserList extends Component<StoreProps> {
         editModalVisible: false,
         newUserModalVisible: false,
         registerUserModalVisible: false,
-        loading: false,
+        loading: true,
         usersChanged: false,
         status: null,
     };
@@ -94,6 +97,7 @@ export class UserList extends Component<StoreProps> {
     getUsersInfo = () => {
         try {
             return new AdminApi().GetAllUsers().then((data: any) => {
+                this.setState({ loading: false });
                 if (data) {
                     const { ErrorCode } = data;
                     if (ErrorCode === 0) {
@@ -191,7 +195,13 @@ export class UserList extends Component<StoreProps> {
                 <Menu.Item
                     onClick={() =>
                         Modal.confirm({
-                            title: `Are you sure you want to send an email to ${row.FirstName} ?`,
+                            title:
+                                WithStringTranslate(
+                                    "user.sendCodeModal.title"
+                                ) +
+                                " " +
+                                row.FirstName +
+                                "?",
                             onOk: () => {
                                 this.props.sendActivationCode(row.ID);
                             },
@@ -201,27 +211,33 @@ export class UserList extends Component<StoreProps> {
                 >
                     <Flex alignItems="center">
                         <ArrowRightOutlined />
-                        <span className="ml-2">Send activation code</span>
+                        <span className="ml-2">
+                            <IntlMessage id="dropdown.SendActivationCode" />
+                        </span>
                     </Flex>
                 </Menu.Item>
             )}
             <Menu.Item onClick={() => this.showUserProfile(row)}>
                 <Flex alignItems="center">
                     <EyeOutlined />
-                    <span className="ml-2">View Details</span>
+                    <span className="ml-2">
+                        <IntlMessage id="dropdown.ViewDetails" />
+                    </span>
                 </Flex>
             </Menu.Item>
             <Menu.Item onClick={() => this.showEditModal(row)}>
                 <Flex alignItems="center">
                     <EditOutlined />
-                    <span className="ml-2">Edit</span>
+                    <span className="ml-2">
+                        <IntlMessage id="dropdown.Edit" />
+                    </span>
                 </Flex>
             </Menu.Item>
             {row.Status === 0 || row.Status === 2 ? (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: `Are you sure you want to activate this user?`,
+                            title: <IntlMessage id="user.activate.title" />,
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
@@ -235,14 +251,16 @@ export class UserList extends Component<StoreProps> {
                 >
                     <Flex alignItems="center">
                         <CheckCircleOutlined />
-                        <span className="ml-2">Activate</span>
+                        <span className="ml-2">
+                            <IntlMessage id="dropdown.Activate" />
+                        </span>
                     </Flex>
                 </Menu.Item>
             ) : (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: `Are you sure you want to disable this user?`,
+                            title: <IntlMessage id="user.disable.title" />,
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
@@ -255,7 +273,9 @@ export class UserList extends Component<StoreProps> {
                 >
                     <Flex alignItems="center">
                         <CloseCircleOutlined />
-                        <span className="ml-2">Disable</span>
+                        <span className="ml-2">
+                            <IntlMessage id="dropdown.Disable" />
+                        </span>
                     </Flex>
                 </Menu.Item>
             )}
@@ -279,7 +299,7 @@ export class UserList extends Component<StoreProps> {
 
         let tableColumns: any = [
             {
-                title: "User",
+                title: <IntlMessage id="user.Title" />,
                 dataIndex: "FirstName",
                 render: (_: any, record: UsersProps) => (
                     <div className="d-flex">
@@ -293,16 +313,16 @@ export class UserList extends Component<StoreProps> {
                 ),
             },
             {
-                title: "Company",
+                title: <IntlMessage id="company.Title" />,
                 dataIndex: "Company",
                 render: (Company: string) => <span>{Company}</span>,
             },
             {
-                title: "Role",
+                title: <IntlMessage id="user.Role" />,
                 render: () => "User",
             },
             {
-                title: "Last online",
+                title: <IntlMessage id="user.LastOnline" />,
                 dataIndex: "LastAuthorize",
                 render: (LastAuthorize: any) => (
                     <span>
@@ -315,14 +335,14 @@ export class UserList extends Component<StoreProps> {
                 ),
             },
             {
-                title: "Last Authorize IP",
+                title: <IntlMessage id="user.LastAuthorizeIP" />,
                 dataIndex: "LastAuthorizeIP",
                 render: (LastAuthorizeIP: string) => (
                     <span>{LastAuthorizeIP}</span>
                 ),
             },
             {
-                title: "Status",
+                title: <IntlMessage id="user.Status" />,
                 dataIndex: "Status",
                 render: (Status: number) => (
                     <Tag
@@ -335,11 +355,13 @@ export class UserList extends Component<StoreProps> {
                                 : "orange"
                         }
                     >
-                        {Status === 1
-                            ? "Active"
-                            : Status === 2
-                            ? "Disabled"
-                            : "Inactive"}
+                        {Status === 1 ? (
+                            <IntlMessage id="user.status.Active" />
+                        ) : Status === 2 ? (
+                            <IntlMessage id="user.status.Disabled" />
+                        ) : (
+                            <IntlMessage id="user.status.Inactive" />
+                        )}
                     </Tag>
                 ),
                 sorter: {
@@ -432,7 +454,8 @@ export class UserList extends Component<StoreProps> {
                                 icon={<PlusCircleOutlined />}
                                 block
                             >
-                                Invite user
+                                {" "}
+                                <IntlMessage id="user.Invite" />
                             </Button>
                         </Flex>
                     </div>
@@ -441,7 +464,6 @@ export class UserList extends Component<StoreProps> {
                     <Table
                         loading={this.state.loading}
                         columns={tableColumns}
-                        /* TODO: FILTER THIS BY ID BEFORE MOUNTING */
                         dataSource={this.state.users}
                         rowKey="ID"
                         style={{ position: "relative" }}

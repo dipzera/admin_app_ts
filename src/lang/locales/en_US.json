@@ -1,4 +1,6 @@
 {
+    "app.Search": "Search",
+    "app.Contact": "Contact",
 	"auth.SignIn": "Sign In",
 	"auth.DontHaveAnAccountYet": "Don't have an account yet?",
 	"auth.SignUp": "Register",
@@ -76,11 +78,12 @@
 	"header.profile.SignOut": "Sign Out",
 
 	"message.language.success": "You've changed your language successfully!",
-	"message.AccountSettings.Uploading": "Uploading...",
-	"message.AccountSettings.Uploaded": "Uploaded!",
-	"message.AccountSettings.Updating": "Updating...",
-	"message.AccountSettings.Done": "Done!",
-	"message.AccountSettings.Error": "Something went wrong! Try again!",
+	"message.Uploading": "Uploading...",
+	"message.Uploaded": "Uploaded!",
+	"message.Updating": "Updating...",
+	"message.Done": "Done!",
+    "message.Error": "Something went wrong! Try again!",
+    "message.ExpireTime": "Time has expired... Redirecting you to login page!",
 
 
     "account.sidenav.EditProfile": "Edit Profile",
@@ -103,7 +106,7 @@
 	"account.EditProfile.ChangeAvatar": "Change Avatar",
 	"account.EditProfile.Remove": "Remove",
 
-    
+  "account.company.General": "General",
   "account.company.BIC": "BIC",
   "account.company.Bank": "Bank",
   "account.company.CommercialName": "Commercial Name",
@@ -158,6 +161,42 @@
     "theme.Language": "Language",
     
     "news.title": "News",
-    "news.AddButton": "Add new"
+    "news.AddButton": "Add new",
+
+
+    "company.Title": "Company",
+    "company.IDNO": "IDNO",
+    "company.Address": "Address",
+    "company.Status": "Status",
+    "company.Register": "Register company",
+    "company.status.Active": "Active",
+    "company.status.Inactive": "Inactive",
+    "company.status.Disabled": "Disabled",
+    "company.edit.title": "Edit company",
+
+    "user.edit.title": "Edit user",
+    "user.Title": "User",
+    "user.Invite": "Invite user",
+    "user.sendCodeModal.title": "Are you sure you want to send an email to the user",
+    "user.activate.title": "Are you sure you want to activate this user?",
+    "user.disable.title": "Are you sure you want to disable this user?",
+    "user.AccountDetails": "Account Details",
+    "user.PersonalID": "Personal ID",
+    "user.CompanyID": "Company ID",
+    "user.Role": "Role",
+    "user.LastOnline": "Last online",
+    "user.LastAuthorizeIP": "Last Authorize IP",
+    "user.Status": "Status",
+    "user.status.Active": "Active",
+    "user.status.Inactive": "Inactive",
+    "user.status.Disabled": "Disabled",
+    
+    "dropdown.Manage": "Manage",
+    "dropdown.SendActivationCode": "Send activation code",
+    "dropdown.ViewDetails": "View details",
+    "dropdown.Edit": "Edit",
+    "dropdown.Activate": "Activate",
+    "dropdown.Disable": "Disable"
+    
 
 }

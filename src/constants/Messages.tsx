@@ -1,7 +1,12 @@
+import React from "react";
+import Localization from "../utils/Localization";
+
 export const ACTIVATION_MSG_TITLE = "User registration confirmation";
 export const ACTIVATION_MSG_CONTENT =
     "Press OK if you want us to send a new activation message";
-export const EXPIRE_TIME = "Time has expired! Redirecting you to login page...";
+export const EXPIRE_TIME = () => {
+    return <Localization msg="message.ExpireTime" />;
+};
 export const EMAIL_CONFIRM_MSG_2 =
     "Please confirm the registration by clicking on the link we've sent to your email!";
 export const EMAIL_CONFIRM_MSG = "Confirmation message was send to the email!";
