@@ -41,6 +41,14 @@ const dashBoardNavTree = [
         submenu: [],
     },
     {
+        key: "news",
+        path: "/app/news",
+        title: "sidenav.news",
+        icon: InfoCircleOutlined,
+        breadcrumb: false,
+        submenu: [],
+    },
+    {
         key: "catalog",
         path: "/app/catalog",
         title: "sidenav.catalog",
@@ -89,7 +97,7 @@ const dashBoardNavTree = [
                 submenu: [],
             },
             {
-                key: "loginHistory",
+                key: "login History",
                 path: "/app/audit/history",
                 title: "sidenav.audit.loginHistory",
                 icon: HistoryOutlined,

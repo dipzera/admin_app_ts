@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Layout } from "antd";
 import { connect } from "react-redux";
 import {
@@ -10,6 +10,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 import MenuContent from "./MenuContent";
 import { IState } from "../../redux/reducers";
 import { ITheme } from "../../redux/reducers/Theme";
+import Localization from "../../utils/Localization";
 
 const { Sider } = Layout;
 
@@ -25,6 +26,16 @@ export const SideNav = ({
     localization = true,
 }: SideNavProps) => {
     const props = { sideNavTheme, routeInfo, hideGroupTitle, localization };
+
+    useEffect(() => {
+        if (routeInfo) {
+            const title =
+                routeInfo.key.charAt(0).toUpperCase() + routeInfo.key.slice(1);
+            document.title = title;
+        } else {
+            document.title = "Admin Portal App";
+        }
+    }, [routeInfo]);
     return (
         <Sider
             className={`side-nav ${

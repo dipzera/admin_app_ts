@@ -41,6 +41,7 @@
 
   "sidenav.home": "Acasă",
   "sidenav.dashboard": "Dashboard",
+    "sidenav.news": "Noutăți",
 
   "sidenav.catalog": "Catalog",
     "sidenav.applications": "Aplicatii",
@@ -159,6 +160,8 @@
   "theme.Light": "Light",
   "theme.Dark": "Dark",
   "theme.Locale": "Localizare",
-  "theme.Language": "Limbă"
+  "theme.Language": "Limbă",
 
+    "news.title": "Noutăți",
+    "news.AddButton": "Adaugă"
 }

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, Grid } from "antd";
 import IntlMessage from "../util-components/IntlMessage";
@@ -144,6 +144,7 @@ const SideNavContent = (props: any) => {
 
 const TopNavContent = (props: any) => {
     const { topNavColor, localization } = props;
+
     return (
         <Menu mode="horizontal" style={{ backgroundColor: topNavColor }}>
             {navigationConfig.map((menu) =>

@@ -43,6 +43,7 @@
 
 
   "sidenav.home": "Главная",
+    "sidenav.news": "Новости",
   "sidenav.dashboard": "Панель",
     "sidenav.applications": "Приложения",
   "sidenav.catalog": "Каталог",
@@ -164,5 +165,8 @@
   "theme.Light": "Светлая",
   "theme.Dark": "Темная",
   "theme.Locale": "Локализация",
-  "theme.Language": "Язык"
+  "theme.Language": "Язык",
+
+    "news.title": "Новости",
+    "news.AddButton": "Добавить"
 }

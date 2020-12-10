@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { NAV_TYPE_TOP } from "../../constants/ThemeConstant";
 import { IState } from "../../redux/reducers";
@@ -18,6 +18,16 @@ export const TopNav = ({
     routeInfo,
 }: TopNavProps) => {
     const props = { topNavColor, localization };
+
+    useEffect(() => {
+        if (routeInfo) {
+            const title =
+                routeInfo.key.charAt(0).toUpperCase() + routeInfo.key.slice(1);
+            document.title = title;
+        } else {
+            document.title = "Admin Portal App";
+        }
+    }, [routeInfo]);
     return (
         <div
             className={`top-nav ${utils.getColorContrast(topNavColor)}`}

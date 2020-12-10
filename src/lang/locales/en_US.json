@@ -38,7 +38,8 @@
   "auth.validate.Error": "You haven't confirmed your registration yet! Please check your email!",
 
 	"sidenav.home": "Home",
-	"sidenav.dashboard": "Dashboard",
+    "sidenav.dashboard": "Dashboard",
+    "sidenav.news": "News",
 
     "sidenav.applications": "Applications",
 	"sidenav.catalog": "Catalog",
@@ -154,6 +155,9 @@
 	"theme.Light": "Light",
 	"theme.Dark": "Dark",
 	"theme.Locale": "Locale",
-	"theme.Language": "Language"
+    "theme.Language": "Language",
+    
+    "news.title": "News",
+    "news.AddButton": "Add new"
 
 }

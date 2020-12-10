@@ -78,33 +78,37 @@ class HttpClient {
     public _handleError = async (error: any) => {
         if (error.config && error.data && error.data.ErrorCode === 118) {
             return this._RefreshToken().then(async (data: any) => {
-                const { ErrorCode, Token } = data;
-                if (ErrorCode === 0) {
-                    store.dispatch(authenticated(Token));
-                    if (error.config.method === "get") {
-                        error.config.params = {
-                            ...error.config.params,
-                            Token,
-                        };
-                        return await axios
-                            .request(error.config)
-                            .then((response) => response.data);
+                if (data) {
+                    const { ErrorCode, Token } = data;
+                    if (ErrorCode === 0) {
+                        store.dispatch(authenticated(Token));
+                        if (error.config.method === "get") {
+                            error.config.params = {
+                                ...error.config.params,
+                                Token,
+                            };
+                            return await axios
+                                .request(error.config)
+                                .then((response) => response.data);
+                        }
+                        if (error.config.method === "post") {
+                            error.config.data = {
+                                ...JSON.parse(error.config.data),
+                                Token,
+                            };
+                            return await axios
+                                .request(error.config)
+                                .then((response) => response.data);
+                        }
+                    } else {
+                        const key = "updatable";
+                        message
+                            .loading({ content: EXPIRE_TIME, key })
+                            .then(() => {
+                                store.dispatch(signOut());
+                                // store.dispatch(clearSettings());
+                            });
                     }
-                    if (error.config.method === "post") {
-                        error.config.data = {
-                            ...JSON.parse(error.config.data),
-                            Token,
-                        };
-                        return await axios
-                            .request(error.config)
-                            .then((response) => response.data);
-                    }
-                } else {
-                    const key = "updatable";
-                    message.loading({ content: EXPIRE_TIME, key }).then(() => {
-                        store.dispatch(signOut());
-                        // store.dispatch(clearSettings());
-                    });
                 }
             });
         }
@@ -234,5 +238,12 @@ export class AdminApi extends HttpClient {
     public ChangeMarketAppStatus = (ID: number, Status: number) =>
         this.instance.get("/ChangeMarketAppStatus", {
             params: { ID, Status },
+        });
+
+    public GetNews = () => this.instance.get("/GetNews");
+
+    public UpdateNews = (data: any) =>
+        this.instance.post("/UpdateNews", {
+            ...data,
         });
 }

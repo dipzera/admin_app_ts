@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../../components/shared-components/Loading";
 import { APP_PREFIX_PATH } from "../../configs/AppConfig";
+import navigationConfig from "../../configs/NavigationConfig";
 
 export const AppViews = () => {
     return (
@@ -19,6 +20,10 @@ export const AppViews = () => {
                     path={`${APP_PREFIX_PATH}/applications`}
                     exact
                     component={lazy(() => import(`./applications`))}
+                />
+                <Route
+                    path={`${APP_PREFIX_PATH}/news`}
+                    component={lazy(() => import(`./news`))}
                 />
                 <Route
                     path={`${APP_PREFIX_PATH}/applications/:appID`}
