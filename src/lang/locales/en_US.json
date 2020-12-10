@@ -122,6 +122,7 @@
   "account.company.PhoneNumber": "Phone Number",
   "account.company.PostalCode": "Postal Code",
   "account.company.WebSite": "Website",
+  "account.company.ShortName": "Short name",
 
 	"account.ChangePassword.CurrentPassword": "Current Password",
 	"account.ChangePassword.Title": "Change Password",
@@ -196,7 +197,16 @@
     "dropdown.ViewDetails": "View details",
     "dropdown.Edit": "Edit",
     "dropdown.Activate": "Activate",
-    "dropdown.Disable": "Disable"
+    "dropdown.Disable": "Disable",
     
+
+    "wizard.Title": "Registration wizard",
+    "wizard.UploadAvatar": "Upload avatar",
+    "wizard.Next": "Next",
+    "wizard.Previous": "Previous",
+    "wizard.Company.title": "Company info",
+    "wizard.User.title": "User info",
+    "wizard.Finish.title": "Finish"
+
 
 }

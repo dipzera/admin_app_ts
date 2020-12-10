@@ -155,6 +155,7 @@
   "account.company.PhoneNumber": "Телефон",
   "account.company.PostalCode": "Почтовый индекс",
   "account.company.WebSite": "Веб-сайт",
+  "account.company.ShortName": "Короткое название",
 
 
   "theme.Title": "Тема",
@@ -205,5 +206,15 @@
     "dropdown.ViewDetails": "Деталии",
     "dropdown.Edit": "Редактировать",
     "dropdown.Activate": "Активировать",
-    "dropdown.Disable": "Деактивировать"
+    "dropdown.Disable": "Деактивировать",
+
+
+
+    "wizard.Title": "Визард регистрации",
+    "wizard.UploadAvatar": "Загрузить аватар",
+    "wizard.Next": "Следующий шаг",
+    "wizard.Previous": "Предыдущий шаг",
+    "wizard.Company.title": "Данные компании",
+    "wizard.User.title": "Данные пользователя",
+    "wizard.Finish.title": "Конец"
 }

@@ -1,5 +1,6 @@
 import { Button, Col, Form, Input, Row } from "antd";
 import React from "react";
+import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../../constants/ThemeConstant";
 import { WizardContext } from "./WizardContext";
 
@@ -81,7 +82,7 @@ class UserFormWizard extends React.Component {
                                             htmlType="submit"
                                             type="primary"
                                         >
-                                            Next
+                                            <IntlMessage id="wizard.Next" />
                                         </Button>
                                         <Button
                                             className="ml-2"
@@ -91,7 +92,7 @@ class UserFormWizard extends React.Component {
                                                 )
                                             }
                                         >
-                                            Previous
+                                            <IntlMessage id="wizard.Previous" />
                                         </Button>
                                     </Col>
                                 </Row>

@@ -7,17 +7,19 @@ import UserFormWizard from "./UserFormWizard";
 import { WizardContext } from "./WizardContext";
 import { useBeforeunload } from "react-beforeunload";
 import LastWizardStep from "./LastWizardStep";
+import IntlMessage from "../../../../../components/util-components/IntlMessage";
+import WithStringTranslate from "../../../../../utils/translate";
 const steps = [
     {
-        title: "Company info",
+        title: WithStringTranslate("wizard.Company.title"),
         content: <CompanyFormWizard />,
     },
     {
-        title: "User info",
+        title: WithStringTranslate("wizard.User.title"),
         content: <UserFormWizard />,
     },
     {
-        title: "Finish",
+        title: WithStringTranslate("wizard.Finish.title"),
         content: <LastWizardStep />,
     },
 ];

@@ -124,7 +124,9 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                             customRequest={Utils.dummyRequest}
                             beforeUpload={(info) => Utils.beforeUpload(info)}
                         >
-                            <Button type="primary">Upload Avatar</Button>
+                            <Button type="primary">
+                                <IntlMessage id="wizard.UploadAvatar" />
+                            </Button>
                         </Upload>
                         <Button className="ml-2" onClick={onRemoveAvater}>
                             <IntlMessage id={"account.EditProfile.Remove"} />
@@ -381,7 +383,9 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                     </Col>
                                     <Col xs={24} sm={24} md={12}>
                                         <Form.Item
-                                            label={"Short name"}
+                                            label={
+                                                <IntlMessage id="account.company.ShortName" />
+                                            }
                                             name="ShortName"
                                             rules={[
                                                 {
@@ -434,7 +438,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             htmlType="submit"
                                             type="primary"
                                         >
-                                            Next
+                                            <IntlMessage id="wizard.Next" />
                                         </Button>
                                     </Col>
                                 </Row>

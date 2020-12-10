@@ -41,11 +41,6 @@ export const setProfileInfo = (accountInfo: {
             if (data) {
                 if (data.ErrorCode === 0) {
                     dispatch(getProfileInfo());
-                    message.success({
-                        content: DONE,
-                        key: "updatable",
-                        duration: 2.5,
-                    });
                 }
             }
         });

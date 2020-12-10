@@ -126,6 +126,7 @@
   "account.company.PhoneNumber": "Telefon",
   "account.company.PostalCode": "Cod poștal",
   "account.company.WebSite": "Site Web",
+  "account.company.ShortName": "Denumire prescurtată",
 
 
   "account.ChangePassword.CurrentPassword": "Parola curentă",
@@ -199,5 +200,15 @@
     "dropdown.ViewDetails": "Detalii",
     "dropdown.Edit": "Editează",
     "dropdown.Activate": "Activează",
-    "dropdown.Disable": "Deactivează"
+    "dropdown.Disable": "Deactivează",
+
+
+
+    "wizard.Title": "Wizard înregistrare",
+    "wizard.UploadAvatar": "Încarcă logo",
+    "wizard.Next": "Următorul",
+    "wizard.Previous": "Pasul precedent",
+    "wizard.Company.title": "Informație companie",
+    "wizard.User.title": "Informație utilizator",
+    "wizard.Finish.title": "Finisare"
 }
