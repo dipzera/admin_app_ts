@@ -26,6 +26,7 @@ import { IState } from "../../../../redux/reducers";
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../utils/translate";
+import { APP_NAME } from "../../../../configs/AppConfig";
 
 const SingleAppPage = ({ match }: any) => {
     const { appID } = match.params;
@@ -97,6 +98,12 @@ const SingleAppPage = ({ match }: any) => {
             form.setFieldsValue(app);
         }
     }, [edit, setEdit]);
+
+    useEffect(() => {
+        if (app) {
+            document.title = `${APP_NAME} - ${app.Name}`;
+        }
+    }, [appID]);
 
     const handleUploadChange = (info: any) => {
         if (info.file.status === "uploading") {

@@ -112,6 +112,13 @@ class HttpClient {
                 }
             });
         }
+        if (error.request.status !== 200) {
+            message.error({
+                content: error.toString(),
+                key: "updatable",
+                duration: 10,
+            });
+        }
         store.dispatch(hideLoading());
     };
 }

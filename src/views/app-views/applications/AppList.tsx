@@ -14,6 +14,7 @@ import { hideLoading, signOut } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
 import { IAuth } from "../../../redux/reducers/Auth";
+import IntlMessage from "../../../components/util-components/IntlMessage";
 
 const GridItem = ({ data }: any) => {
     const [shortDescription, setShortDescription] = useState<any>();
@@ -46,14 +47,14 @@ const GridItem = ({ data }: any) => {
                     >
                         <ClockCircleOutlined />
                         <span className="ml-2 font-weight-semibold">
-                            Not Active
+                            <IntlMessage id="applications.status.NotActive" />
                         </span>
                     </Tag>
                 ) : (
                     <Tag className="text-capitalize" color="cyan">
                         <CheckCircleOutlined />
                         <span className="ml-2 font-weight-semibold">
-                            Active
+                            <IntlMessage id="applications.status.Active" />
                         </span>
                     </Tag>
                 )}

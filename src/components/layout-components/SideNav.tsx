@@ -12,6 +12,8 @@ import { IState } from "../../redux/reducers";
 import { ITheme } from "../../redux/reducers/Theme";
 import Localization from "../../utils/Localization";
 import ReactDOMServer from "react-dom/server";
+import { APP_NAME } from "../../configs/AppConfig";
+import WithStringTranslate from "../../utils/translate";
 
 const { Sider } = Layout;
 
@@ -31,11 +33,9 @@ export const SideNav = ({
     useEffect(() => {
         if (routeInfo) {
             const title = routeInfo.title;
-            document.title = ReactDOMServer.renderToString(
-                <Localization msg={title} />
-            );
+            document.title = `${APP_NAME} - ${WithStringTranslate(title)}`;
         } else {
-            document.title = "Admin Portal App";
+            document.title = APP_NAME;
         }
     }, [routeInfo]);
     return (

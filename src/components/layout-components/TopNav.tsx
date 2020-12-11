@@ -7,6 +7,8 @@ import utils from "../../utils";
 import MenuContent from "./MenuContent";
 import ReactDOMServer from "react-dom/server";
 import Localization from "../../utils/Localization";
+import { APP_NAME } from "../../configs/AppConfig";
+import WithStringTranslate from "../../utils/translate";
 
 interface TopNavProps {
     topNavColor?: any;
@@ -24,11 +26,9 @@ export const TopNav = ({
     useEffect(() => {
         if (routeInfo) {
             const title = routeInfo.title;
-            document.title = ReactDOMServer.renderToString(
-                <Localization msg={title} />
-            );
+            document.title = `${APP_NAME} - ${WithStringTranslate(title)}`;
         } else {
-            document.title = "Admin Portal App";
+            document.title = APP_NAME;
         }
     }, [routeInfo]);
     return (
