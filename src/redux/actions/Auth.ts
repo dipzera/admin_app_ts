@@ -17,9 +17,10 @@ import {
 import { message, Modal } from "antd";
 import { IS_USER_ACTIVATED } from "../constants/Auth";
 import { getProfileInfo } from "./Account";
-import { EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../constants/Messages";
+import { DONE, EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../constants/Messages";
 import { AuthApi } from "../../api";
 import { ThunkResult } from "../reducers";
+import WithStringTranslate from "../../utils/translate";
 
 export const authenticated = (token: string) => ({
     type: AUTHENTICATED,
@@ -68,7 +69,12 @@ export const sendActivationCode = (
     return new AuthApi().SendActivationCode(UserID).then((data: any) => {
         if (data) {
             const { ErrorMessage, ErrorCode } = data;
-            if (ErrorCode === 0) message.success(EMAIL_CONFIRM_MSG);
+            if (ErrorCode === 0)
+                message.success({
+                    content: WithStringTranslate(DONE),
+                    key: "updatable",
+                    duration: 2,
+                });
             else dispatch(showAuthMessage(ErrorMessage));
         }
     });
@@ -91,9 +97,12 @@ export const authorizeUser = (data: {
             } else if (ErrorCode === 108) {
                 dispatch(hideLoading());
                 Modal.confirm({
-                    title: "Confirm registration",
-                    content:
-                        "Press the OK button down below if you want us to send you a new activation code!",
+                    title: WithStringTranslate(
+                        "auth.ConfirmRegistration.Title"
+                    ),
+                    content: WithStringTranslate(
+                        "auth.ConfirmRegistration.Content"
+                    ),
                     onOk: () => {
                         dispatch(sendActivationCode());
                     },

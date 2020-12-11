@@ -141,7 +141,7 @@ const SingleAppPage = ({ match }: any) => {
                 "base64"
             ),
             Photo: uploadedImg ? uploadedImg : app!.Photo,
-            BackOfficeURI: values.BackOfficeURI,
+            // BackOfficeURI: values.BackOfficeURI,
         };
         message.loading(LOADING, 1.5).then(() => {
             dispatch(updateMarketApp(App));

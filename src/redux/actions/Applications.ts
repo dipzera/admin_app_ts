@@ -1,6 +1,7 @@
 import { message } from "antd";
 import { AdminApi } from "../../api";
 import { DONE } from "../../constants/Messages";
+import WithStringTranslate from "../../utils/translate";
 import { SET_APPS } from "../constants/Applications";
 import { ThunkResult } from "../reducers";
 import { IApps, IPackages } from "../reducers/Applications";
@@ -28,7 +29,11 @@ export const updateMarketApp = (App: {
         if (data) {
             if (data.ErrorCode === 0) {
                 await dispatch(getMarketApps());
-                message.success(DONE, 1.5);
+                message.success({
+                    content: WithStringTranslate(DONE),
+                    key: "updatable",
+                    duration: 1,
+                });
             }
         }
     });
@@ -46,7 +51,11 @@ export const createMarketAppPackage = (
             if (data) {
                 if (data.ErrorCode === 0) {
                     await dispatch(getMarketApps());
-                    message.success(DONE, 1.5);
+                    message.success({
+                        content: WithStringTranslate(DONE),
+                        key: "updatable",
+                        duration: 1,
+                    });
                 }
             }
         });
@@ -62,7 +71,11 @@ export const updateMarketAppPackage = (
             if (data) {
                 if (data.ErrorCode === 0) {
                     await dispatch(getMarketApps());
-                    message.success(DONE, 1.5);
+                    message.success({
+                        content: WithStringTranslate(DONE),
+                        key: "updatable",
+                        duration: 1,
+                    });
                 }
             }
         });
@@ -77,7 +90,11 @@ export const deleteMarketAppPackage = (ID: number): ThunkResult<void> => async (
         if (data) {
             if (data.ErrorCode === 0) {
                 await dispatch(getMarketApps());
-                message.success(DONE, 1.5);
+                message.success({
+                    content: WithStringTranslate(DONE),
+                    key: "updatable",
+                    duration: 1,
+                });
             }
         }
     });
@@ -95,7 +112,11 @@ export const changeMarketAppStatus = (
             .then((data: any) => {
                 if (data) {
                     if (data.ErrorCode === 0) {
-                        message.success(DONE, 1);
+                        message.success({
+                            content: WithStringTranslate(DONE),
+                            key: "updatable",
+                            duration: 1,
+                        });
                         dispatch(getMarketApps());
                     }
                 }

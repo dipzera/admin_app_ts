@@ -7,7 +7,8 @@ import { AdminApi } from "../../../api";
 import { useEffect, useState } from "react";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import CreateNews from "./CreateNews";
-const ArticleItem = ({ newsData }: any) => {
+import EditNews from "./EditNews";
+const ArticleItem = ({ newsData, setSelected, setEdit }: any) => {
     return (
         <Card style={{ padding: 30 }}>
             <Flex justifyContent="between" alignItems="center" className="mt-3">
@@ -61,8 +62,8 @@ const ArticleItem = ({ newsData }: any) => {
                     <Button
                         icon={<EditOutlined />}
                         onClick={() => {
-                            // setSelectedNew(newsData);
-                            // setEdit(true);
+                            setSelected(newsData);
+                            setEdit(true);
                         }}
                     />
                 </Tooltip>
@@ -73,6 +74,8 @@ const ArticleItem = ({ newsData }: any) => {
 const News = () => {
     const [news, setNews] = useState<any>();
     const [isCreateVisible, setCreateVisible] = useState<boolean>();
+    const [edit, setEdit] = useState<boolean>();
+    const [selected, setSelected] = useState<any>();
     const getNews = () => {
         return new AdminApi().GetNews().then((data: any) => {
             if (data) {
@@ -88,6 +91,14 @@ const News = () => {
             <CreateNews
                 visible={isCreateVisible}
                 close={() => setCreateVisible(false)}
+                getNews={getNews}
+                setSelected={setSelected}
+                setEdit={setEdit}
+            />
+            <EditNews
+                visible={edit}
+                close={() => setEdit(false)}
+                news={selected}
                 getNews={getNews}
             />
             <Flex justifyContent="between" className="mb-4">
@@ -109,7 +120,12 @@ const News = () => {
                         .sort((a: any, b: any) => a.ID - b.ID)
                         .reverse()
                         .map((elm: any) => (
-                            <ArticleItem newsData={elm} key={elm.ID} />
+                            <ArticleItem
+                                newsData={elm}
+                                key={elm.ID}
+                                setSelected={setSelected}
+                                setEdit={setEdit}
+                            />
                         ))
                 ) : (
                     <Flex className="w-100" justifyContent="center">

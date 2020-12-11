@@ -42,6 +42,8 @@
   "auth.MessageRedirect": "Вас перенаправят через несколько секунд...",
   "auth.validate.Success": "Поздравляем! Вы успешно зарегестрировались!",
   "auth.validate.Error": "Вы не подтвердили регистрацию! Проверьте электронную почту!",
+  "auth.ConfirmRegistration.Title": "Подтверждение регистрации",
+  "auth.ConfirmRegistration.Content": "Нажмите кнопку ОК чтобы получить новое сообщение о потдверждении регистрации на почту!",
 
 
   "sidenav.home": "Главная",
@@ -82,11 +84,13 @@
 
   "message.language.success": "Вы успешно сменили язык!",
   "message.Uploading": "Загружается...",
+  "message.Loading": "Загружается...",
   "message.Uploaded": "Загрузилось!",
   "message.Updating": "Обновляется...",
   "message.Done": "Готово!",
   "message.Error": "Что-то пошло не так! Попробуйте еще раз!",
   "message.ExpireTime": "Время истекло... Перенаправляем вас на страницу аутентификации!",
+    "message.Confirmation": "Сообщение о подтверждении было отправлено на почту!",
 
 
 
@@ -203,7 +207,7 @@
     "user.status.Disabled": "Деактивированный",
     "dropdown.Manage": "Управлять",
     "dropdown.SendActivationCode": "Отправить код активации",
-    "dropdown.ViewDetails": "Деталии",
+    "dropdown.ViewDetails": "Подробнее",
     "dropdown.Edit": "Редактировать",
     "dropdown.Activate": "Активировать",
     "dropdown.Disable": "Деактивировать",

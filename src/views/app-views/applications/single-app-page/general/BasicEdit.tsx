@@ -73,9 +73,9 @@ const BasicEdit = ({
             <Form.Item name="Name" label="Application name" rules={rules.name}>
                 <Input />
             </Form.Item>
-            <Form.Item name="BackOfficeURI" label="Back Office URI">
+            {/* <Form.Item name="BackOfficeURI" label="Back Office URI">
                 <Input />
-            </Form.Item>
+            </Form.Item> */}
             <div className="form__item shortdesc mb-3">
                 <Flex
                     alignItems="center"

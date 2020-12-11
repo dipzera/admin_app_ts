@@ -1,6 +1,5 @@
-import { Col, Form, message, Row, Upload } from "antd";
+import { Col, Form, message, Modal, Row, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import Modal from "antd/lib/modal/Modal";
 import React, { useEffect, useState } from "react";
 import Flex from "../../../components/shared-components/Flex";
 import { DONE, UPLOADING } from "../../../constants/Messages";
@@ -8,26 +7,23 @@ import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
 import TextEditor from "../applications/single-app-page/TextEditor";
 import { AdminApi } from "../../../api";
-import { useSelector } from "react-redux";
 import Localization from "../../../utils/Localization";
-import { IState } from "../../../redux/reducers";
-
-const CreateNews = ({ getNews, visible, close }: any) => {
-    /* Get All Apps from Store and show as DropDown menu somewhere */
+const EditNews = ({ visible, close, news, getNews }: any) => {
     const [form] = Form.useForm();
-    useEffect(() => {
-        if (!visible) return;
-        setPhoto("");
-        setHeader("");
-        setContent("");
-    }, [visible, form]);
-    const [photo, setPhoto] = useState<any>();
-    const [header, setHeader] = useState<string>();
-    const [content, setContent] = useState<string>();
+    const [Photo, setPhoto] = useState<any>();
+    const [Header, setHeader] = useState<any>();
+    const [Content, setContent] = useState<any>();
+    const [AppType, setAppType] = useState<any>();
     const [loading, setLoading] = useState<boolean>(false);
-    const CompanyID = useSelector(
-        (state: IState) => state["account"]!.CompanyID
-    );
+    useEffect(() => {
+        if (news) {
+            setPhoto(news.Photo);
+            setHeader(news.Header);
+            setContent(news.Content);
+            setAppType(news.AppType);
+        }
+    }, [news]);
+
     const onUploadAvatar = (info: any) => {
         if (info.file.status === "uploading") {
             message.loading({
@@ -41,30 +37,32 @@ const CreateNews = ({ getNews, visible, close }: any) => {
                 key: "updatable",
                 duration: 1,
             });
-            Utils.getBase64(info.file.originFileObj, (imageUrl: string) => {
+            Utils.getBase64(info.file.originFileObj, (imageUrl: any) => {
                 setPhoto(imageUrl);
             });
         }
     };
+
     const onFinish = (values: any) => {
         setLoading(true);
         setTimeout(() => {
             return new AdminApi()
                 .UpdateNews({
-                    ID: 0,
-                    Photo: photo,
-                    Content: content,
-                    Header: header,
+                    ...news,
+                    Photo,
+                    Content,
+                    Header,
                 })
                 .then(async (data: any) => {
                     setLoading(false);
                     close();
                     if (data) {
-                        if (data.ErrorCode === 0) await getNews();
+                        if (data.ErrorCode === 0) await getNews(AppType);
                     }
                 });
         }, 1000);
     };
+
     const uploadButton = (
         <div>
             {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -99,9 +97,9 @@ const CreateNews = ({ getNews, visible, close }: any) => {
                         customRequest={Utils.dummyRequest}
                         beforeUpload={(info) => Utils.beforeUpload(info)}
                     >
-                        {photo ? (
+                        {Photo ? (
                             <img
-                                src={photo}
+                                src={Photo}
                                 alt="photo"
                                 style={{ width: "100%" }}
                             />
@@ -116,7 +114,7 @@ const CreateNews = ({ getNews, visible, close }: any) => {
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item label={"Header"}>
                             <TextEditor
-                                apps={header}
+                                apps={Header}
                                 handleEditorChange={(field: any) =>
                                     setHeader(field)
                                 }
@@ -126,7 +124,7 @@ const CreateNews = ({ getNews, visible, close }: any) => {
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item label={"Content"}>
                             <TextEditor
-                                apps={content}
+                                apps={Content}
                                 handleEditorChange={(field: any) =>
                                     setContent(field)
                                 }
@@ -138,4 +136,4 @@ const CreateNews = ({ getNews, visible, close }: any) => {
         </Modal>
     );
 };
-export default CreateNews;
+export default EditNews;

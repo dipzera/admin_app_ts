@@ -10,7 +10,6 @@ import {
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
 import ReactDOMServer from "react-dom/server";
-import Localization from "../utils/Localization";
 const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
@@ -242,8 +241,8 @@ export class AdminApi extends HttpClient {
 
     public GetNews = () => this.instance.get("/GetNews");
 
-    public UpdateNews = (data: any) =>
+    public UpdateNews = (NewsData: any) =>
         this.instance.post("/UpdateNews", {
-            ...data,
+            NewsData,
         });
 }

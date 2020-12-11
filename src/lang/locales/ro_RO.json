@@ -20,6 +20,8 @@
   "auth.GoBack": "Înapoi",
   "auth.Send": "Trimite",
   "auth.Sending": "Se trimite...",
+  "auth.ConfirmRegistration.Title": "Confirmă înregistrarea",
+  "auth.ConfirmRegistration.Content": "Apăsați butonul OK pentru a primi un mesaj de confirmare pe poșta electronică!",
 
   "auth.AlreadyHaveAnAccount": "Deja dețineți un cont?",
   "auth.JuridicalName": "Denumire juridică",
@@ -82,11 +84,13 @@
 
   "message.language.success": "Ați schimbat limba cu succes!",
   "message.Uploading": "Se încarcă...",
+  "message.Loading": "Se încarcă...",
   "message.Uploaded": "Încărcat!",
   "message.Updating": "Se actualizează...",
   "message.Done": "Succes!",
   "message.Error": "A apărut o problemă! Încercați din nou!",
   "message.ExpireTime": "Timpul a expirat... Vă redirecționăm pe pagina de logare!",
+    "message.Confirmation": "Mesaj de confirmare a fost trimis pe poșta electronică!",
 
     "account.sidenav.EditCompany": "Editează Compania",
   "account.sidenav.EditProfile": "Editează Profilul",
