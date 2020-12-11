@@ -14,6 +14,7 @@ import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { createMarketAppPackage } from "../../../redux/actions/Applications";
 import { IState } from "../../../redux/reducers";
+import WithStringTranslate from "../../../utils/translate";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
@@ -72,7 +73,7 @@ const AddPackageForm = ({
     return (
         <Modal
             destroyOnClose
-            title={"Add package"}
+            title={WithStringTranslate("applications.Packages.Add")}
             visible={visible}
             onCancel={close}
             confirmLoading={loading}
@@ -90,7 +91,9 @@ const AddPackageForm = ({
                 <Row gutter={ROW_GUTTER}>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Package Name"}
+                            label={WithStringTranslate(
+                                "applications.Packages.Name"
+                            )}
                             name="Name"
                             rules={[
                                 {
@@ -104,7 +107,9 @@ const AddPackageForm = ({
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Price"
+                            label={WithStringTranslate(
+                                "applications.Packages.Price"
+                            )}
                             name="Price"
                             rules={[
                                 {
@@ -122,7 +127,9 @@ const AddPackageForm = ({
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Min value"
+                            label={WithStringTranslate(
+                                "applications.Packages.MinValue"
+                            )}
                             name="MinValue"
                             rules={[
                                 {
@@ -140,7 +147,9 @@ const AddPackageForm = ({
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Max value"
+                            label={WithStringTranslate(
+                                "applications.Packages.MaxValue"
+                            )}
                             name="MaxValue"
                             rules={[
                                 {
@@ -164,7 +173,9 @@ const AddPackageForm = ({
                     </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
-                            label="Valid date"
+                            label={WithStringTranslate(
+                                "applications.Packages.ValidDate"
+                            )}
                             name="ValidDate"
                             rules={[
                                 {
@@ -177,13 +188,20 @@ const AddPackageForm = ({
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>
-                        <Form.Item label="Sort index" name="SortIndex">
+                        <Form.Item
+                            label={WithStringTranslate(
+                                "applications.Packages.SortIndex"
+                            )}
+                            name="SortIndex"
+                        >
                             <InputNumber />
                         </Form.Item>
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Activate package"}
+                            label={WithStringTranslate(
+                                "applications.Packages.Activate"
+                            )}
                             name="Status"
                             valuePropName={"checked"}
                         >

@@ -210,7 +210,41 @@
     "wizard.Previous": "Previous",
     "wizard.Company.title": "Company info",
     "wizard.User.title": "User info",
-    "wizard.Finish.title": "Finish"
+    "wizard.Finish.title": "Finish",
+
+
+    "applications.status.Active": "Active",
+    "applications.status.NotActive": "Not Active",
+    "applications.General": "General",
+    "applications.Packages": "Packages",
+    "applications.TermsOfUse": "Terms of Use",
+    "applications.BasicInfo": "Basic Info",
+    "applications.AppName": "Application name",
+    "applications.ShortDescription": "Short description",
+    "applications.LongDescription": "Long description",
+    "applications.Media": "Media",
+    "applications.Status": "Status",
+    "applications.New": "New",
+    "application.Save": "Save",
+    "applications.Discard": "Discard",
+    "applications.ClickOrDrag": "Click or drag file to upload",
+    "applications.Packages.Edit": "Edit",
+    "applications.Packages.Add": "Add package",
+    "applications.Packages.Delete": "Delete",
+    "applications.Packages.Name": "Package name",
+    "applications.Packages.Price": "Price",
+    "applications.Packages.MinValue": "Min value",
+    "applications.Packages.MaxValue": "Max value",
+    "applications.Packages.ValidDate": "Valid date",
+    "applications.Packages.SortIndex": "Sort index",
+    "applications.Packages.Activate": "Activate package",
+    "applications.Packages.Pricing": "Pricing",
+    "applications.Packages.From": "From",
+    "applications.Packages.to": "to",
+    "applications.Packages.for": "for",
+    "applications.Packages.Active": "Active",
+    "applications.Packages.NotActive": "Not Active"
+
 
 
 }

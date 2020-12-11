@@ -10,6 +10,7 @@ import {
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
 import ReactDOMServer from "react-dom/server";
+import WithStringTranslate from "../utils/translate";
 const publicIp = require("react-public-ip");
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
@@ -99,8 +100,8 @@ class HttpClient {
                         const key = "updatable";
                         message
                             .loading({
-                                content: ReactDOMServer.renderToString(
-                                    EXPIRE_TIME()
+                                content: WithStringTranslate(
+                                    "message.ExpireTime"
                                 ),
                                 key,
                             })

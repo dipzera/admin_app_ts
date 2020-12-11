@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
 import Flex from "../../../../../components/shared-components/Flex";
 import { IState } from "../../../../../redux/reducers";
+import WithStringTranslate from "../../../../../utils/translate";
+import IntlMessage from "../../../../../components/util-components/IntlMessage";
 const rules = {
     name: [
         {
@@ -70,7 +72,11 @@ const BasicEdit = ({
 
     return (
         <>
-            <Form.Item name="Name" label="Application name" rules={rules.name}>
+            <Form.Item
+                name="Name"
+                label={WithStringTranslate("applications.AppName")}
+                rules={rules.name}
+            >
                 <Input />
             </Form.Item>
             {/* <Form.Item name="BackOfficeURI" label="Back Office URI">
@@ -82,7 +88,9 @@ const BasicEdit = ({
                     className="mb-2"
                     justifyContent="between"
                 >
-                    <h5>Short description</h5>
+                    <h5>
+                        <IntlMessage id="applications.ShortDescription" />
+                    </h5>
                     <div className="ml-2 mb-1">
                         <Select
                             defaultValue={globalLanguage}
@@ -117,7 +125,9 @@ const BasicEdit = ({
                     className="mb-2"
                     justifyContent="between"
                 >
-                    <h5>Long description</h5>
+                    <h5>
+                        <IntlMessage id="applications.LongDescription" />
+                    </h5>
                     <div className="ml-2 mb-1">
                         <Select
                             defaultValue={globalLanguage}

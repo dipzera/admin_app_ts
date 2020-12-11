@@ -14,6 +14,7 @@ import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { updateMarketAppPackage } from "../../../redux/actions/Applications";
 import { IState } from "../../../redux/reducers";
+import WithStringTranslate from "../../../utils/translate";
 interface IEditPackageForm {
     packages: any;
     visible: boolean;
@@ -66,7 +67,7 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
     return (
         <Modal
             destroyOnClose
-            title={"Edit package"}
+            title={WithStringTranslate("applications.Packages.Edit")}
             visible={visible}
             onCancel={close}
             confirmLoading={isLoading}
@@ -81,7 +82,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                 <Row gutter={ROW_GUTTER}>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Package Name"}
+                            label={WithStringTranslate(
+                                "applications.Packages.Name"
+                            )}
                             name="Name"
                             rules={[
                                 {
@@ -95,7 +98,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Price"
+                            label={WithStringTranslate(
+                                "applications.Packages.Price"
+                            )}
                             name="Price"
                             rules={[
                                 {
@@ -113,7 +118,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Min value"
+                            label={WithStringTranslate(
+                                "applications.Packages.MinValue"
+                            )}
                             name="MinValue"
                             rules={[
                                 {
@@ -131,7 +138,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Max value"
+                            label={WithStringTranslate(
+                                "applications.Packages.MaxValue"
+                            )}
                             name="MaxValue"
                             rules={[
                                 {
@@ -154,7 +163,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
-                            label="Valid date"
+                            label={WithStringTranslate(
+                                "applications.Packages.ValidDate"
+                            )}
                             name="ValidDate"
                             rules={[
                                 {
@@ -168,7 +179,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label="Sort index"
+                            label={WithStringTranslate(
+                                "applications.Packages.SortIndex"
+                            )}
                             name="SortIndex"
                             rules={[
                                 {
@@ -181,7 +194,9 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                     </Col>
                     <Col xs={24} sm={24} md={12}>
                         <Form.Item
-                            label={"Activate package"}
+                            label={WithStringTranslate(
+                                "applications.Packages.Activate"
+                            )}
                             name="Status"
                             valuePropName={"checked"}
                         >

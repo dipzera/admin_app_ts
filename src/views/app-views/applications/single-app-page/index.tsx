@@ -24,6 +24,8 @@ import TermsOfUse from "./TermsOfUse";
 import General from "./general";
 import { IState } from "../../../../redux/reducers";
 import Utils from "../../../../utils";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
+import WithStringTranslate from "../../../../utils/translate";
 
 const SingleAppPage = ({ match }: any) => {
     const { appID } = match.params;
@@ -198,10 +200,10 @@ const SingleAppPage = ({ match }: any) => {
                                         className="mr-2"
                                         onClick={() => setEdit(false)}
                                     >
-                                        Discard
+                                        <IntlMessage id="applications.Discard" />
                                     </Button>
                                     <Button type="primary" htmlType="submit">
-                                        Save
+                                        <IntlMessage id="applications.Save" />
                                     </Button>
                                 </div>
                             )}
@@ -216,7 +218,10 @@ const SingleAppPage = ({ match }: any) => {
                         style={{ marginTop: 30 }}
                         onChange={() => setEdit(false)}
                     >
-                        <Tabs.TabPane tab="General" key="1">
+                        <Tabs.TabPane
+                            tab={WithStringTranslate("applications.General")}
+                            key="1"
+                        >
                             <General
                                 app={app}
                                 status={status}
@@ -231,7 +236,10 @@ const SingleAppPage = ({ match }: any) => {
                                 longDesc={longDesc}
                             />
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab="Packages" key="2">
+                        <Tabs.TabPane
+                            tab={WithStringTranslate("applications.Packages")}
+                            key="2"
+                        >
                             <Packages
                                 packages={app.Packages}
                                 showEditPackageModal={showEditPackageModal}
@@ -239,7 +247,10 @@ const SingleAppPage = ({ match }: any) => {
                                 showAddPackageModal={showAddPackageModal}
                             />
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab="Terms of Use" key="3">
+                        <Tabs.TabPane
+                            tab={WithStringTranslate("applications.TermsOfUse")}
+                            key="3"
+                        >
                             <TermsOfUse app={app} />
                         </Tabs.TabPane>
                     </Tabs>

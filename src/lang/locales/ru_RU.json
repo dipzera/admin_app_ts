@@ -97,9 +97,9 @@
 
 
 
-    "account.sidenav.EditCompany": " Редактирование Кампании",
-  "account.sidenav.EditProfile": "Редактирование Профиля",
-  "account.sidenav.ChangePassword": "Сменить Пароль",
+    "account.sidenav.EditCompany": " Редактирование компании",
+  "account.sidenav.EditProfile": "Редактирование профиля",
+  "account.sidenav.ChangePassword": "Сменить пароль",
   "account.sidenav.Billing": "Оплата",
   "account.sidenav.Notification": "Уведомления",
   "account.sidenav.Security": "Безопасность",
@@ -220,5 +220,38 @@
     "wizard.Previous": "Предыдущий шаг",
     "wizard.Company.title": "Данные компании",
     "wizard.User.title": "Данные пользователя",
-    "wizard.Finish.title": "Конец"
+    "wizard.Finish.title": "Конец",
+
+
+    "applications.status.Active": "Активное",
+    "applications.status.NotActive": "Неактивное",
+    "applications.General": "Общее",
+    "applications.Packages": "Тарифы",
+    "applications.TermsOfUse": "Условия",
+    "applications.BasicInfo": "Информация",
+    "applications.AppName": "Название приложения",
+    "applications.ShortDescription": "Короткое описание",
+    "applications.LongDescription": "Развернутое описание",
+    "applications.Media": "Логотип",
+    "applications.Status": "Статус",
+    "applications.New": "Новый",
+    "application.Save": "Сохранить",
+    "applications.Discard": "Отмена",
+    "applications.ClickOrDrag": "Щелкните или перетащите файл для загрузки",
+    "applications.Packages.Edit": "Редактировать",
+    "applications.Packages.Add": "Добавить тариф",
+    "applications.Packages.Delete": "Удалить",
+    "applications.Packages.Name": "Название",
+    "applications.Packages.Price": "Цена",
+    "applications.Packages.MinValue": "Минимальное значение",
+    "applications.Packages.MaxValue": "Максимальное значение",
+    "applications.Packages.ValidDate": "Дата валидности",
+    "applications.Packages.SortIndex": "Индекс сортировки",
+    "applications.Packages.Activate": "Активировать тариф",
+    "applications.Packages.Pricing": "Цена",
+    "applications.Packages.From": "От",
+    "applications.Packages.to": "до",
+    "applications.Packages.for": "за",
+    "applications.Packages.Active": "Активный",
+    "applications.Packages.NotActive": "Нактивный"
 }

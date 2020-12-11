@@ -11,6 +11,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeMarketAppStatus } from "../../../../../redux/actions/Applications";
 import { IState } from "../../../../../redux/reducers";
 import Utils from "../../../../../utils";
+import IntlMessage from "../../../../../components/util-components/IntlMessage";
+import WithStringTranslate from "../../../../../utils/translate";
 const imageUploadProps: any = {
     name: "file",
     multiple: false,
@@ -40,7 +42,9 @@ const General = ({
                 <Col xs={24} sm={24} md={17}>
                     <Card>
                         <Flex justifyContent="between">
-                            <h4>Basic Info</h4>
+                            <h4>
+                                <IntlMessage id="applications.BasicInfo" />
+                            </h4>
                             <Tooltip title="Edit">
                                 <Button
                                     type="primary"
@@ -70,7 +74,7 @@ const General = ({
                     </Card>
                 </Col>
                 <Col xs={24} sm={24} md={7}>
-                    <Card title="Media">
+                    <Card title={WithStringTranslate("applications.Media")}>
                         <Dragger
                             {...imageUploadProps}
                             beforeUpload={(info) => Utils.beforeUpload(info)}
@@ -88,7 +92,7 @@ const General = ({
                                         <div>
                                             <LoadingOutlined className="font-size-xxl text-primary" />
                                             <div className="mt-3">
-                                                Uploading
+                                                <IntlMessage id="message.Uploading" />
                                             </div>
                                         </div>
                                     ) : (
@@ -97,14 +101,16 @@ const General = ({
                                                 className="display-3"
                                                 svg={ImageSvg}
                                             />
-                                            <p>Click or drag file to upload</p>
+                                            <p>
+                                                <IntlMessage id="applications.ClickOrDrag" />
+                                            </p>
                                         </div>
                                     )}
                                 </div>
                             )}
                         </Dragger>
                     </Card>
-                    <Card title="Status">
+                    <Card title={WithStringTranslate("applications.Status")}>
                         <Select
                             className="w-100"
                             placeholder="Status"
@@ -115,8 +121,12 @@ const General = ({
                                 dispatch(changeMarketAppStatus(app.ID, value));
                             }}
                         >
-                            <Select.Option value={0}>Disabled</Select.Option>
-                            <Select.Option value={1}>Active</Select.Option>
+                            <Select.Option value={0}>
+                                <IntlMessage id="applications.status.Active" />
+                            </Select.Option>
+                            <Select.Option value={1}>
+                                <IntlMessage id="applications.status.NotActive" />
+                            </Select.Option>
                         </Select>
                     </Card>
                 </Col>

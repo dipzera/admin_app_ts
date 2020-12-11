@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import Utils from "../../../../utils";
+import IntlMessage from "../../../../components/util-components/IntlMessage";
 
 const ItemHeader = ({ packages }: any) => (
     <>
@@ -25,7 +26,11 @@ const ItemHeader = ({ packages }: any) => (
                     <ClockCircleOutlined />
                 )}
                 <span className="ml-2 font-weight-semibold">
-                    {packages.Status === 1 ? "Active" : "Not Active"}
+                    {packages.Status === 1 ? (
+                        <IntlMessage id="applications.Packages.Active" />
+                    ) : (
+                        <IntlMessage id="applications.Packages.NotActive" />
+                    )}
                 </span>
             </Tag>
         </Flex>
@@ -34,11 +39,17 @@ const ItemHeader = ({ packages }: any) => (
 
 const ItemFooter = ({ packages }: any) => (
     <div>
-        <h5>Pricing</h5>
+        <h5>
+            <IntlMessage id="applications.Packages.Pricing" />
+        </h5>
         <Flex justifyContent="center">
             <Card className="mt-3">
                 <div>
-                    From {packages.MinValue} to {packages.MaxValue} for{" "}
+                    <IntlMessage id="applications.Packages.From" />{" "}
+                    {packages.MinValue}{" "}
+                    <IntlMessage id="applications.Packages.to" />{" "}
+                    {packages.MaxValue}{" "}
+                    <IntlMessage id="applications.Packages.for" />{" "}
                     {packages.Price} MDL
                 </div>
             </Card>
@@ -55,12 +66,16 @@ const ItemAction = ({ packages, showEditPackageModal, deletePackage }: any) => (
                     onClick={() => showEditPackageModal(packages)}
                 >
                     <EditOutlined />
-                    <span>Edit</span>
+                    <span>
+                        <IntlMessage id="applications.Packages.Edit" />
+                    </span>
                 </Menu.Item>
                 <Menu.Divider />
                 <Menu.Item key={2} onClick={() => deletePackage(packages.ID)}>
                     <DeleteOutlined />
-                    <span>Delete</span>
+                    <span>
+                        <IntlMessage id="applications.Packages.Delete" />
+                    </span>
                 </Menu.Item>
             </Menu>
         }
@@ -97,14 +112,19 @@ const Packages = ({
     return (
         <>
             <Flex justifyContent="between" alignItems="center" className="py-2">
-                <h2>Packages</h2>
+                <h2>
+                    <IntlMessage id="applications.Packages" />
+                </h2>
                 <div>
                     <Button
                         type="primary"
                         className="ml-2 "
                         onClick={() => showAddPackageModal()}
                     >
-                        <PlusOutlined /> <span>New</span>
+                        <PlusOutlined />{" "}
+                        <span>
+                            <IntlMessage id="applications.New" />
+                        </span>
                     </Button>
                 </div>
             </Flex>

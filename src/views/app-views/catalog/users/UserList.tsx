@@ -390,7 +390,7 @@ export class UserList extends Component<StoreProps> {
                 >
                     <div className="mr-md-3 mb-3">
                         <Input
-                            placeholder="Search"
+                            placeholder={WithStringTranslate("app.Search")}
                             prefix={<SearchOutlined />}
                             onChange={(e) => onSearch(e)}
                         />
