@@ -1,9 +1,12 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../../components/shared-components/Loading";
-import { AUTH_PREFIX_PATH } from "../../configs/AppConfig";
+import { APP_NAME, AUTH_PREFIX_PATH } from "../../configs/AppConfig";
 
 export const AuthViews = () => {
+    useEffect(() => {
+        document.title = APP_NAME;
+    }, []);
     return (
         <Suspense fallback={<Loading cover="page" />}>
             <Switch>
