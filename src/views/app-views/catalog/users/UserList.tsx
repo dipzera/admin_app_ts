@@ -233,11 +233,11 @@ export class UserList extends Component<StoreProps> {
                     </span>
                 </Flex>
             </Menu.Item>
-            {row.Status === 0 || row.Status === 2 ? (
+            {row.Status === 2 ? (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: <IntlMessage id="user.activate.title" />,
+                            title: WithStringTranslate("user.activate.title"),
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
@@ -256,11 +256,11 @@ export class UserList extends Component<StoreProps> {
                         </span>
                     </Flex>
                 </Menu.Item>
-            ) : (
+            ) : row.Status === status.active ? (
                 <Menu.Item
                     onClick={async () => {
                         Modal.confirm({
-                            title: <IntlMessage id="user.disable.title" />,
+                            title: WithStringTranslate("user.disable.title"),
                             onOk: async () => {
                                 await this.handleUserStatus(
                                     row.ID,
@@ -278,7 +278,7 @@ export class UserList extends Component<StoreProps> {
                         </span>
                     </Flex>
                 </Menu.Item>
-            )}
+            ) : null}
         </Menu>
     );
 

@@ -104,6 +104,7 @@ class HttpClient {
                                     "message.ExpireTime"
                                 ),
                                 key,
+                                duration: 1.5,
                             })
                             .then(() => {
                                 store.dispatch(signOut());
