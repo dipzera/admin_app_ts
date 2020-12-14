@@ -5,7 +5,7 @@ import { AuthApi } from "../../../../api";
 import { RouteComponentProps } from "react-router-dom";
 
 const Validate = ({ history }: RouteComponentProps) => {
-    const [isValidated, setIsValidated] = useState(false);
+    const [isValidated, setIsValidated] = useState(true);
     useLayoutEffect(() => {
         new AuthApi()
             .ActivateUser({
