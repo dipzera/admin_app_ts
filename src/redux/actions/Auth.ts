@@ -79,10 +79,11 @@ export const sendActivationCode = (
         }
     });
 };
-export const authorizeUser = (data: {
+
+export const authorizeUser = (serverData: {
     [key: string]: any;
 }): ThunkResult<void> => async (dispatch) => {
-    return new AuthApi().Login(data).then((data) => {
+    return new AuthApi().Login(serverData).then((data) => {
         dispatch(hideLoading());
         /* Handle errors here */
         if (data) {

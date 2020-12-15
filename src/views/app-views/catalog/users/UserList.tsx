@@ -35,6 +35,8 @@ import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import Localization from "../../../../utils/Localization";
 import WithStringTranslate from "../../../../utils/translate";
+import { ApiResponse } from "../../../../api";
+import { AxiosResponse } from "axios";
 
 enum status {
     inactive = 0,
@@ -95,37 +97,34 @@ export class UserList extends Component<StoreProps> {
     };
 
     getUsersInfo = () => {
-        try {
-            return new AdminApi().GetAllUsers().then((data: any) => {
-                this.setState({ loading: false });
-                if (data) {
-                    const { ErrorCode } = data;
-                    if (ErrorCode === 0) {
-                        const filteredUsers = data.Users.filter(
-                            (user: any) => user.ID !== this.props.ID
-                        );
-                        const evaluatedArray = utils.sortData(
-                            filteredUsers,
-                            "ID"
-                        ); /* Add .reverse() here if you want a reverse sort */
-                        this.setState((prev) => ({
-                            ...prev,
-                            usersToSearch: [...evaluatedArray],
-                        }));
-                        this.setState((prev) => ({
-                            ...prev,
-                            users: [...evaluatedArray],
-                        }));
-                    }
+        return new AdminApi().GetAllUsers().then((data: any) => {
+            this.setState({ loading: false });
+            if (data) {
+                const { ErrorCode } = data;
+                if (ErrorCode === 0) {
+                    const filteredUsers = data.Users.filter(
+                        (user: any) => user.ID !== this.props.ID
+                    );
+                    const evaluatedArray = utils.sortData(
+                        filteredUsers,
+                        "ID"
+                    ); /* Add .reverse() here if you want a reverse sort */
+                    this.setState((prev) => ({
+                        ...prev,
+                        usersToSearch: [...evaluatedArray],
+                    }));
+                    this.setState((prev) => ({
+                        ...prev,
+                        users: [...evaluatedArray],
+                    }));
                 }
-            });
-        } catch {}
+            }
+        });
     };
 
     componentDidMount() {
         this.getUsersInfo();
     }
-
     showUserProfile = (userInfo: UsersProps) => {
         this.setState({
             userProfileVisible: true,
@@ -166,11 +165,22 @@ export class UserList extends Component<StoreProps> {
 
     toggleStatusRow = async (row: any, statusNumber: any) => {
         Modal.confirm({
-            title: `Are you sure you want to ${
+            title:
                 statusNumber === 0 || statusNumber === 2
-                    ? "disable"
-                    : "activate"
-            } ${row.length} ${row.length > 1 ? "users" : "user"}?`,
+                    ? `${WithStringTranslate("user.disable.title2")} ${
+                          row.length
+                      } ${
+                          row.length > 1
+                              ? WithStringTranslate("user.plural")
+                              : WithStringTranslate("user.singular")
+                      }?`
+                    : `${WithStringTranslate("user.activate.title2")} ${
+                          row.length
+                      } ${
+                          row.length > 1
+                              ? WithStringTranslate("user.plural")
+                              : WithStringTranslate("user.singular")
+                      }?`,
             onOk: async () => {
                 console.log(this.state.users);
                 console.log(row);
@@ -410,8 +420,14 @@ export class UserList extends Component<StoreProps> {
                                         }
                                     >
                                         {this.state.selectedRows.length > 1
-                                            ? `Activate (${this.state.selectedRows.length})`
-                                            : "Activate"}
+                                            ? `${WithStringTranslate(
+                                                  "user.activate"
+                                              )} (${
+                                                  this.state.selectedRows.length
+                                              })`
+                                            : `${WithStringTranslate(
+                                                  "user.activate"
+                                              )}`}
                                     </Button>
                                     <Button
                                         type="ghost"
@@ -424,8 +440,14 @@ export class UserList extends Component<StoreProps> {
                                         }
                                     >
                                         {this.state.selectedRows.length > 1
-                                            ? `Disable (${this.state.selectedRows.length})`
-                                            : "Disable"}
+                                            ? `${WithStringTranslate(
+                                                  "user.disable"
+                                              )} (${
+                                                  this.state.selectedRows.length
+                                              })`
+                                            : `${WithStringTranslate(
+                                                  "user.disable"
+                                              )}`}
                                     </Button>
                                     {/* <Tooltip
                                         title={`${

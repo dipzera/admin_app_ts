@@ -1,20 +1,26 @@
 import { message } from "antd";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
-import {
-    DONE,
-    EMAIL_CONFIRM_MSG,
-    EXPIRE_TIME,
-    INTERNAL_ERROR,
-} from "../constants/Messages";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
-import ReactDOMServer from "react-dom/server";
 import WithStringTranslate from "../utils/translate";
+import { UsersProps } from "../views/app-views/catalog/users/UserList";
 const publicIp = require("react-public-ip");
+
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
 }
+export interface ApiResponse<T = any> {
+    ErrorCode: number;
+    ErrorMessage: string;
+    Users?: T;
+    CompanyList?: T;
+    Company?: T;
+    MarketAppList?: T;
+    NewsList?: T;
+    User?: T;
+}
+
 class HttpClient {
     public readonly instance: AxiosInstance;
     public _token: string;
@@ -56,7 +62,7 @@ class HttpClient {
     private _RefreshToken = () =>
         this.instance.get(`${API_AUTH_URL}/RefreshToken`);
 
-    public _handleResponse = async (response: AxiosResponse) => {
+    private _handleResponse = (response: AxiosResponse) => {
         console.log(response);
         if (response.data.ErrorCode === 118) {
             return this._handleError(response);
@@ -71,7 +77,7 @@ class HttpClient {
         }
         return response.data;
     };
-    public _handleError = async (error: any) => {
+    private _handleError = async (error: any) => {
         if (error.config && error.data && error.data.ErrorCode === 118) {
             return this._RefreshToken().then(async (data: any) => {
                 if (data) {
@@ -248,7 +254,12 @@ export class AdminApi extends HttpClient {
             params: { ID, Status },
         });
 
-    public GetNews = () => this.instance.get("/GetNews");
+    public GetNews = (ProductType: number) =>
+        this.instance.get("/GetNews", {
+            params: {
+                ProductType,
+            },
+        });
 
     public UpdateNews = (NewsData: any) =>
         this.instance.post("/UpdateNews", {
