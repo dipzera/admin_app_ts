@@ -7,17 +7,6 @@ import { AppNavGrid } from "./AppNavGrid";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
-export interface IApps {
-    CustomerPrice: number;
-    DataBaseServer: string;
-    Description: string;
-    ID: number;
-    IsActive: boolean;
-    Name: string;
-    PartnerPercent: number;
-    Photo: string;
-    ReferalPercent: number;
-}
 const AppStoreNav = () => {
     const loading = useSelector((state: IState) => state["auth"].loading);
     const apps = useSelector((state: IState) => state["apps"]);

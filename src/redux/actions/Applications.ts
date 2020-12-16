@@ -1,20 +1,25 @@
 import { message } from "antd";
 import { AdminApi } from "../../api";
+import {
+    IAppRequest,
+    ICreateMarketAppPackageRequest,
+    IUpdateMarketAppRequest,
+    IUpdatePackageRequest,
+} from "../../api/types.request";
 import { DONE } from "../../constants/Messages";
 import WithStringTranslate from "../../utils/translate";
 import { SET_APPS } from "../constants/Applications";
 import { ThunkResult } from "../reducers";
-import { IApps, IPackages } from "../reducers/Applications";
 import { hideLoading, showLoading } from "./Auth";
 
-const setApps = (payload: IApps) => ({
+const setApps = (payload: any) => ({
     type: SET_APPS,
     payload,
 });
 
 export const getMarketApps = (): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
-    return new AdminApi().GetMarketAppList().then((data: any) => {
+    return new AdminApi().GetMarketAppList().then((data) => {
         dispatch(hideLoading());
         if (data) {
             const { ErrorCode, ErrorMessage, MarketAppList } = data;
@@ -22,13 +27,13 @@ export const getMarketApps = (): ThunkResult<void> => async (dispatch) => {
         }
     });
 };
-export const updateMarketApp = (App: {
-    [key: string]: any;
-}): ThunkResult<void> => async (dispatch) => {
-    return new AdminApi().UpdateMarketApp(App).then(async (data: any) => {
+export const updateMarketApp = (App: IAppRequest): ThunkResult<void> => async (
+    dispatch
+) => {
+    return new AdminApi().UpdateMarketApp(App).then(async (data) => {
         if (data) {
             if (data.ErrorCode === 0) {
-                await dispatch(getMarketApps());
+                dispatch(getMarketApps());
                 message.success({
                     content: WithStringTranslate(DONE),
                     key: "updatable",
@@ -40,12 +45,11 @@ export const updateMarketApp = (App: {
 };
 
 export const createMarketAppPackage = (
-    middlewareData: { [key: string]: any },
-    MarketAppID: number
+    packageInfo: ICreateMarketAppPackageRequest
 ): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()
-        .CreateMarketAppPackage(middlewareData, MarketAppID)
+        .CreateMarketAppPackage(packageInfo)
         .then(async (data: any) => {
             dispatch(hideLoading());
             if (data) {
@@ -61,7 +65,7 @@ export const createMarketAppPackage = (
         });
 };
 export const updateMarketAppPackage = (
-    AppPackage: IPackages
+    AppPackage: IUpdatePackageRequest
 ): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()

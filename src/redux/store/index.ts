@@ -1,5 +1,5 @@
 import { applyMiddleware, compose, createStore } from "redux";
-import reducers, { IState } from "../reducers";
+import reducers from "../reducers";
 import { loadState, saveState } from "../../utils/localStorage";
 import throttle from "lodash/throttle";
 import thunk from "redux-thunk";

@@ -1,15 +1,19 @@
 import { Button, Col, Form, Input, message, Row, Switch } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { IGetMarketAppListResponse } from "../../../../api/types.response";
 import Flex from "../../../../components/shared-components/Flex";
 import { DONE, LOADING } from "../../../../constants/Messages";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
 import { IState } from "../../../../redux/reducers";
-import { IApps } from "../../../../redux/reducers/Applications";
 import TextEditor from "./TextEditor";
 
-const EditApp = ({ app }: { [key: string]: IApps }) => {
+const EditApp = ({
+    app,
+}: {
+    [key: string]: IGetMarketAppListResponse["MarketAppList"];
+}) => {
     const [form] = Form.useForm();
     const Token = useSelector((state: IState) => state["auth"].token);
     const dispatch = useDispatch();

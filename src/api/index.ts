@@ -4,13 +4,47 @@ import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
 import WithStringTranslate from "../utils/translate";
-import { UsersProps } from "../views/app-views/catalog/users/UserList";
 import {
-    IAuthorizeUser,
-    IChangePassword,
-    IRegisterUser,
+    IActivateUserRequest,
+    IAppRequest,
+    IAuthorizeUserRequest,
+    IChangePasswordRequest,
+    ICreateMarketAppPackageRequest,
+    IDeleteMarketAppPackageRequest,
+    IRegisterClientCompanyRequest,
+    IRegisterUserRequest,
+    IUpdateCompanyRequest,
+    IUpdateMarketAppRequest,
+    IUpdateNewsRequest,
+    IUpdatePackageRequest,
 } from "./types.request";
-import { ICompanyData, IGetCompanyList } from "./types.response";
+import {
+    IActivateUserResponse,
+    IAuthorizeUserResponse,
+    IChangeCompanyStatusResponse,
+    IChangeMarketAppStatusResponse,
+    IChangePasswordResponse,
+    IChangeUserStatusResponse,
+    IDeleteMarketAppPackageResponse,
+    IGetAllUsersInfoResponse,
+    IGetBasicCompaniesListResponse,
+    IGetCompanyInfoResponse,
+    IGetCompanyListResponse,
+    IGetManagedTokenResponse,
+    IGetMarketAppListResponse,
+    IGetNewsResponse,
+    IGetProfileInfoResponse,
+    INewsList,
+    IRefreshTokenResponse,
+    IRegisterClientCompanyResponse,
+    IRegisterUserResponse,
+    IResetPasswordResponse,
+    ISendActivationCodeResponse,
+    IUpdateMarketAppResponse,
+    IUpdateNewsResponse,
+    IUpdatePackageResponse,
+    IUpdateUserResponse,
+} from "./types.response";
 const publicIp = require("react-public-ip");
 
 declare module "axios" {
@@ -58,13 +92,15 @@ class HttpClient {
         );
     };
 
-    private _RefreshToken = () =>
-        this.instance.get(`${API_AUTH_URL}/RefreshToken`);
+    private _RefreshToken = async () =>
+        this.instance.get<IRefreshTokenResponse>(
+            `${API_AUTH_URL}/RefreshToken`
+        );
 
-    private _handleResponse = (response: AxiosResponse) => {
+    private _handleResponse = async (response: AxiosResponse) => {
         console.log(response);
         if (response.data.ErrorCode === 118) {
-            return this._RefreshToken().then(async (data: any) => {
+            return await this._RefreshToken().then(async (data) => {
                 if (data) {
                     const { ErrorCode, Token } = data;
                     if (ErrorCode === 0) {
@@ -115,8 +151,6 @@ class HttpClient {
         return response.data;
     };
     private _handleError = async (error: AxiosResponse) => {
-        // if (error.config && error.data && error.data.ErrorCode === 118) {
-        // }
         if (error.request.status !== 200) {
             message.error({
                 content: error.toString(),
@@ -132,36 +166,36 @@ export class AuthApi extends HttpClient {
         super(`${API_AUTH_URL}`);
     }
 
-    public Login = async (data: IAuthorizeUser) =>
-        this.instance.post("/AuthorizeUser", {
+    public Login = async (data: IAuthorizeUserRequest) =>
+        this.instance.post<IAuthorizeUserResponse>("/AuthorizeUser", {
             ...data,
             info: (await publicIp.v4()) || ("" as string),
         });
 
     public SendActivationCode = async (UserID?: number) =>
-        this.instance.get("/SendActivationCode", {
+        this.instance.get<ISendActivationCodeResponse>("/SendActivationCode", {
             params: { UserID },
         });
 
     public ResetPassword = async (Email: string) =>
-        this.instance.post("/ResetPassword", {
+        this.instance.post<IResetPasswordResponse>("/ResetPassword", {
             Email,
             info: (await publicIp.v4()) || "",
         });
 
-    public RegisterUser = async (data: IRegisterUser) =>
-        this.instance.post("/RegisterUser", data);
+    public RegisterUser = async (data: IRegisterUserRequest) =>
+        this.instance.post<IRegisterUserResponse>("/RegisterUser", data);
 
     public GetManagedToken = async (CompanyID: number) =>
-        this.instance.get("/GetManagedToken", {
+        this.instance.get<IGetManagedTokenResponse>("/GetManagedToken", {
             params: { CompanyID },
         });
 
-    public ChangePassword = async (data: IChangePassword) =>
-        this.instance.post("/ChangePassword", data);
+    public ChangePassword = async (data: IChangePasswordRequest) =>
+        this.instance.post<IChangePasswordResponse>("/ChangePassword", data);
 
-    public ActivateUser = async (params: { [key: string]: string }) =>
-        this.instance.get("/ActivateUser", {
+    public ActivateUser = async (params: IActivateUserRequest) =>
+        this.instance.get<IActivateUserResponse>("/ActivateUser", {
             params /* Param is a token took from the browser url */,
         });
 }
@@ -171,95 +205,106 @@ export class AdminApi extends HttpClient {
         super(`${API_APP_URL}`);
     }
 
-    public GetAllUsers = async () => this.instance.get("/GetAllUsersInfo");
+    public GetAllUsers = async () =>
+        this.instance.get<IGetAllUsersInfoResponse>("/GetAllUsersInfo");
 
     public GetCompanyList = async () =>
-        this.instance.get<IGetCompanyList>("/GetCompanyList");
+        this.instance.get<IGetCompanyListResponse>("/GetCompanyList");
 
     public GetBasicCompanyList = async () =>
-        this.instance.get("/GetBasicCompaniesList");
+        this.instance.get<IGetBasicCompaniesListResponse>(
+            "/GetBasicCompaniesList"
+        );
 
-    public ChangeCompanyStatus = (ID: number, Status: number) =>
-        this.instance.get("/ChangeCompanyStatus", {
-            params: {
-                ID,
-                Status,
-            },
-        });
+    public ChangeCompanyStatus = async (ID: number, Status: number) =>
+        this.instance.get<IChangeCompanyStatusResponse>(
+            "/ChangeCompanyStatus",
+            {
+                params: {
+                    ID,
+                    Status,
+                },
+            }
+        );
 
-    public ChangeUserStatus = (ID: number, Status: number) =>
-        this.instance.get("/ChangeUserStatus", {
+    public ChangeUserStatus = async (ID: number, Status: number) =>
+        this.instance.get<IChangeUserStatusResponse>("/ChangeUserStatus", {
             params: {
                 ID,
                 Status,
             },
         });
     public UpdateUser = async (data: { [key: string]: any }) =>
-        this.instance.post("/UpdateUser", {
+        this.instance.post<IUpdateUserResponse>("/UpdateUser", {
             ...data,
             info: await publicIp.v4(),
         });
 
-    public RegisterClientCompany = async (data: {
-        [key: string]: string | number;
-    }) =>
-        this.instance.post("/RegisterClientCompany", {
-            ...data,
-            info: (await publicIp.v4()) || "",
-        });
+    public RegisterClientCompany = async (
+        data: IRegisterClientCompanyRequest
+    ) =>
+        this.instance.post<IRegisterClientCompanyResponse>(
+            "/RegisterClientCompany",
+            {
+                ...data,
+                info: (await publicIp.v4()) || "",
+            }
+        );
 
-    public UpdateCompany = async (data: { [key: string]: string | number }) =>
+    public UpdateCompany = async (data: IUpdateCompanyRequest) =>
         this.instance.post("/UpdateCompany", {
             ...data,
             info: (await publicIp.v4()) || "",
         });
 
-    public GetProfileInfo = () => this.instance.get("/GetProfileInfo");
+    public GetProfileInfo = async () =>
+        this.instance.get<IGetProfileInfoResponse>("/GetProfileInfo");
 
-    public GetCompanyInfo = () => this.instance.get("/GetCompanyInfo");
+    public GetCompanyInfo = async () =>
+        this.instance.get<IGetCompanyInfoResponse>("/GetCompanyInfo");
 
-    public GetMarketAppList = () => this.instance.get("/GetMarketAppList");
+    public GetMarketAppList = async () =>
+        this.instance.get<IGetMarketAppListResponse>("/GetMarketAppList");
 
-    public UpdateMarketApp = (App: { [key: string]: any }) =>
-        this.instance.post("/UpdateMarketApp", {
+    public UpdateMarketApp = async (App: IAppRequest) =>
+        this.instance.post<IUpdateMarketAppResponse>("/UpdateMarketApp", {
             App,
         });
 
-    public CreateMarketAppPackage = (
-        data: { [key: string]: any },
-        MarketAppID: number
-    ) =>
-        this.instance.post("/CreateMarketAppPackage", {
-            AppPackage: {
-                ...data,
-            },
-            MarketAppID,
-        });
+    public CreateMarketAppPackage = async (
+        Package: ICreateMarketAppPackageRequest
+    ) => this.instance.post("/CreateMarketAppPackage", Package);
 
-    public UpdateMarketAppPackage = (AppPackage: { [key: string]: any }) =>
-        this.instance.post("/UpdateMarketAppPackage", {
+    public UpdateMarketAppPackage = async (AppPackage: IUpdatePackageRequest) =>
+        this.instance.post<IUpdatePackageResponse>("/UpdateMarketAppPackage", {
             AppPackage,
         });
 
-    public DeleteMarketAppPackage = (ID: number) =>
-        this.instance.post("/DeleteMarketAppPackage", {
-            ID,
-        });
+    public DeleteMarketAppPackage = async (ID: number) =>
+        this.instance.post<IDeleteMarketAppPackageResponse>(
+            "/DeleteMarketAppPackage",
+            {
+                ID,
+            }
+        );
 
-    public ChangeMarketAppStatus = (ID: number, Status: number) =>
-        this.instance.get("/ChangeMarketAppStatus", {
-            params: { ID, Status },
-        });
+    public ChangeMarketAppStatus = async (ID: number, Status: number) =>
+        this.instance.get<IChangeMarketAppStatusResponse>(
+            "/ChangeMarketAppStatus",
+            {
+                params: { ID, Status },
+            }
+        );
 
-    public GetNews = (ProductType: number) =>
-        this.instance.get("/GetNews", {
+    public GetNews = async (ProductType: number) =>
+        this.instance.get<IGetNewsResponse>("/GetNews", {
             params: {
                 ProductType,
             },
         });
 
-    public UpdateNews = (NewsData: any) =>
-        this.instance.post("/UpdateNews", {
+    public UpdateNews = async (NewsData: IUpdateNewsRequest["NewsData"]) =>
+        this.instance.post<IUpdateNewsResponse>("/UpdateNews", {
             NewsData,
         });
 }

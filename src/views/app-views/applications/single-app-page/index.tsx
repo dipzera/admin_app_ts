@@ -27,6 +27,7 @@ import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../utils/translate";
 import { APP_NAME } from "../../../../configs/AppConfig";
+import { IAppRequest } from "../../../../api/types.request";
 
 const SingleAppPage = ({ match }: any) => {
     const { appID } = match.params;
@@ -117,7 +118,7 @@ const SingleAppPage = ({ match }: any) => {
                     ShortDescription,
                     TermsOfUse,
                     LongDescription,
-                } = app as any;
+                } = app as IAppRequest;
                 dispatch(
                     updateMarketApp({
                         ID: appID,
@@ -129,11 +130,11 @@ const SingleAppPage = ({ match }: any) => {
                     })
                 );
                 setImage(Photo);
-                message.success(DONE, 1.5);
+                message.success(WithStringTranslate(DONE), 1.5);
             });
         }
         if (info.file.status === "failed") {
-            message.error(ERROR, 1.5);
+            message.error(WithStringTranslate(ERROR), 1.5);
         }
     };
 
@@ -152,7 +153,7 @@ const SingleAppPage = ({ match }: any) => {
             Photo: uploadedImg ? uploadedImg : app!.Photo,
             // BackOfficeURI: values.BackOfficeURI,
         };
-        message.loading(LOADING, 1.5).then(() => {
+        message.loading(WithStringTranslate(LOADING), 1.5).then(() => {
             dispatch(updateMarketApp(App));
             setEdit(false);
         });

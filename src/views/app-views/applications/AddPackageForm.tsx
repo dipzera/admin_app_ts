@@ -46,17 +46,15 @@ const AddPackageForm = ({
         delete values.Range;
         console.log({ ...values, ValidFrom, ValidTo });
         dispatch(
-            createMarketAppPackage(
-                {
+            createMarketAppPackage({
+                AppPackage: {
                     ...values,
                     ValidFrom,
                     ValidTo,
-                    // MinValue: Range[0],
-                    // MaxValue: Range[1],
                     Status,
                 },
-                appID
-            )
+                MarketAppID: appID,
+            })
         );
     };
 

@@ -1,8 +1,7 @@
 import { Form } from "antd";
-import React, { useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { IState } from "../../../../../redux/reducers";
-import { IApps } from "../../../../../redux/reducers/Applications";
 import WithStringTranslate from "../../../../../utils/translate";
 const BasicValuesStyles = {
     paddingLeft: "10px",

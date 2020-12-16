@@ -89,7 +89,7 @@ export class UserList extends Component<StoreProps> {
     };
 
     getUsersInfo = () => {
-        return new AdminApi().GetAllUsers().then((data: any) => {
+        return new AdminApi().GetAllUsers().then((data) => {
             this.setState({ loading: false });
             if (data) {
                 const { ErrorCode } = data;

@@ -13,7 +13,7 @@ export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
     const [showOptions, setShowOptions] = useState(false);
     useEffect(() => {
         if (visible) {
-            new AdminApi().GetBasicCompanyList().then((data: any) => {
+            new AdminApi().GetBasicCompanyList().then((data) => {
                 const { CompanyList, ErrorCode } = data;
                 if (ErrorCode === 0) {
                     setCompanies(CompanyList);
@@ -32,7 +32,7 @@ export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
         form.resetFields();
         new AuthApi()
             .RegisterUser({ ...values, UiLanguage: 0 })
-            .then((data: any) => {
+            .then((data) => {
                 if (data) {
                     const { ErrorCode, ErrorMessage } = data;
                     if (ErrorCode === 0) {

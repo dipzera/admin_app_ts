@@ -12,7 +12,7 @@ import { DONE } from "../../constants/Messages";
 import { AuthApi } from "../../api";
 import { ThunkResult } from "../reducers";
 import WithStringTranslate from "../../utils/translate";
-import { IAuthorizeUser } from "../../api/types.request";
+import { IAuthorizeUserRequest } from "../../api/types.request";
 
 export const authenticated = (token: string) => ({
     type: AUTHENTICATED,
@@ -57,7 +57,7 @@ export const sendActivationCode = (
 };
 
 export const authorizeUser = (
-    serverData: IAuthorizeUser
+    serverData: IAuthorizeUserRequest
 ): ThunkResult<void> => async (dispatch) => {
     return new AuthApi().Login(serverData).then((data) => {
         dispatch(hideLoading());
