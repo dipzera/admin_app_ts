@@ -24,6 +24,7 @@ const LoginForm = ({
     hideAuthMessage,
     onForgetPasswordClick,
     showLoading,
+    hideLoading,
     extra,
     loading,
     showMessage,
@@ -52,6 +53,10 @@ const LoginForm = ({
             }, 3000);
         }
     }, [token, showMessage]);
+
+    useEffect(() => {
+        hideLoading();
+    }, []);
 
     return (
         <>

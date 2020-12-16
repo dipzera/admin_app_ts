@@ -37,7 +37,7 @@ export const setProfileInfo = (accountInfo: {
     [key: string]: any;
 }): ThunkResult<void> => {
     return async (dispatch) => {
-        return new AdminApi().UpdateUser(accountInfo).then((data: any) => {
+        return new AdminApi().UpdateUser(accountInfo).then((data) => {
             if (data) {
                 if (data.ErrorCode === 0) {
                     dispatch(getProfileInfo());

@@ -5,11 +5,11 @@ import { connect } from "react-redux";
 import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import { DONE } from "../../../constants/Messages";
-import { refreshToken } from "../../../redux/actions/Auth";
 import { AuthApi } from "../../../api";
 import { IState } from "../../../redux/reducers";
 import { IAuth } from "../../../redux/reducers/Auth";
 import { ITheme } from "../../../redux/reducers/Theme";
+import WithStringTranslate from "../../../utils/translate";
 export class ChangePassword extends Component {
     private changePasswordFormRef = React.createRef<any>();
     state = {
@@ -39,7 +39,8 @@ export class ChangePassword extends Component {
                 .then((data: any) => {
                     if (data) {
                         const { ErrorCode, ErrorMessage } = data;
-                        if (ErrorCode === 0) message.success(DONE, 1.5);
+                        if (ErrorCode === 0)
+                            message.success(WithStringTranslate(DONE), 1.5);
                     }
                 });
         }, 1500);
@@ -163,4 +164,4 @@ const mapStateToProps = ({ auth, theme }: IState) => {
     const { locale } = theme as ITheme;
     return { token, locale };
 };
-export default connect(mapStateToProps, { refreshToken })(ChangePassword);
+export default connect(mapStateToProps)(ChangePassword);

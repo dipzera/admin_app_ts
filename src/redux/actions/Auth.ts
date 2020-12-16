@@ -1,26 +1,18 @@
 import {
-    SIGNIN,
     AUTHENTICATED,
     SIGNOUT,
-    SIGNOUT_SUCCESS,
     SHOW_AUTH_MESSAGE,
     HIDE_AUTH_MESSAGE,
-    SIGNUP,
-    SIGNUP_SUCCESS,
     SHOW_LOADING,
-    SIGNIN_WITH_GOOGLE,
-    SIGNIN_WITH_GOOGLE_AUTHENTICATED,
-    SIGNIN_WITH_FACEBOOK,
-    SIGNIN_WITH_FACEBOOK_AUTHENTICATED,
     HIDE_LOADING,
 } from "../constants/Auth";
 import { message, Modal } from "antd";
-import { IS_USER_ACTIVATED } from "../constants/Auth";
 import { getProfileInfo } from "./Account";
-import { DONE, EMAIL_CONFIRM_MSG, EXPIRE_TIME } from "../../constants/Messages";
+import { DONE } from "../../constants/Messages";
 import { AuthApi } from "../../api";
 import { ThunkResult } from "../reducers";
 import WithStringTranslate from "../../utils/translate";
+import { IAuthorizeUser } from "../../api/types.request";
 
 export const authenticated = (token: string) => ({
     type: AUTHENTICATED,
@@ -47,26 +39,10 @@ export const hideLoading = () => ({
     type: HIDE_LOADING,
 });
 
-export const refreshToken = (): ThunkResult<void> => async (dispatch) => {
-    return new AuthApi().RefreshToken().then(async (data: any) => {
-        if (data) {
-            const { ErrorCode, ErrorMessage, Token } = data;
-            if (ErrorCode === 0) {
-                await dispatch(authenticated(Token));
-                window.location.reload();
-            } else if (ErrorCode === 105) {
-                const key = "updatable";
-                message
-                    .loading({ content: EXPIRE_TIME, key })
-                    .then(() => dispatch(signOut()));
-            }
-        }
-    });
-};
 export const sendActivationCode = (
     UserID?: number
 ): ThunkResult<void> => async (dispatch) => {
-    return new AuthApi().SendActivationCode(UserID).then((data: any) => {
+    return new AuthApi().SendActivationCode(UserID).then((data) => {
         if (data) {
             const { ErrorMessage, ErrorCode } = data;
             if (ErrorCode === 0)
@@ -80,16 +56,16 @@ export const sendActivationCode = (
     });
 };
 
-export const authorizeUser = (serverData: {
-    [key: string]: any;
-}): ThunkResult<void> => async (dispatch) => {
+export const authorizeUser = (
+    serverData: IAuthorizeUser
+): ThunkResult<void> => async (dispatch) => {
     return new AuthApi().Login(serverData).then((data) => {
         dispatch(hideLoading());
         /* Handle errors here */
         if (data) {
             const { ErrorCode, ErrorMessage, Token } = data;
             if (ErrorCode === 0) {
-                dispatch(authenticated(Token));
+                dispatch(authenticated(Token ?? ""));
                 dispatch(getProfileInfo());
             }
             if (ErrorCode === 102) {

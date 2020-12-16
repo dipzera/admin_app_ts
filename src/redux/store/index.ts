@@ -10,17 +10,35 @@ declare global {
     }
 }
 
-function configureStore(preLoadedState: any) {
-    // const composeEnhancers =
-    //   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-    return createStore(
+// function configureStore(preLoadedState: any) {
+//     const composeEnhancers =
+//         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+//     return createStore(
+//         reducers,
+//         preLoadedState,
+//         compose(applyMiddleware(thunk))
+//     );
+// }
+
+let store: any;
+const configureStore = (preLoadedState: any) => {
+    store = createStore(
         reducers,
         preLoadedState,
         compose(applyMiddleware(thunk))
     );
-}
+    if (process.env.NODE_ENV !== "production") {
+        if (module.hot) {
+            module.hot.accept("../reducers", () => {
+                store.replaceReducer(reducers);
+            });
+        }
+    }
+    return store;
+};
 
-const store = configureStore(loadState());
+store = configureStore(loadState());
 
 store.subscribe(throttle(() => saveState(store.getState()), 1000));
 export default store;

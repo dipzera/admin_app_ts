@@ -1,35 +1,11 @@
 import React, { Component } from "react";
-import {
-    Form,
-    Avatar,
-    Button,
-    Input,
-    DatePicker,
-    Row,
-    Col,
-    message,
-    Upload,
-} from "antd";
+import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { ROW_GUTTER } from "../../../../../constants/ThemeConstant";
 import Flex from "../../../../../components/shared-components/Flex";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
-import { updateSettings } from "../../../../../redux/actions/Account";
-import { connect } from "react-redux";
-import { IntlProvider } from "react-intl";
-import AppLocale from "../../../../../lang";
-import axios from "axios";
 import MaskedInput from "antd-mask-input";
-import { signOut, refreshToken } from "../../../../../redux/actions/Auth";
-import {
-    DONE,
-    ERROR,
-    EXPIRE_TIME,
-    LOADING,
-    UPDATING,
-    UPLOADED,
-    UPLOADING,
-} from "../../../../../constants/Messages";
+import { ERROR, UPLOADED, UPLOADING } from "../../../../../constants/Messages";
 import { WizardContext } from "./WizardContext";
 import Utils from "../../../../../utils";
 const publicIp = require("react-public-ip");

@@ -8,11 +8,10 @@ import { useEffect, useState } from "react";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import CreateNews from "./CreateNews";
 import EditNews from "./EditNews";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../../redux/reducers";
-enum AppList {
-  all = 0,
-}
+import { getMarketApps } from "../../../redux/actions/Applications";
+
 const ArticleItem = ({ newsData, setSelected, setEdit }: any) => {
   return (
     <Card style={{ padding: 30 }}>
@@ -56,7 +55,7 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: any) => {
           {newsData.Photo && (
             <img
               src={newsData.Photo}
-              alt="Photo"
+              alt="Article"
               style={{ maxWidth: "100%" }}
             />
           )}
@@ -83,14 +82,20 @@ const News = () => {
   const [selected, setSelected] = useState<any>();
   const [AppType, setAppType] = useState<number>();
   const apps = useSelector((state: IState) => state["apps"]);
+  const dispatch = useDispatch();
   const getNews = async (ProductType = 0) => {
-    return new AdminApi().GetNews(ProductType).then((data: any) => {
-      if (data) {
-        if (data.ErrorCode === 0) {
-          setNews(data.NewsList);
+    return new AdminApi()
+      .GetNews(ProductType)
+      .then((data: any) => {
+        if (data) {
+          if (data.ErrorCode === 0) {
+            setNews(data.NewsList);
+          }
         }
-      }
-    });
+      })
+      .then(() => {
+        dispatch(getMarketApps());
+      });
   };
   useEffect(() => {
     getNews();
@@ -119,7 +124,7 @@ const News = () => {
       />
       <Flex justifyContent="between" className="mb-4">
         <Select defaultValue={0} style={{ width: "150px" }} onChange={onSelect}>
-          <Select.Option value={0}>
+          <Select.Option value={0} key={0}>
             <b>General</b>
           </Select.Option>
           {apps &&

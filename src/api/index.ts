@@ -5,20 +5,16 @@ import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import store from "../redux/store";
 import WithStringTranslate from "../utils/translate";
 import { UsersProps } from "../views/app-views/catalog/users/UserList";
+import {
+    IAuthorizeUser,
+    IChangePassword,
+    IRegisterUser,
+} from "./types.request";
+import { ICompanyData, IGetCompanyList } from "./types.response";
 const publicIp = require("react-public-ip");
 
 declare module "axios" {
     interface AxiosResponse<T = any> extends Promise<T> {}
-}
-export interface ApiResponse<T = any> {
-    ErrorCode: number;
-    ErrorMessage: string;
-    Users?: T;
-    CompanyList?: T;
-    Company?: T;
-    MarketAppList?: T;
-    NewsList?: T;
-    User?: T;
 }
 
 class HttpClient {
@@ -41,22 +37,25 @@ class HttpClient {
         );
     };
     public _initializeRequestInterceptor = () => {
-        this.instance.interceptors.request.use((config) => {
-            console.log(config);
-            if (config.method === "get") {
-                config.params = {
-                    Token: this._token,
-                    ...config.params,
-                };
-            }
-            if (config.method === "post") {
-                config.data = {
-                    ...config.data,
-                    Token: this._token,
-                };
-            }
-            return config;
-        });
+        this.instance.interceptors.request.use(
+            (config) => {
+                console.log(config);
+                if (config.method === "get") {
+                    config.params = {
+                        Token: this._token,
+                        ...config.params,
+                    };
+                }
+                if (config.method === "post") {
+                    config.data = {
+                        ...config.data,
+                        Token: this._token,
+                    };
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
     };
 
     private _RefreshToken = () =>
@@ -65,41 +64,27 @@ class HttpClient {
     private _handleResponse = (response: AxiosResponse) => {
         console.log(response);
         if (response.data.ErrorCode === 118) {
-            return this._handleError(response);
-        } else if (
-            response.data.ErrorCode !== 0 &&
-            response.data.ErrorCode !== 118
-        ) {
-            message.error({
-                content: response.data.ErrorMessage,
-                key: "updatable",
-            });
-        }
-        return response.data;
-    };
-    private _handleError = async (error: any) => {
-        if (error.config && error.data && error.data.ErrorCode === 118) {
             return this._RefreshToken().then(async (data: any) => {
                 if (data) {
                     const { ErrorCode, Token } = data;
                     if (ErrorCode === 0) {
                         store.dispatch(authenticated(Token));
-                        if (error.config.method === "get") {
-                            error.config.params = {
-                                ...error.config.params,
+                        if (response.config.method === "get") {
+                            response.config.params = {
+                                ...response.config.params,
                                 Token,
                             };
                             return await axios
-                                .request(error.config)
+                                .request(response.config)
                                 .then((response) => response.data);
                         }
-                        if (error.config.method === "post") {
-                            error.config.data = {
-                                ...JSON.parse(error.config.data),
+                        if (response.config.method === "post") {
+                            response.config.data = {
+                                ...JSON.parse(response.config.data),
                                 Token,
                             };
                             return await axios
-                                .request(error.config)
+                                .request(response.config)
                                 .then((response) => response.data);
                         }
                     } else {
@@ -118,7 +103,20 @@ class HttpClient {
                     }
                 }
             });
+        } else if (
+            response.data.ErrorCode !== 0 &&
+            response.data.ErrorCode !== 118
+        ) {
+            message.error({
+                content: response.data.ErrorMessage,
+                key: "updatable",
+            });
         }
+        return response.data;
+    };
+    private _handleError = async (error: AxiosResponse) => {
+        // if (error.config && error.data && error.data.ErrorCode === 118) {
+        // }
         if (error.request.status !== 200) {
             message.error({
                 content: error.toString(),
@@ -134,15 +132,13 @@ export class AuthApi extends HttpClient {
         super(`${API_AUTH_URL}`);
     }
 
-    public Login = async (data: { [key: string]: any }) =>
+    public Login = async (data: IAuthorizeUser) =>
         this.instance.post("/AuthorizeUser", {
             ...data,
             info: (await publicIp.v4()) || ("" as string),
         });
 
-    public RefreshToken = () => this.instance.get("/RefreshToken");
-
-    public SendActivationCode = (UserID?: number) =>
+    public SendActivationCode = async (UserID?: number) =>
         this.instance.get("/SendActivationCode", {
             params: { UserID },
         });
@@ -153,18 +149,18 @@ export class AuthApi extends HttpClient {
             info: (await publicIp.v4()) || "",
         });
 
-    public RegisterUser = (data: { [key: string]: string | number }) =>
+    public RegisterUser = async (data: IRegisterUser) =>
         this.instance.post("/RegisterUser", data);
 
-    public GetManagedToken = (CompanyID: number) =>
+    public GetManagedToken = async (CompanyID: number) =>
         this.instance.get("/GetManagedToken", {
             params: { CompanyID },
         });
 
-    public ChangePassword = (data: { [key: string]: string }) =>
+    public ChangePassword = async (data: IChangePassword) =>
         this.instance.post("/ChangePassword", data);
 
-    public ActivateUser = (params: { [key: string]: string }) =>
+    public ActivateUser = async (params: { [key: string]: string }) =>
         this.instance.get("/ActivateUser", {
             params /* Param is a token took from the browser url */,
         });
@@ -175,11 +171,12 @@ export class AdminApi extends HttpClient {
         super(`${API_APP_URL}`);
     }
 
-    public GetAllUsers = () => this.instance.get("/GetAllUsersInfo");
+    public GetAllUsers = async () => this.instance.get("/GetAllUsersInfo");
 
-    public GetCompanyList = () => this.instance.get("/GetCompanyList");
+    public GetCompanyList = async () =>
+        this.instance.get<IGetCompanyList>("/GetCompanyList");
 
-    public GetBasicCompanyList = () =>
+    public GetBasicCompanyList = async () =>
         this.instance.get("/GetBasicCompaniesList");
 
     public ChangeCompanyStatus = (ID: number, Status: number) =>

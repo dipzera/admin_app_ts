@@ -16,14 +16,9 @@ import UserView from "./UserView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import "../hand_gesture.scss";
 import { connect } from "react-redux";
-import {
-    refreshToken,
-    signOut,
-    sendActivationCode,
-} from "../../../../redux/actions/Auth";
+import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
-import { ColumnsType } from "antd/lib/table";
 import { AdminApi } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
@@ -33,10 +28,7 @@ import { IState } from "../../../../redux/reducers";
 import { IAuth } from "../../../../redux/reducers/Auth";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import Localization from "../../../../utils/Localization";
 import WithStringTranslate from "../../../../utils/translate";
-import { ApiResponse } from "../../../../api";
-import { AxiosResponse } from "axios";
 
 enum status {
     inactive = 0,
@@ -252,7 +244,7 @@ export class UserList extends Component<StoreProps> {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.active
-                                ).then((data: any) => {
+                                ).then(() => {
                                     this.getUsersInfo();
                                 });
                             },
@@ -275,8 +267,9 @@ export class UserList extends Component<StoreProps> {
                                 await this.handleUserStatus(
                                     row.ID,
                                     status.disabled
-                                );
-                                this.getUsersInfo();
+                                ).then(() => {
+                                    this.getUsersInfo();
+                                });
                             },
                         });
                     }}
@@ -449,25 +442,6 @@ export class UserList extends Component<StoreProps> {
                                                   "user.disable"
                                               )}`}
                                     </Button>
-                                    {/* <Tooltip
-                                        title={`${
-                                            this.state.selectedRows.length > 1
-                                                ? `Delete (${this.state.selectedRows.length})`
-                                                : "Delete"
-                                        }`}
-                                    >
-                                        <Button
-                                            className="mr-3"
-                                            danger
-                                            onClick={() =>
-                                                this.deleteRow(
-                                                    this.state.selectedRows
-                                                )
-                                            }
-                                        >
-                                            <DeleteOutlined />
-                                        </Button>
-                                    </Tooltip> */}
                                 </>
                             )}
                             <Button

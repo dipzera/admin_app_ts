@@ -28,6 +28,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/react-simple-maps": "^1.0.3",
     "@types/react-syntax-highlighter": "^13.5.0",
+    "@types/webpack-env": "^1.16.0",
     "@vx/pattern": "0.0.195",
     "ajv": "^6.8.1",
     "antd": "^4.6.0",
