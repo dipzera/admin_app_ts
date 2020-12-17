@@ -37,12 +37,7 @@ class CompanyForm extends Component {
             .then(async (data) => {
                 if (data) {
                     if (data.ErrorCode === 0) {
-                        message.success({
-                            content: WithStringTranslate(DONE),
-                            key: "updatable",
-                            duration: 1.5,
-                        });
-                        return Promise;
+                        this.getCompanyInfo();
                     }
                 }
             });
@@ -60,10 +55,15 @@ class CompanyForm extends Component {
             message.loading({
                 content: WithStringTranslate(UPDATING),
                 key,
-                duration: 1,
             });
             setTimeout(async () => {
-                this.updateCompany({ ...values });
+                this.updateCompany({ ...values }).then(() =>
+                    message.success({
+                        content: WithStringTranslate(DONE),
+                        key: "updatable",
+                        duration: 1,
+                    })
+                );
             }, 1000);
         };
 
@@ -81,20 +81,21 @@ class CompanyForm extends Component {
                 return;
             }
             if (info.file.status === "done") {
+                message.success({
+                    content: WithStringTranslate(DONE),
+                    key: "updatable",
+                    duration: 1,
+                });
                 Utils.getBase64(
                     info.file.originFileObj,
                     async (imageUrl: string) => {
                         await this.updateCompany({
                             ...this.state,
                             Logo: imageUrl,
-                        }).then(() => {
-                            this.setState({
-                                ...this.state,
-                                Logo: imageUrl,
-                            });
                         });
                     }
                 );
+                return;
             }
         };
 

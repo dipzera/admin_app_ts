@@ -7,12 +7,13 @@ import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { setProfileInfo } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
-import { ERROR, UPLOADING } from "../../../constants/Messages";
+import { DONE, ERROR, UPLOADING } from "../../../constants/Messages";
 import Utils from "../../../utils";
 import { IState } from "../../../redux/reducers";
 import { IAccount } from "../../../redux/reducers/Account";
 import Localization from "../../../utils/Localization";
 import { UploadChangeParam } from "antd/lib/upload";
+import WithStringTranslate from "../../../utils/translate";
 interface IEditProfile {
     setProfileInfo: (accountInfo: IAccount) => void;
     account: IAccount;
@@ -26,6 +27,7 @@ class EditProfile extends Component<IEditProfile> {
             message.loading({
                 content: <Localization msg={"message.Updating"} />,
                 key,
+                duration: 1,
             });
             setTimeout(async () => {
                 this.props.setProfileInfo({
