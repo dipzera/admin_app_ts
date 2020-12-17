@@ -1,11 +1,7 @@
 import { message } from "antd";
 import { AdminApi } from "../../api";
-import {
-    IAppRequest,
-    ICreateMarketAppPackageRequest,
-    IUpdateMarketAppRequest,
-    IUpdatePackageRequest,
-} from "../../api/types.request";
+import { ICreateMarketAppPackageRequest } from "../../api/types.request";
+import { IMarketAppList, IPackages } from "../../api/types.response";
 import { DONE } from "../../constants/Messages";
 import WithStringTranslate from "../../utils/translate";
 import { SET_APPS } from "../constants/Applications";
@@ -27,9 +23,9 @@ export const getMarketApps = (): ThunkResult<void> => async (dispatch) => {
         }
     });
 };
-export const updateMarketApp = (App: IAppRequest): ThunkResult<void> => async (
-    dispatch
-) => {
+export const updateMarketApp = (
+    App: IMarketAppList
+): ThunkResult<void> => async (dispatch) => {
     return new AdminApi().UpdateMarketApp(App).then(async (data) => {
         if (data) {
             if (data.ErrorCode === 0) {
@@ -65,7 +61,7 @@ export const createMarketAppPackage = (
         });
 };
 export const updateMarketAppPackage = (
-    AppPackage: IUpdatePackageRequest
+    AppPackage: IPackages
 ): ThunkResult<void> => async (dispatch) => {
     dispatch(showLoading());
     return new AdminApi()

@@ -14,7 +14,6 @@ import {
     IS_USER_ACTIVATED,
     SET_TOKEN,
 } from "../constants/Auth";
-
 export interface IAuth {
     loading?: boolean;
     message?: string;
@@ -66,21 +65,6 @@ const auth = (state = initState, action: any) => {
                 isAuth: false,
             };
 
-        case SIGNOUT_SUCCESS: {
-            return {
-                ...state,
-                token: null,
-                redirect: "/auth/login",
-                loading: false,
-            };
-        }
-        case SIGNUP_SUCCESS: {
-            return {
-                ...state,
-                loading: false,
-                token: action.token,
-            };
-        }
         case SHOW_LOADING: {
             return {
                 ...state,
@@ -91,25 +75,6 @@ const auth = (state = initState, action: any) => {
             return {
                 ...state,
                 loading: false,
-            };
-        case SIGNIN_WITH_GOOGLE_AUTHENTICATED: {
-            return {
-                ...state,
-                loading: false,
-                token: action.token,
-            };
-        }
-        case SIGNIN_WITH_FACEBOOK_AUTHENTICATED: {
-            return {
-                ...state,
-                loading: false,
-                token: action.token,
-            };
-        }
-        case SET_TOKEN:
-            return {
-                ...state,
-                token: action.token,
             };
         default:
             return state;

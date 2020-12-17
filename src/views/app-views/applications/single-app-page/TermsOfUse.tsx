@@ -6,8 +6,13 @@ import { EditOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { updateMarketApp } from "../../../../redux/actions/Applications";
 import { IState } from "../../../../redux/reducers";
+import { ILocale, IMarketAppList } from "../../../../api/types.response";
 
-const textarea = [
+export interface ITextArea {
+    title: string;
+    locale: "en" | "ro" | "ru";
+}
+const textarea: ITextArea[] = [
     {
         title: "English",
         locale: "en",
@@ -21,15 +26,15 @@ const textarea = [
         locale: "ru",
     },
 ];
-const TermsOfUse = ({ app }: any) => {
-    const [edit, setEdit] = useState(false);
-    const [terms, setTerms] = useState<any>();
-    const locale =
+const TermsOfUse = ({ app }: { app: IMarketAppList }) => {
+    const [edit, setEdit] = useState<boolean>(false);
+    const [terms, setTerms] = useState<Partial<ILocale>>({});
+    const locale: "en" | "ro" | "ru" =
         useSelector((state: IState) => state["theme"].locale) ?? "en";
     const dispatch = useDispatch();
     useEffect(() => {
         try {
-            setTerms(JSON.parse(window.atob(app.TermsOfUse)));
+            setTerms(JSON.parse(window.atob(app.TermsOfUse.toString())));
         } catch {
             setTerms({ en: "", ru: "", ro: "" });
         }
@@ -44,16 +49,19 @@ const TermsOfUse = ({ app }: any) => {
             Status,
             Photo,
         } = app;
-        const App = {
-            ID,
-            LongDescription,
-            Name,
-            ShortDescription,
-            Status,
-            Photo,
-            TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
-        };
-        dispatch(updateMarketApp(App));
+        dispatch(
+            updateMarketApp({
+                ID,
+                LongDescription,
+                Name,
+                ShortDescription,
+                Status,
+                Photo,
+                TermsOfUse: Buffer.from(JSON.stringify(terms)).toString(
+                    "base64"
+                ),
+            })
+        );
         setEdit(false);
     };
     return (
@@ -77,9 +85,9 @@ const TermsOfUse = ({ app }: any) => {
                         <div key={locale} className="mb-3">
                             <h4>{title}</h4>
                             <TextEditor
-                                apps={terms ? terms[locale] : null}
-                                handleEditorChange={(content: any) => {
-                                    setTerms((prevState: any) => ({
+                                apps={terms[locale] ?? ""}
+                                handleEditorChange={(content: string) => {
+                                    setTerms((prevState: Partial<ILocale>) => ({
                                         ...prevState,
                                         [locale]: content,
                                     }));
@@ -103,7 +111,7 @@ const TermsOfUse = ({ app }: any) => {
                     <p
                         dangerouslySetInnerHTML={{
                             /* Filter from API */
-                            __html: terms ? terms[locale] : null,
+                            __html: terms[locale] ?? "",
                         }}
                     ></p>
                 </>

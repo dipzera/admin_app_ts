@@ -1,6 +1,6 @@
 import { Col, Form, message, Modal, Row, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Flex from "../../../components/shared-components/Flex";
 import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
@@ -13,7 +13,7 @@ import { IAntUpload } from "../../../types";
 import { UploadChangeParam } from "antd/lib/upload";
 interface IEditNews {
     visible: boolean;
-    close: any;
+    close: () => void;
     news: INewsList;
     getNews: (AppType: number) => void;
 }

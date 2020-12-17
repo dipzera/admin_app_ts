@@ -4,6 +4,9 @@ import MaskedInput from "antd-mask-input";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AdminApi } from "../../../../api";
+import { ICompanyData } from "../../../../api/types.response";
+import WithStringTranslate from "../../../../utils/translate";
+import { DONE } from "../../../../constants/Messages";
 
 export const CompanyModalEdit = ({
     data,
@@ -14,6 +17,7 @@ export const CompanyModalEdit = ({
     const [form] = Form.useForm();
 
     const [mask, setMask] = useState<any>();
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         if (!visible) return;
@@ -25,11 +29,21 @@ export const CompanyModalEdit = ({
         setMask({ [e.target.name]: e.target.value });
     };
 
-    const onFinish = (values: any) => {
+    const onFinish = (values: ICompanyData) => {
         new AdminApi()
             .UpdateCompany({ Company: { ...data, ...values } })
             .then((data) => {
-                data.ErrorCode === 0 && getCompanyList();
+                if (data) {
+                    if (data.ErrorCode === 0) {
+                        getCompanyList().then(() =>
+                            message.success({
+                                content: WithStringTranslate(DONE),
+                                key: "updatable",
+                                duration: 1.5,
+                            })
+                        );
+                    }
+                }
             });
     };
     const onFinishFailed = () => {};
@@ -37,19 +51,24 @@ export const CompanyModalEdit = ({
     return (
         <Modal
             destroyOnClose
-            title={"Edit company"}
+            title={<IntlMessage id="company.edit.title" />}
             visible={visible}
-            okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
+            okText={` ${WithStringTranslate("account.EditProfile.SaveChange")}`}
             onCancel={onCancel}
+            confirmLoading={loading}
             onOk={() => {
-                form.validateFields()
-                    .then((values) => {
-                        onCancel();
-                        onFinish(values);
-                    })
-                    .catch((info) => {
-                        console.log("Validate Failed:", info);
-                    });
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                    form.validateFields()
+                        .then((values) => {
+                            onCancel();
+                            onFinish(values);
+                        })
+                        .catch((info) => {
+                            console.log("Validate Failed:", info);
+                        });
+                }, 1000);
             }}
         >
             <Form

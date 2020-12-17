@@ -1,13 +1,12 @@
-import { Button, Form, message, Steps } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Steps } from "antd";
 import { PageHeaderAlt } from "../../../../../components/layout-components/PageHeaderAlt";
 import Flex from "../../../../../components/shared-components/Flex";
 import CompanyFormWizard from "./CompanyFormWizard";
 import UserFormWizard from "./UserFormWizard";
-import { WizardContext } from "./WizardContext";
+import { IWizard, WizardContext } from "./WizardContext";
 import { useBeforeunload } from "react-beforeunload";
 import LastWizardStep from "./LastWizardStep";
-import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../../utils/translate";
 const steps = [
     {
@@ -26,21 +25,14 @@ const steps = [
 const RegisterWizard = () => {
     const { Step } = Steps;
 
-    const [wizardData, setWizardData] = useState({
-        CompanyData: {},
-        UserData: {},
-    });
-    const [current, setCurrent] = useState<any>(0);
-    function next() {
-        setCurrent(current + 1);
-    }
-    function prev() {
-        setCurrent(current - 1);
-    }
-    const [apiSuccess, setApiSuccess] = useState(false);
-    const [companyID, setCompanyID] = useState<any>();
+    const [wizardData, setWizardData] = useState<
+        Partial<IWizard["wizardData"]>
+    >({});
+    const [current, setCurrent] = useState<number>(0);
+    const [apiSuccess, setApiSuccess] = useState<boolean>(false);
+    const [companyID, setCompanyID] = useState<number>(0);
 
-    useBeforeunload((e: any) => e.preventDefault());
+    useBeforeunload((e: BeforeUnloadEvent) => e.preventDefault());
 
     return (
         <WizardContext.Provider
@@ -56,17 +48,6 @@ const RegisterWizard = () => {
             }}
         >
             <div>
-                <PageHeaderAlt className="bg-white border-bottom">
-                    <div className="container-fluid">
-                        <Flex
-                            justifyContent="between"
-                            alignItems="center"
-                            className="py-4 "
-                        >
-                            <h2>Registration wizard</h2>
-                        </Flex>
-                    </div>
-                </PageHeaderAlt>
                 <div className="mt-3">
                     <Steps current={current}>
                         {steps.map((item) => (
@@ -76,35 +57,7 @@ const RegisterWizard = () => {
                     <div className="steps-content mt-5">
                         {steps[current]["content"]}
                     </div>
-                    <div className="steps-action">
-                        {/* {current < steps.length - 1 && (
-                            <Button
-                                htmlType="submit"
-                                type="primary"
-                                onClick={() => next()}
-                            >
-                                Next
-                            </Button>
-                        )}
-                        {current === steps.length - 1 && (
-                            <Button
-                                type="primary"
-                                onClick={() =>
-                                    message.success("Processing complete!")
-                                }
-                            >
-                                Done
-                            </Button>
-                        )}
-                        {current > 0 && (
-                            <Button
-                                style={{ marginLeft: 8 }}
-                                onClick={() => prev()}
-                            >
-                                Previous
-                            </Button>
-                        )} */}
-                    </div>
+                    <div className="steps-action"></div>
                 </div>
             </div>
         </WizardContext.Provider>

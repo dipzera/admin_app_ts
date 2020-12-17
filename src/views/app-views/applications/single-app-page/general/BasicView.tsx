@@ -1,12 +1,21 @@
 import { Form } from "antd";
 import React from "react";
 import { useSelector } from "react-redux";
+import { ILocale, IMarketAppList } from "../../../../../api/types.response";
 import { IState } from "../../../../../redux/reducers";
 import WithStringTranslate from "../../../../../utils/translate";
 const BasicValuesStyles = {
     paddingLeft: "10px",
 };
-const BasicView = ({ app, shortDesc, longDesc }: any) => {
+const BasicView = ({
+    app,
+    shortDesc,
+    longDesc,
+}: {
+    app: IMarketAppList;
+    shortDesc: ILocale;
+    longDesc: ILocale;
+}) => {
     const locale =
         useSelector((state: IState) => state["theme"].locale) ?? "en";
     return (
@@ -14,15 +23,10 @@ const BasicView = ({ app, shortDesc, longDesc }: any) => {
             <Form.Item label={WithStringTranslate("applications.AppName")}>
                 <div style={BasicValuesStyles}>{app.Name}</div>
             </Form.Item>
-            {/* <Form.Item label="Back Office URI">
-                <div style={BasicValuesStyles}>{app.BackOfficeURI}</div>
-            </Form.Item> */}
             <Form.Item
                 label={WithStringTranslate("applications.ShortDescription")}
             >
-                <div style={BasicValuesStyles}>
-                    {shortDesc ? shortDesc[locale] : null}
-                </div>
+                <div style={BasicValuesStyles}>{shortDesc[locale] ?? ""}</div>
             </Form.Item>
             <Form.Item
                 label={WithStringTranslate("applications.LongDescription")}
@@ -31,7 +35,7 @@ const BasicView = ({ app, shortDesc, longDesc }: any) => {
                     style={BasicValuesStyles}
                     className="mt-2"
                     dangerouslySetInnerHTML={{
-                        __html: longDesc ? longDesc[locale] : null,
+                        __html: longDesc[locale] ?? "",
                     }}
                 ></div>
             </Form.Item>

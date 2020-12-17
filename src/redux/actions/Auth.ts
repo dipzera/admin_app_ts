@@ -14,6 +14,14 @@ import { ThunkResult } from "../reducers";
 import WithStringTranslate from "../../utils/translate";
 import { IAuthorizeUserRequest } from "../../api/types.request";
 
+type Actions =
+    | { type: typeof AUTHENTICATED; token: string }
+    | { type: typeof SIGNOUT }
+    | { type: typeof SHOW_AUTH_MESSAGE; message: string }
+    | { type: typeof HIDE_AUTH_MESSAGE }
+    | { type: typeof SHOW_LOADING }
+    | { type: typeof HIDE_LOADING };
+
 export const authenticated = (token: string) => ({
     type: AUTHENTICATED,
     token,
@@ -51,7 +59,7 @@ export const sendActivationCode = (
                     key: "updatable",
                     duration: 2,
                 });
-            else dispatch(showAuthMessage(ErrorMessage));
+            else dispatch(showAuthMessage(ErrorMessage ?? "Error"));
         }
     });
 };
@@ -70,7 +78,7 @@ export const authorizeUser = (
             }
             if (ErrorCode === 102) {
                 dispatch(hideLoading());
-                dispatch(showAuthMessage(ErrorMessage));
+                dispatch(showAuthMessage(ErrorMessage ?? "Error"));
             } else if (ErrorCode === 108) {
                 dispatch(hideLoading());
                 Modal.confirm({
@@ -86,7 +94,7 @@ export const authorizeUser = (
                 });
             } else {
                 dispatch(hideLoading());
-                dispatch(showAuthMessage(ErrorMessage));
+                dispatch(showAuthMessage(ErrorMessage ?? "Error"));
             }
         }
     });

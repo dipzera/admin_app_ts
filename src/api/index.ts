@@ -2,21 +2,18 @@ import { message } from "antd";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
+import { IAccount } from "../redux/reducers/Account";
 import store from "../redux/store";
 import WithStringTranslate from "../utils/translate";
 import {
     IActivateUserRequest,
-    IAppRequest,
     IAuthorizeUserRequest,
     IChangePasswordRequest,
     ICreateMarketAppPackageRequest,
-    IDeleteMarketAppPackageRequest,
     IRegisterClientCompanyRequest,
     IRegisterUserRequest,
     IUpdateCompanyRequest,
-    IUpdateMarketAppRequest,
     IUpdateNewsRequest,
-    IUpdatePackageRequest,
 } from "./types.request";
 import {
     IActivateUserResponse,
@@ -25,6 +22,7 @@ import {
     IChangeMarketAppStatusResponse,
     IChangePasswordResponse,
     IChangeUserStatusResponse,
+    ICompanyData,
     IDeleteMarketAppPackageResponse,
     IGetAllUsersInfoResponse,
     IGetBasicCompaniesListResponse,
@@ -34,7 +32,9 @@ import {
     IGetMarketAppListResponse,
     IGetNewsResponse,
     IGetProfileInfoResponse,
+    IMarketAppList,
     INewsList,
+    IPackages,
     IRefreshTokenResponse,
     IRegisterClientCompanyResponse,
     IRegisterUserResponse,
@@ -48,7 +48,7 @@ import {
 const publicIp = require("react-public-ip");
 
 declare module "axios" {
-    interface AxiosResponse<T = any> extends Promise<T> {}
+    interface AxiosResponse<T> extends Promise<T> {}
 }
 
 class HttpClient {
@@ -146,6 +146,7 @@ class HttpClient {
             message.error({
                 content: response.data.ErrorMessage,
                 key: "updatable",
+                duration: 2.5,
             });
         }
         return response.data;
@@ -183,8 +184,10 @@ export class AuthApi extends HttpClient {
             info: (await publicIp.v4()) || "",
         });
 
-    public RegisterUser = async (data: IRegisterUserRequest) =>
-        this.instance.post<IRegisterUserResponse>("/RegisterUser", data);
+    public RegisterUser = async (data: IAccount) =>
+        this.instance.post<IRegisterUserResponse>("/RegisterUser", {
+            ...data,
+        });
 
     public GetManagedToken = async (CompanyID: number) =>
         this.instance.get<IGetManagedTokenResponse>("/GetManagedToken", {
@@ -234,19 +237,20 @@ export class AdminApi extends HttpClient {
                 Status,
             },
         });
-    public UpdateUser = async (data: { [key: string]: any }) =>
+    public UpdateUser = async (data: IAccount) =>
         this.instance.post<IUpdateUserResponse>("/UpdateUser", {
-            ...data,
-            info: await publicIp.v4(),
+            User: {
+                ...data,
+            },
         });
 
-    public RegisterClientCompany = async (
-        data: IRegisterClientCompanyRequest
-    ) =>
+    public RegisterClientCompany = async (data: ICompanyData) =>
         this.instance.post<IRegisterClientCompanyResponse>(
             "/RegisterClientCompany",
             {
-                ...data,
+                Company: {
+                    ...data,
+                },
                 info: (await publicIp.v4()) || "",
             }
         );
@@ -266,7 +270,7 @@ export class AdminApi extends HttpClient {
     public GetMarketAppList = async () =>
         this.instance.get<IGetMarketAppListResponse>("/GetMarketAppList");
 
-    public UpdateMarketApp = async (App: IAppRequest) =>
+    public UpdateMarketApp = async (App: IMarketAppList) =>
         this.instance.post<IUpdateMarketAppResponse>("/UpdateMarketApp", {
             App,
         });
@@ -275,7 +279,7 @@ export class AdminApi extends HttpClient {
         Package: ICreateMarketAppPackageRequest
     ) => this.instance.post("/CreateMarketAppPackage", Package);
 
-    public UpdateMarketAppPackage = async (AppPackage: IUpdatePackageRequest) =>
+    public UpdateMarketAppPackage = async (AppPackage: IPackages) =>
         this.instance.post<IUpdatePackageResponse>("/UpdateMarketAppPackage", {
             AppPackage,
         });

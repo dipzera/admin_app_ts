@@ -1,10 +1,9 @@
 import * as React from "react";
-import { useState } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { Menu, Dropdown, Empty, Tooltip } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { AppNavGrid } from "./AppNavGrid";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
 const AppStoreNav = () => {
@@ -20,7 +19,7 @@ const AppStoreNav = () => {
             {loading ? (
                 <Loading cover="content" align="center" />
             ) : (
-                <AppNavGrid apps={apps} />
+                <AppNavGrid apps={apps ?? []} />
             )}
             {apps!.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         </Menu>

@@ -1,4 +1,4 @@
-import { ICompanyData, IPackages } from "./types.response";
+import { ICompanyData, ILocale, IPackages } from "./types.response";
 
 interface ApiRequest {
     Token?: string;
@@ -36,11 +36,8 @@ export interface IAppPackageRequest {
     ValidTo: string;
 }
 export interface ICreateMarketAppPackageRequest extends ApiRequest {
-    AppPackage: IAppPackageRequest[];
+    AppPackage: IAppPackageRequest;
     MarketAppID: number;
-}
-export interface IDeleteMarketAppPackageRequest extends ApiRequest {
-    ID: number;
 }
 
 export interface IRegisterClientCompanyRequest extends ApiRequest {
@@ -53,23 +50,6 @@ export interface IUpdateCompanyRequest extends ApiRequest {
     info?: string;
 }
 
-export interface IAppRequest {
-    BackOfficeURI?: string;
-    ID: number;
-    LongDescription: any;
-    Name: string;
-    Photo: string;
-    ShortDescription: any;
-    Status?: number;
-    TermsOfUse: any;
-}
-export interface IUpdateMarketAppRequest extends ApiRequest {
-    App: IAppRequest;
-}
-export interface IUpdatePackageRequest extends ApiRequest {
-    AppPackage: IPackages;
-}
-
 export interface IUpdateNewsRequest extends ApiRequest {
     NewsData: {
         Content: string;
@@ -79,24 +59,6 @@ export interface IUpdateNewsRequest extends ApiRequest {
         Photo: string;
         ProductType: number;
         Status?: number;
-    };
-}
-
-export interface IUpdateUserRequest extends ApiRequest {
-    User: {
-        Company?: string;
-        CompanyID?: number;
-        CreateDate?: string;
-        Email: string;
-        FirstName: string;
-        ID: string;
-        LastAuthorize?: string;
-        LastAuthorizeIP?: string;
-        LastName: string;
-        PhoneNumber: string;
-        Photo: string;
-        Status: number;
-        UiLanguage: number;
     };
 }
 

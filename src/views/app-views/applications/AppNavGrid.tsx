@@ -1,19 +1,19 @@
+import * as React from "react";
 import { Menu } from "antd";
 import { Avatar } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
-import React, { CSSProperties, useEffect } from "react";
 import "./app_list.scss";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 import { Link } from "react-router-dom";
-const MenuItemStyles = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-} as CSSProperties;
-export const AppNavGrid = (/* { apps }: { apps: IApps[] }, */ props: any) => {
+import { MenuItemProps } from "antd/lib/menu/MenuItem";
+import { IMarketAppList } from "../../../api/types.response";
+interface IAppNavGrid extends MenuItemProps {
+    apps: IMarketAppList[];
+}
+export const AppNavGrid = (props: IAppNavGrid) => {
     return (
         <>
-            {props.apps.map((app: any) => (
+            {props.apps.map((app) => (
                 <Menu.Item key={app.Name} {...props} className="app-list__item">
                     <Link to={`${APP_PREFIX_PATH}/applications/${app.ID}`}>
                         <div className="text-center">

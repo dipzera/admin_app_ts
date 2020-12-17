@@ -4,6 +4,9 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import AppLocale from "../../../../lang";
 import { AdminApi } from "../../../../api";
+import WithStringTranslate from "../../../../utils/translate";
+import { DONE } from "../../../../constants/Messages";
+import { IAccount } from "../../../../redux/reducers/Account";
 export const UserModalEdit = ({
     data,
     visible,
@@ -52,32 +55,25 @@ export const UserModalEdit = ({
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const onFinish = (values: any) => {
-        setIsLoading(true);
-        setTimeout(() => {
-            setIsLoading(false);
-            // const newCompanyName = companies
-            //     .filter((company) => company.ID === values.CompanyID)
-            //     .map((elm) => elm.Name);
-            console.log({
-                User: {
-                    ...data,
-                    ...values,
-                    // Company: newCompanyName.toString(),
-                },
+    const onFinish = (values: IAccount) => {
+        return new AdminApi()
+            .UpdateUser({
+                ...data,
+                ...values,
+            })
+            .then((data) => {
+                if (data) {
+                    if (data.ErrorCode === 0) {
+                        getUsersInfo().then(() =>
+                            message.success({
+                                content: WithStringTranslate(DONE),
+                                key: "updatable",
+                                duration: 1.5,
+                            })
+                        );
+                    }
+                }
             });
-            new AdminApi()
-                .UpdateUser({
-                    User: {
-                        ...data,
-                        ...values,
-                        // Company: newCompanyName.toString(),
-                    },
-                })
-                .then((data: any) => {
-                    data.ErrorCode === 0 && getUsersInfo();
-                });
-        }, 1000);
     };
 
     const onFinishFailed = () => {};
@@ -102,7 +98,7 @@ export const UserModalEdit = ({
             destroyOnClose
             title={<IntlMessage id="user.edit.title" />}
             visible={visible}
-            okText={<IntlMessage id={"account.EditProfile.SaveChange"} />}
+            okText={` ${WithStringTranslate("account.EditProfile.SaveChange")}`}
             onCancel={onCancel}
             confirmLoading={isLoading}
             onOk={onOk}

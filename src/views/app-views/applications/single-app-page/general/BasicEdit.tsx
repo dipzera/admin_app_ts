@@ -1,12 +1,14 @@
 import { Form, Input, Select } from "antd";
 import { lang } from "../../../../../assets/data/language.data.json";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
 import Flex from "../../../../../components/shared-components/Flex";
 import { IState } from "../../../../../redux/reducers";
 import WithStringTranslate from "../../../../../utils/translate";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
+import { ILocale } from "../../../../../api/types.response";
+import { ITextArea } from "../TermsOfUse";
 const rules = {
     name: [
         {
@@ -28,13 +30,17 @@ const rules = {
     ],
 };
 const BasicEdit = ({
-    app,
     longDesc,
     setLongDesc,
     setShortDesc,
     shortDesc,
-}: any) => {
-    const fields = [
+}: {
+    longDesc: Partial<ILocale>;
+    setLongDesc: Dispatch<SetStateAction<Partial<ILocale>>>;
+    setShortDesc: Dispatch<SetStateAction<Partial<ILocale>>>;
+    shortDesc: Partial<ILocale>;
+}) => {
+    const fields: ITextArea[] = [
         {
             title: "English",
             locale: "en",
@@ -53,20 +59,20 @@ const BasicEdit = ({
     );
     const [shortDescLang, setShortDescLang] = useState(globalLanguage);
     const [longDescLang, setLongDescLang] = useState(globalLanguage);
-    const [selectedShortDesc, setSelectedShortDesc] = useState<any>();
-    const [selectedLongDesc, setSelectedLongDesc] = useState<any>();
-    const onChange = (name: any, value: any) => {
-        setShortDesc((prevState: any) => ({
+    const [selectedShortDesc, setSelectedShortDesc] = useState<ITextArea[]>([]);
+    const [selectedLongDesc, setSelectedLongDesc] = useState<ITextArea[]>([]);
+    const onChange = (name: string, value: string) => {
+        setShortDesc((prevState: Partial<ILocale>) => ({
             ...prevState,
             [name]: value,
         }));
     };
     useEffect(() => {
         setSelectedShortDesc(
-            fields.filter(({ locale }) => shortDescLang == locale)
+            fields.filter((field) => shortDescLang == field.locale)
         );
         setSelectedLongDesc(
-            fields.filter(({ locale }) => longDescLang == locale)
+            fields.filter((field) => longDescLang == field.locale)
         );
     }, [lang, longDescLang]);
 
@@ -105,13 +111,13 @@ const BasicEdit = ({
                     </div>
                 </Flex>
                 {selectedShortDesc &&
-                    selectedShortDesc.map(({ title, locale }: any) => (
+                    selectedShortDesc.map(({ title, locale }) => (
                         <div key={locale}>
                             {/* <h6>{title}</h6> */}
                             <Input.TextArea
                                 rows={4}
                                 name={locale}
-                                value={shortDesc ? shortDesc[locale] : null}
+                                value={shortDesc[locale] ?? "en"}
                                 onChange={(e) =>
                                     onChange(e.target.name, e.target.value)
                                 }
@@ -142,17 +148,19 @@ const BasicEdit = ({
                     </div>
                 </Flex>
                 {selectedLongDesc &&
-                    selectedLongDesc.map(({ title, locale }: any) => (
+                    selectedLongDesc.map(({ title, locale }) => (
                         <div key={locale} className="mb-3">
                             {/* <h4>{title}</h4> */}
                             <TextEditor
-                                apps={longDesc ? longDesc[locale] : null}
-                                handleEditorChange={(e: any) =>
-                                    setLongDesc((prevState: any) => ({
-                                        ...prevState,
-                                        [locale]: e,
-                                    }))
-                                }
+                                apps={longDesc[locale] ?? ""}
+                                handleEditorChange={(content: string) => {
+                                    setLongDesc(
+                                        (prevState: Partial<ILocale>) => ({
+                                            ...prevState,
+                                            [locale]: content,
+                                        })
+                                    );
+                                }}
                             />
                         </div>
                     ))}

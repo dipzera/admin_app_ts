@@ -1,19 +1,20 @@
 import { Button, Col, Form, Input, Row } from "antd";
+import { FormInstance } from "antd/lib/form";
 import React from "react";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../../constants/ThemeConstant";
+import { IAccount } from "../../../../../redux/reducers/Account";
 import { WizardContext } from "./WizardContext";
 
 class UserFormWizard extends React.Component {
-    formRef = React.createRef() as any;
+    formRef = React.createRef<FormInstance>();
     static contextType = WizardContext;
     render() {
-        const onFinish = async (values: any) => {
+        const onFinish = async (values: IAccount) => {
             this.context.setWizardData({
                 ...this.context.wizardData,
                 UserData: { ...values },
             });
-
             this.context.setCurrent(this.context.current + 1);
         };
 

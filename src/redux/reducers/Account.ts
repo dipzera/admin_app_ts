@@ -11,6 +11,7 @@ export interface IAccount {
     PhoneNumber?: string;
     Photo?: string;
     UiLanguage?: number;
+    Token?: string;
 }
 const initialState = {
     CompanyID: null,

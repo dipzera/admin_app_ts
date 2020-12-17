@@ -1,6 +1,6 @@
 export interface ApiResponse {
-    ErrorCode: number;
-    ErrorMessage: string;
+    ErrorCode?: number;
+    ErrorMessage?: string;
 }
 
 /* Status handlers */
@@ -40,24 +40,24 @@ export interface IGetBasicCompaniesListResponse extends ApiResponse {
     }[];
 }
 export interface ICompanyData {
-    BIC: string;
-    Bank: string;
-    Email: string;
-    CommercialName: string;
-    CountryID: number;
-    ID: number;
-    IBAN: string;
-    IDNO: string;
-    IsVATPayer: boolean;
-    JuridicalAddress: string;
-    JuridicalName: string;
-    Logo: string;
-    OfficeAddress: string;
-    PostalCode: string;
-    ShortName: string;
-    Status: number;
-    VATCode: number;
-    WebSite: string;
+    BIC?: string;
+    Bank?: string;
+    Email?: string;
+    CommercialName?: string;
+    CountryID?: number;
+    ID?: number;
+    IBAN?: string;
+    IDNO?: string;
+    IsVATPayer?: boolean;
+    JuridicalAddress?: string;
+    JuridicalName?: string;
+    Logo?: string;
+    OfficeAddress?: string;
+    PostalCode?: string;
+    ShortName?: string;
+    Status?: number;
+    VATCode?: number;
+    WebSite?: string;
 }
 export interface IGetCompanyInfoResponse extends ApiResponse {
     Company: ICompanyData;
@@ -69,6 +69,8 @@ export interface IGetCompanyListResponse extends ApiResponse {
 
 /* Apps */
 export interface IPackages {
+    ValidDate?: any;
+    Range?: string | number;
     ID: number;
     MaxValue: number;
     MinValue: number;
@@ -79,23 +81,30 @@ export interface IPackages {
     ValidFrom: string;
     ValidTo: string;
 }
+
+export interface IMarketAppList {
+    AppType?: number;
+    ApyKey?: string;
+    BackOfficeURI?: string;
+    ID: number;
+    LicenseActivationCode?: number;
+    LicenseActivationCodeValidHours?: number;
+    LicenseActivationCodeValidTo?: string;
+    LongDescription: ILocale | string;
+    Name: string;
+    Packages?: IPackages[];
+    Photo: string;
+    ShortDescription: ILocale | string;
+    Status?: number;
+    TermsOfUse: ILocale | string;
+}
+export interface ILocale {
+    en: string;
+    ro: string;
+    ru: string;
+}
 export interface IGetMarketAppListResponse extends ApiResponse {
-    MarketAppList: {
-        AppType: number;
-        ApyKey: string;
-        BackOfficeURI: string;
-        ID: number;
-        LicenseActivationCode: number;
-        LicenseActivationCodeValidHours: number;
-        LicenseActivationCodeValidTo: string;
-        LongDescription: string;
-        Name: string;
-        Packages: IPackages[];
-        Photo: string;
-        ShortDescription: string;
-        Status: number;
-        TermsOfUse?: string;
-    };
+    MarketAppList: IMarketAppList;
 }
 export interface IUpdateMarketAppResponse extends ApiResponse {}
 export interface IUpdatePackageResponse extends ApiResponse {}

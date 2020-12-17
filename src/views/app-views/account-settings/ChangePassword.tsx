@@ -10,8 +10,10 @@ import { IState } from "../../../redux/reducers";
 import { IAuth } from "../../../redux/reducers/Auth";
 import { ITheme } from "../../../redux/reducers/Theme";
 import WithStringTranslate from "../../../utils/translate";
+import { FormInstance } from "antd/lib/form";
+import { IChangePasswordRequest } from "../../../api/types.request";
 export class ChangePassword extends Component {
-    private changePasswordFormRef = React.createRef<any>();
+    private changePasswordFormRef = React.createRef<FormInstance>();
     state = {
         loading: false,
     };
@@ -20,7 +22,8 @@ export class ChangePassword extends Component {
         currentPassword,
         newPassword,
     }: {
-        [key: string]: string;
+        currentPassword: IChangePasswordRequest["OldPassword"];
+        newPassword: IChangePasswordRequest["NewPassword"];
     }) => {
         this.setState({ loading: true });
         setTimeout(() => {
@@ -36,9 +39,9 @@ export class ChangePassword extends Component {
                         API_PUBLIC_KEY
                     ),
                 })
-                .then((data: any) => {
+                .then((data) => {
                     if (data) {
-                        const { ErrorCode, ErrorMessage } = data;
+                        const { ErrorCode } = data;
                         if (ErrorCode === 0)
                             message.success(WithStringTranslate(DONE), 1.5);
                     }

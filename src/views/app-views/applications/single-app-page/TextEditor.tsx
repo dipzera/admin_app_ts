@@ -1,8 +1,12 @@
 import React from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import Loading from "../../../../components/shared-components/Loading";
+import { IMarketAppList } from "../../../../api/types.response";
 
-const TextEditor = ({ apps, handleEditorChange }: any) => {
+interface ITextEditor {
+    apps: any;
+    handleEditorChange: (content: string) => void;
+}
+const TextEditor = ({ apps, handleEditorChange }: ITextEditor) => {
     return (
         <Editor
             apiKey="n212ulx8ltmzy5gkpquyp9dx6gf2ui0xvzzuod2h2r6iwygg"

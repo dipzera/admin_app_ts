@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import * as React from "react";
+import { Component } from "react";
 import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
@@ -6,44 +7,30 @@ import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { setProfileInfo } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
-import { IntlProvider } from "react-intl";
-import AppLocale from "../../../lang";
-import { ERROR, UPLOADED, UPLOADING } from "../../../constants/Messages";
+import { ERROR, UPLOADING } from "../../../constants/Messages";
 import Utils from "../../../utils";
 import { IState } from "../../../redux/reducers";
 import { IAccount } from "../../../redux/reducers/Account";
-import { ITheme } from "../../../redux/reducers/Theme";
-import { IAuth } from "../../../redux/reducers/Auth";
 import Localization from "../../../utils/Localization";
-
-class EditProfile extends Component {
+import { UploadChangeParam } from "antd/lib/upload";
+interface IEditProfile {
+    setProfileInfo: (accountInfo: IAccount) => void;
+    account: IAccount;
+}
+class EditProfile extends Component<IEditProfile> {
     render() {
-        let {
-            account,
-            CompanyID,
-            Email,
-            FirstName,
-            ID,
-            LastName,
-            PhoneNumber,
-            Photo,
-            locale,
-            setProfileInfo,
-            token: Token,
-        } = this.props as any;
+        let { account, setProfileInfo } = this.props;
 
-        const onFinish = (values: any) => {
+        const onFinish = (values: IAccount) => {
             const key = "updatable";
             message.loading({
                 content: <Localization msg={"message.Updating"} />,
                 key,
             });
             setTimeout(async () => {
-                setProfileInfo({
-                    User: {
-                        ...account,
-                        ...values,
-                    },
+                this.props.setProfileInfo({
+                    ...account,
+                    ...values,
                 });
             }, 1000);
         };
@@ -52,7 +39,7 @@ class EditProfile extends Component {
             console.log("Failed:", errorInfo);
         };
 
-        const onUploadAavater = (info: any) => {
+        const onUploadAavater = (info: UploadChangeParam) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({
@@ -63,14 +50,12 @@ class EditProfile extends Component {
                 return;
             }
             if (info.file.status === "done") {
-                Utils.getBase64(
-                    info.file.originFileObj,
-                    async (imageUrl: string) => {
-                        await setProfileInfo({
-                            User: { ...account, Photo: imageUrl },
-                        });
-                    }
-                );
+                Utils.getBase64(info.file.originFileObj, (imageUrl: string) => {
+                    setProfileInfo({
+                        ...account,
+                        Photo: imageUrl,
+                    });
+                });
             } else {
                 message.error({
                     content: ERROR,
@@ -82,7 +67,8 @@ class EditProfile extends Component {
 
         const onRemoveAvater = () => {
             setProfileInfo({
-                User: { ...account, Photo: "" },
+                ...account,
+                Photo: "",
             });
         };
 
@@ -93,7 +79,11 @@ class EditProfile extends Component {
                     mobileFlex={false}
                     className="text-center text-md-left"
                 >
-                    <Avatar size={90} src={Photo} icon={<UserOutlined />} />
+                    <Avatar
+                        size={90}
+                        src={account.Photo}
+                        icon={<UserOutlined />}
+                    />
                     <div className="ml-md-3 mt-md-0 mt-3">
                         <Upload
                             customRequest={Utils.dummyRequest}
@@ -116,15 +106,7 @@ class EditProfile extends Component {
                     <Form
                         name="basicInformation"
                         layout="vertical"
-                        initialValues={{
-                            CompanyID,
-                            Email,
-                            FirstName,
-                            ID,
-                            LastName,
-                            PhoneNumber,
-                            Photo,
-                        }}
+                        initialValues={account}
                         onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
                     >
@@ -234,29 +216,9 @@ const mapDispatchToProps = {
     setProfileInfo,
 };
 
-const mapStateToProps = ({ account, theme, auth }: IState) => {
-    const {
-        CompanyID,
-        Email,
-        FirstName,
-        ID,
-        LastName,
-        PhoneNumber,
-        Photo,
-    } = account as IAccount;
-    const { locale } = theme as ITheme;
-    const { token } = auth as IAuth;
+const mapStateToProps = ({ account }: IState) => {
     return {
         account,
-        CompanyID,
-        Email,
-        FirstName,
-        ID,
-        LastName,
-        PhoneNumber,
-        Photo,
-        locale,
-        token,
     };
 };
 

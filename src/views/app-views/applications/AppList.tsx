@@ -8,21 +8,30 @@ import {
 import Flex from "../../../components/shared-components/Flex";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getMarketApps } from "../../../redux/actions/Applications";
-import { hideLoading, signOut } from "../../../redux/actions/Auth";
+import { hideLoading } from "../../../redux/actions/Auth";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
-import { IAuth } from "../../../redux/reducers/Auth";
 import IntlMessage from "../../../components/util-components/IntlMessage";
+import {
+    IGetMarketAppListResponse,
+    ILocale,
+} from "../../../api/types.response";
 
-const GridItem = ({ data }: any) => {
-    const [shortDescription, setShortDescription] = useState<any>();
-    const locale =
+const GridItem = ({ MarketAppList }: IGetMarketAppListResponse) => {
+    const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
+        {}
+    );
+    const locale: "en" | "ro" | "ru" =
         useSelector((state: IState) => state["theme"].locale) ?? "en";
     useEffect(() => {
         try {
-            setShortDescription(JSON.parse(window.atob(data.ShortDescription)));
+            setShortDescription(
+                JSON.parse(
+                    window.atob(MarketAppList.ShortDescription.toString())
+                )
+            );
         } catch {
             setShortDescription({ en: "", ru: "", ro: "" });
         }
@@ -30,17 +39,19 @@ const GridItem = ({ data }: any) => {
     return (
         <Card>
             <Flex className="mb-3 " justifyContent="between">
-                <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
+                <Link
+                    to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}
+                >
                     <div className="cursor-pointer">
                         <Avatar
-                            src={data.Photo}
+                            src={MarketAppList.Photo}
                             icon={<ExperimentOutlined />}
                             shape="square"
                             size={60}
                         />
                     </div>
                 </Link>
-                {data.Status === 0 ? (
+                {MarketAppList.Status === 0 ? (
                     <Tag
                         className="text-capitalize cursor-pointer"
                         color="volcano"
@@ -60,8 +71,12 @@ const GridItem = ({ data }: any) => {
                 )}
             </Flex>
             <div>
-                <Link to={`${APP_PREFIX_PATH}/applications/${data.ID}`}>
-                    <h3 className="mb-0 cursor-pointer ">{data.Name}</h3>
+                <Link
+                    to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}
+                >
+                    <h3 className="mb-0 cursor-pointer ">
+                        {MarketAppList.Name}
+                    </h3>
                 </Link>
                 <p className="text-muted">By IntelectSoft</p>
                 <div style={{ minHeight: "70px" }}>
@@ -72,11 +87,13 @@ const GridItem = ({ data }: any) => {
     );
 };
 
-const AppList = ({ getMarketApps, loading, apps }: any) => {
+const AppList = () => {
     const dispatch = useDispatch();
+    const apps = useSelector((state: IState) => state["apps"]);
+    const loading = useSelector((state: IState) => state["auth"].loading);
     useEffect(() => {
         try {
-            getMarketApps();
+            dispatch(getMarketApps());
         } catch {}
         dispatch(hideLoading());
     }, []);
@@ -92,18 +109,22 @@ const AppList = ({ getMarketApps, loading, apps }: any) => {
                     container-fluid`}
                     >
                         <Row gutter={16}>
-                            {apps.map((elm: any) => (
-                                <Col
-                                    xs={24}
-                                    sm={24}
-                                    lg={12}
-                                    xl={6}
-                                    xxl={6}
-                                    key={elm["ID"]}
-                                >
-                                    <GridItem data={elm} key={elm["ID"]} />
-                                </Col>
-                            ))}
+                            {apps &&
+                                apps.map((elm) => (
+                                    <Col
+                                        xs={24}
+                                        sm={24}
+                                        lg={12}
+                                        xl={6}
+                                        xxl={6}
+                                        key={elm.ID}
+                                    >
+                                        <GridItem
+                                            MarketAppList={elm}
+                                            key={elm["ID"]}
+                                        />
+                                    </Col>
+                                ))}
                         </Row>
                     </div>
                 </>
@@ -112,9 +133,4 @@ const AppList = ({ getMarketApps, loading, apps }: any) => {
     );
 };
 
-const mapStateToProps = ({ apps, auth }: IState) => {
-    const { loading, token } = auth as IAuth;
-    return { apps, loading, token };
-};
-
-export default connect(mapStateToProps, { getMarketApps, signOut })(AppList);
+export default AppList;

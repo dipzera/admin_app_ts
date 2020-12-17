@@ -10,7 +10,7 @@ const initialState = [
         Photo: "",
         ShortDescription: "",
     },
-] as any;
+];
 const applications = (state = initialState, action: any) => {
     switch (action.type) {
         case SET_APPS:

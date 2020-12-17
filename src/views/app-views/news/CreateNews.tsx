@@ -17,7 +17,6 @@ interface ICreateNews {
     AppType: number;
 }
 const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
-    /* Get All Apps from Store and show as DropDown menu somewhere */
     const [form] = Form.useForm();
     useEffect(() => {
         if (!visible) return;

@@ -152,7 +152,7 @@ const News = () => {
                             {apps &&
                                 apps.map((app) => (
                                     <Select.Option
-                                        value={app.AppType}
+                                        value={app.AppType ?? 0}
                                         key={app.AppType}
                                     >
                                         {app.Name}

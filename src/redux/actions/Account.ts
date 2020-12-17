@@ -1,10 +1,9 @@
 import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { DONE } from "../../constants/Messages";
 import { AdminApi } from "../../api";
 import { ThunkResult } from "../reducers";
-import { IUpdateUserRequest } from "../../api/types.request";
+import { IAccount } from "../reducers/Account";
 
 export const updateSettings = (payload: { [key: string]: any }) => ({
     type: UPDATE_SETTINGS,
@@ -34,9 +33,7 @@ export const getProfileInfo = (): ThunkResult<void> => {
         });
     };
 };
-export const setProfileInfo = (
-    accountInfo: IUpdateUserRequest
-): ThunkResult<void> => {
+export const setProfileInfo = (accountInfo: IAccount): ThunkResult<void> => {
     return async (dispatch) => {
         return new AdminApi().UpdateUser(accountInfo).then((data) => {
             if (data) {

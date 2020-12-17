@@ -60,7 +60,6 @@ const General = ({
                             <BasicEdit
                                 setShortDesc={setShortDesc}
                                 shortDesc={shortDesc}
-                                app={app}
                                 setLongDesc={setLongDesc}
                                 longDesc={longDesc}
                             />

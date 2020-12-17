@@ -6,29 +6,27 @@ import Flex from "../../../../../components/shared-components/Flex";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import MaskedInput from "antd-mask-input";
 import { ERROR, UPLOADED, UPLOADING } from "../../../../../constants/Messages";
-import { WizardContext } from "./WizardContext";
+import { IWizard, WizardContext } from "./WizardContext";
 import Utils from "../../../../../utils";
-const publicIp = require("react-public-ip");
+import { ICompanyData } from "../../../../../api/types.response";
+import { UploadChangeParam } from "antd/lib/upload";
+import { Link } from "react-router-dom";
+import { APP_PREFIX_PATH } from "../../../../../configs/AppConfig";
 
-class CompanyFormWizard extends Component<{ [key: string]: any }> {
+class CompanyFormWizard extends Component {
     static contextType = WizardContext;
-    formRef = React.createRef() as any;
 
     render() {
         const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
             this.setState({ [e.target.name]: e.target.value });
         };
 
-        const onFinish = async (values: any) => {
+        const onFinish = async (values: ICompanyData) => {
             this.context.setWizardData({
                 ...this.context.wizardData,
                 CompanyData: {
-                    Company: {
-                        ...this.context.wizardData.CompanyData.Company,
-                        ...values,
-                    },
-                    Token: this.props.token,
-                    info: await publicIp.v4(),
+                    ...this.context.wizardData.CompanyData,
+                    ...values,
                 },
             });
             this.context.setCurrent(this.context.current + 1);
@@ -38,7 +36,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             console.log("Failed:", errorInfo);
         };
 
-        const onUploadAavater = (info: any) => {
+        const onUploadAavater = (info: UploadChangeParam) => {
             const key = "updatable";
             if (info.file.status === "uploading") {
                 message.loading({ content: UPLOADING, key });
@@ -51,11 +49,8 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                         this.context.setWizardData({
                             ...this.context.wizardData,
                             CompanyData: {
-                                Company: {
-                                    ...this.context.wizardData.CompanyData
-                                        .Company,
-                                    Logo: imageUrl,
-                                },
+                                ...this.context.wizardData.CompanyData,
+                                Logo: imageUrl,
                             },
                         });
                     }
@@ -70,10 +65,8 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
             this.context.setWizardData({
                 ...this.context.wizardData,
                 CompanyData: {
-                    Company: {
-                        ...this.context.wizardData.CompanyData.Company,
-                        Logo: "",
-                    },
+                    ...this.context.wizardData.CompanyData,
+                    Logo: "",
                 },
             });
         };
@@ -88,8 +81,8 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                     <Avatar
                         size={90}
                         src={
-                            this.context.wizardData.CompanyData.Company &&
-                            this.context.wizardData.CompanyData.Company.Logo
+                            this.context.wizardData.CompanyData &&
+                            this.context.wizardData.CompanyData.Logo
                         }
                         icon={<UserOutlined />}
                     />
@@ -113,9 +106,7 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                     <Form
                         name="basicInformation"
                         layout="vertical"
-                        initialValues={
-                            this.context.wizardData.CompanyData.Company
-                        }
+                        initialValues={this.context.wizardData.CompanyData}
                         onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
                     >
@@ -415,6 +406,13 @@ class CompanyFormWizard extends Component<{ [key: string]: any }> {
                                             type="primary"
                                         >
                                             <IntlMessage id="wizard.Next" />
+                                        </Button>
+                                        <Button type="ghost" className="ml-2">
+                                            <Link
+                                                to={`${APP_PREFIX_PATH}/catalog/companies`}
+                                            >
+                                                <IntlMessage id="app.Cancel" />
+                                            </Link>
                                         </Button>
                                     </Col>
                                 </Row>

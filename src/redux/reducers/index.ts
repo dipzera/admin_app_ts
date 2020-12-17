@@ -4,7 +4,7 @@ import Theme, { ITheme } from "./Theme";
 import Account, { IAccount } from "./Account";
 import Applications from "./Applications";
 import { ThunkAction } from "redux-thunk";
-import { IGetMarketAppListResponse } from "../../api/types.response";
+import { IMarketAppList } from "../../api/types.response";
 export type ThunkResult<R> = ThunkAction<
     R,
     IState,
@@ -15,7 +15,7 @@ export interface IState {
     theme: ITheme;
     account: IAccount;
     auth: IAuth;
-    apps?: IGetMarketAppListResponse["MarketAppList"][];
+    apps?: IMarketAppList[];
 }
 const reducers = combineReducers({
     theme: Theme,

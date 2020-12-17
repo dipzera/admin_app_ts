@@ -34,13 +34,13 @@ enum status {
     disabled = 2,
 }
 
-interface CompanyStateProps {
-    users: ICompanyData[];
-    selectedRows: any;
+interface CompanyStateProps<T> {
+    companies: T;
+    selectedRows: T;
     selectedKeys: any;
-    companiesToSearch: any;
+    companiesToSearch: T;
     userProfileVisible: boolean;
-    selectedUser: any;
+    selectedUser: ICompanyData | null;
     isHidden: string;
     editModalVisible: boolean;
     newUserModalVisible: boolean;
@@ -49,8 +49,8 @@ interface CompanyStateProps {
 }
 
 export class CompanyList extends Component {
-    state: CompanyStateProps = {
-        users: [],
+    state: CompanyStateProps<ICompanyData[]> = {
+        companies: [],
         selectedRows: [],
         selectedKeys: [],
         companiesToSearch: [],
@@ -63,24 +63,22 @@ export class CompanyList extends Component {
         loading: true,
     };
 
-    getCompanyList = () => {
-        try {
-            return new AdminApi().GetCompanyList().then((data) => {
-                this.setState({ loading: false });
-                if (data) {
-                    if (data.ErrorCode === 0) {
-                        const evaluatedArray = utils.sortData(
-                            data.CompanyList,
-                            "ID"
-                        );
-                        this.setState({ users: [...evaluatedArray] });
-                        this.setState({
-                            companiesToSearch: [...evaluatedArray],
-                        });
-                    }
+    getCompanyList = async () => {
+        return await new AdminApi().GetCompanyList().then((data) => {
+            this.setState({ loading: false });
+            if (data) {
+                if (data.ErrorCode === 0) {
+                    const evaluatedArray = utils.sortData(
+                        data.CompanyList,
+                        "ID"
+                    );
+                    this.setState({ companies: [...evaluatedArray] });
+                    this.setState({
+                        companiesToSearch: [...evaluatedArray],
+                    });
                 }
-            });
-        } catch {}
+            }
+        });
     };
 
     componentDidMount() {
@@ -131,7 +129,7 @@ export class CompanyList extends Component {
         },
     };
 
-    toggleStatusRow = async (row: any, statusNumber: number) => {
+    toggleStatusRow = async (row: ICompanyData[], statusNumber: number) => {
         Modal.confirm({
             title:
                 statusNumber === 0 || statusNumber === 2
@@ -151,8 +149,8 @@ export class CompanyList extends Component {
                       }?`,
             onOk: async () => {
                 await Promise.all(
-                    row.map(async (elm: any) => {
-                        await this.handleUserStatus(elm.ID, statusNumber);
+                    row.map(async (elm) => {
+                        await this.handleUserStatus(elm.ID ?? 0, statusNumber);
                     })
                 );
                 this.getCompanyList();
@@ -165,17 +163,19 @@ export class CompanyList extends Component {
         return new AdminApi().ChangeCompanyStatus(userId, status);
     };
 
-    getManagedToken = (CompanyID: number) => {
-        return new AuthApi().GetManagedToken(CompanyID).then((data: any) => {
-            if (data.ErrorCode === 0) return data.Token;
-        });
+    getManagedToken = async (CompanyID: number) => {
+        return await new AuthApi()
+            .GetManagedToken(CompanyID)
+            .then((data: any) => {
+                if (data.ErrorCode === 0) return data.Token;
+            });
     };
 
-    dropdownMenu = (row: any) => (
+    dropdownMenu = (row: ICompanyData) => (
         <Menu>
             <Menu.Item
                 onClick={async () => {
-                    const token = await this.getManagedToken(row.ID);
+                    const token = await this.getManagedToken(row.ID ?? 0);
                     window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
                 }}
             >
@@ -209,7 +209,7 @@ export class CompanyList extends Component {
                             title: `Are you sure you want to activate this company?`,
                             onOk: async () => {
                                 await this.handleUserStatus(
-                                    row.ID,
+                                    row.ID ?? 0,
                                     status.active
                                 ).then(() => {
                                     this.getCompanyList();
@@ -232,7 +232,7 @@ export class CompanyList extends Component {
                             title: `Are you sure you want to disable this company?`,
                             onOk: async () => {
                                 await this.handleUserStatus(
-                                    row.ID,
+                                    row.ID ?? 0,
                                     status.disabled
                                 ).then(() => {
                                     this.getCompanyList();
@@ -254,20 +254,20 @@ export class CompanyList extends Component {
     onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.currentTarget.value;
         const searchArray = value
-            ? this.state.users
+            ? this.state.companies
             : this.state.companiesToSearch;
         const data = utils.wildCardSearch(searchArray, value);
         this.setState({ users: data });
     };
 
     render() {
-        const { users, userProfileVisible, selectedUser } = this.state;
+        const { companies, userProfileVisible, selectedUser } = this.state;
 
         const tableColumns: ColumnsType<ICompanyData> = [
             {
                 title: <IntlMessage id="company.Title" />,
                 dataIndex: "",
-                render: (_, record: ICompanyData) => (
+                render: (_, record) => (
                     <div className="d-flex">
                         <AvatarStatus
                             src={record.Logo}
@@ -408,7 +408,7 @@ export class CompanyList extends Component {
                     <Table
                         loading={this.state.loading}
                         columns={tableColumns}
-                        dataSource={users}
+                        dataSource={companies}
                         rowKey="ID"
                         style={{ position: "relative" }}
                         rowSelection={{

@@ -1,5 +1,5 @@
 import { Button, Card, Col, Empty, Menu, Row, Tag } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Flex from "../../../../components/shared-components/Flex";
 import {
     CheckCircleOutlined,
@@ -11,8 +11,9 @@ import {
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
+import { IPackages } from "../../../../api/types.response";
 
-const ItemHeader = ({ packages }: any) => (
+const ItemHeader = ({ packages }: { packages: IPackages }) => (
     <>
         <Flex>
             <h4 className="mb-0">{packages.Name}</h4>
@@ -37,7 +38,7 @@ const ItemHeader = ({ packages }: any) => (
     </>
 );
 
-const ItemFooter = ({ packages }: any) => (
+const ItemFooter = ({ packages }: { packages: IPackages }) => (
     <div>
         <h5>
             <IntlMessage id="applications.Packages.Pricing" />
@@ -57,7 +58,15 @@ const ItemFooter = ({ packages }: any) => (
     </div>
 );
 
-const ItemAction = ({ packages, showEditPackageModal, deletePackage }: any) => (
+const ItemAction = ({
+    packages,
+    showEditPackageModal,
+    deletePackage,
+}: {
+    packages: IPackages;
+    showEditPackageModal: (packages: IPackages) => void;
+    deletePackage: (ID: number) => void;
+}) => (
     <EllipsisDropdown
         menu={
             <Menu>
@@ -81,7 +90,15 @@ const ItemAction = ({ packages, showEditPackageModal, deletePackage }: any) => (
         }
     />
 );
-const CardItem = ({ packages, showEditPackageModal, deletePackage }: any) => {
+const CardItem = ({
+    packages,
+    showEditPackageModal,
+    deletePackage,
+}: {
+    packages: IPackages;
+    showEditPackageModal: (packages: IPackages) => void;
+    deletePackage: (ID: number) => void;
+}) => {
     return (
         <Card>
             <Flex alignItems="center" justifyContent="between">
@@ -104,8 +121,13 @@ const Packages = ({
     showEditPackageModal,
     deletePackage,
     showAddPackageModal,
-}: any) => {
-    const [sortedPackages, setSortedPackages] = useState<any>(packages);
+}: {
+    packages: IPackages[];
+    showEditPackageModal: (packages: IPackages) => void;
+    deletePackage: (ID: number) => void;
+    showAddPackageModal: () => void;
+}) => {
+    const [sortedPackages, setSortedPackages] = useState<IPackages[]>(packages);
     useEffect(() => {
         setSortedPackages(Utils.sortData(packages, "SortIndex"));
     }, [packages]);
@@ -131,7 +153,7 @@ const Packages = ({
             <div className="my-4 container-fluid">
                 <Row gutter={16}>
                     {sortedPackages.length > 0 ? (
-                        sortedPackages.map((elm: any) => (
+                        sortedPackages.map((elm) => (
                             <Col
                                 xs={24}
                                 sm={24}

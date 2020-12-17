@@ -1,19 +1,7 @@
 import React, { Component } from "react";
-import { Card, Table, Tag, Tooltip, Button, Modal, Input, Menu } from "antd";
-import {
-    EyeOutlined,
-    SearchOutlined,
-    CloseCircleOutlined,
-    CheckCircleOutlined,
-    PlusCircleOutlined,
-    DeleteOutlined,
-    EditOutlined,
-    UserOutlined,
-    ArrowRightOutlined,
-} from "@ant-design/icons";
-import moment from "moment";
+import { Card, Table, Button, Modal, Input } from "antd";
+import { SearchOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import UserView from "./UserView";
-import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import "../hand_gesture.scss";
 import { connect } from "react-redux";
 import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
@@ -22,40 +10,27 @@ import { UserModalAdd } from "./UserModalAdd";
 import { AdminApi } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
-import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import "./table.scss";
 import { IState } from "../../../../redux/reducers";
-import { IAuth } from "../../../../redux/reducers/Auth";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../utils/translate";
+import { IUsers } from "../../../../api/types.response";
+import UserTable from "./UserTable";
 
-enum status {
+export enum status {
     inactive = 0,
     active = 1,
     disabled = 2,
 }
-export interface UsersProps {
-    CompanyID: number;
-    Email: string;
-    FirstName: string;
-    LastName: string;
-    ID: number;
-    LastAuthorize: string;
-    LastAuthorizeIP: string;
-    PhoneNumber: string;
-    Photo: string;
-    Status: number;
-    UiLanguage: number;
-}
 
 interface UserListStateProps {
-    users: UsersProps[];
-    selectedRows: any;
+    users: IUsers[];
+    selectedRows: IUsers[];
     selectedKeys: any;
-    usersToSearch: any;
+    usersToSearch: IUsers[];
     userProfileVisible: boolean;
-    selectedUser: any;
+    selectedUser: IUsers | null;
     isHidden: string;
     editModalVisible: boolean;
     newUserModalVisible: boolean;
@@ -69,7 +44,6 @@ interface StoreProps {
     sendActivationCode?: any;
     CompanyID?: number;
     ID?: number;
-    loading?: boolean;
 }
 export class UserList extends Component<StoreProps> {
     state: UserListStateProps = {
@@ -88,8 +62,8 @@ export class UserList extends Component<StoreProps> {
         status: null,
     };
 
-    getUsersInfo = () => {
-        return new AdminApi().GetAllUsers().then((data) => {
+    getUsersInfo = async () => {
+        return await new AdminApi().GetAllUsers().then((data) => {
             this.setState({ loading: false });
             if (data) {
                 const { ErrorCode } = data;
@@ -117,7 +91,7 @@ export class UserList extends Component<StoreProps> {
     componentDidMount() {
         this.getUsersInfo();
     }
-    showUserProfile = (userInfo: UsersProps) => {
+    showUserProfile = (userInfo: IUsers) => {
         this.setState({
             userProfileVisible: true,
             selectedUser: userInfo,
@@ -130,7 +104,7 @@ export class UserList extends Component<StoreProps> {
         });
     };
 
-    showEditModal = (userInfo: UsersProps) => {
+    showEditModal = (userInfo: IUsers) => {
         this.setState({
             editModalVisible: true,
             selectedUser: userInfo,
@@ -155,7 +129,7 @@ export class UserList extends Component<StoreProps> {
         });
     };
 
-    toggleStatusRow = async (row: any, statusNumber: any) => {
+    toggleStatusRow = async (row: IUsers[], statusNumber: number) => {
         Modal.confirm({
             title:
                 statusNumber === 0 || statusNumber === 2
@@ -174,10 +148,8 @@ export class UserList extends Component<StoreProps> {
                               : WithStringTranslate("user.singular")
                       }?`,
             onOk: async () => {
-                console.log(this.state.users);
-                console.log(row);
                 await Promise.all(
-                    row.map(async (elm: any) => {
+                    row.map(async (elm) => {
                         await this.handleUserStatus(elm.ID, statusNumber);
                     })
                 );
@@ -187,103 +159,9 @@ export class UserList extends Component<StoreProps> {
             },
         });
     };
-    handleUserStatus = (userId: number, status: number) => {
-        return new AdminApi().ChangeUserStatus(userId, status);
+    handleUserStatus = async (userId: number, status: number) => {
+        return await new AdminApi().ChangeUserStatus(userId, status);
     };
-
-    dropdownMenu = (row: any) => (
-        <Menu>
-            {row.Status === 0 && (
-                <Menu.Item
-                    onClick={() =>
-                        Modal.confirm({
-                            title:
-                                WithStringTranslate(
-                                    "user.sendCodeModal.title"
-                                ) +
-                                " " +
-                                row.FirstName +
-                                "?",
-                            onOk: () => {
-                                this.props.sendActivationCode(row.ID);
-                            },
-                            onCancel: () => {},
-                        })
-                    }
-                >
-                    <Flex alignItems="center">
-                        <ArrowRightOutlined />
-                        <span className="ml-2">
-                            <IntlMessage id="dropdown.SendActivationCode" />
-                        </span>
-                    </Flex>
-                </Menu.Item>
-            )}
-            <Menu.Item onClick={() => this.showUserProfile(row)}>
-                <Flex alignItems="center">
-                    <EyeOutlined />
-                    <span className="ml-2">
-                        <IntlMessage id="dropdown.ViewDetails" />
-                    </span>
-                </Flex>
-            </Menu.Item>
-            <Menu.Item onClick={() => this.showEditModal(row)}>
-                <Flex alignItems="center">
-                    <EditOutlined />
-                    <span className="ml-2">
-                        <IntlMessage id="dropdown.Edit" />
-                    </span>
-                </Flex>
-            </Menu.Item>
-            {row.Status === 2 ? (
-                <Menu.Item
-                    onClick={async () => {
-                        Modal.confirm({
-                            title: WithStringTranslate("user.activate.title"),
-                            onOk: async () => {
-                                await this.handleUserStatus(
-                                    row.ID,
-                                    status.active
-                                ).then(() => {
-                                    this.getUsersInfo();
-                                });
-                            },
-                        });
-                    }}
-                >
-                    <Flex alignItems="center">
-                        <CheckCircleOutlined />
-                        <span className="ml-2">
-                            <IntlMessage id="dropdown.Activate" />
-                        </span>
-                    </Flex>
-                </Menu.Item>
-            ) : row.Status === status.active ? (
-                <Menu.Item
-                    onClick={async () => {
-                        Modal.confirm({
-                            title: WithStringTranslate("user.disable.title"),
-                            onOk: async () => {
-                                await this.handleUserStatus(
-                                    row.ID,
-                                    status.disabled
-                                ).then(() => {
-                                    this.getUsersInfo();
-                                });
-                            },
-                        });
-                    }}
-                >
-                    <Flex alignItems="center">
-                        <CloseCircleOutlined />
-                        <span className="ml-2">
-                            <IntlMessage id="dropdown.Disable" />
-                        </span>
-                    </Flex>
-                </Menu.Item>
-            ) : null}
-        </Menu>
-    );
 
     render() {
         const {
@@ -300,90 +178,6 @@ export class UserList extends Component<StoreProps> {
             this.setState({ users: data });
         };
 
-        let tableColumns: any = [
-            {
-                title: <IntlMessage id="user.Title" />,
-                dataIndex: "FirstName",
-                render: (_: any, record: UsersProps) => (
-                    <div className="d-flex">
-                        <AvatarStatus
-                            src={record.Photo}
-                            name={`${record.FirstName} ${record.LastName}`}
-                            subTitle={record.Email}
-                            icon={<UserOutlined />}
-                        />
-                    </div>
-                ),
-            },
-            {
-                title: <IntlMessage id="company.Title" />,
-                dataIndex: "Company",
-                render: (Company: string) => <span>{Company}</span>,
-            },
-            {
-                title: <IntlMessage id="user.Role" />,
-                render: () => "User",
-            },
-            {
-                title: <IntlMessage id="user.LastOnline" />,
-                dataIndex: "LastAuthorize",
-                render: (LastAuthorize: any) => (
-                    <span>
-                        {LastAuthorize
-                            ? moment
-                                  .unix(LastAuthorize.slice(6, 16))
-                                  .format("DD/MM/YYYY")
-                            : " "}{" "}
-                    </span>
-                ),
-            },
-            {
-                title: <IntlMessage id="user.LastAuthorizeIP" />,
-                dataIndex: "LastAuthorizeIP",
-                render: (LastAuthorizeIP: string) => (
-                    <span>{LastAuthorizeIP}</span>
-                ),
-            },
-            {
-                title: <IntlMessage id="user.Status" />,
-                dataIndex: "Status",
-                render: (Status: number) => (
-                    <Tag
-                        className="text-capitalize"
-                        color={
-                            Status === 1
-                                ? "cyan"
-                                : Status === 2
-                                ? "volcano"
-                                : "orange"
-                        }
-                    >
-                        {Status === 1 ? (
-                            <IntlMessage id="user.status.Active" />
-                        ) : Status === 2 ? (
-                            <IntlMessage id="user.status.Disabled" />
-                        ) : (
-                            <IntlMessage id="user.status.Inactive" />
-                        )}
-                    </Tag>
-                ),
-                sorter: {
-                    compare: (a: any, b: any) => a.Status - b.Status,
-                },
-            },
-            {
-                dataIndex: "actions",
-                render: (_: any, elm: UsersProps) => (
-                    <div className="text-right">
-                        <EllipsisDropdown menu={this.dropdownMenu(elm)} />
-                    </div>
-                ),
-            },
-        ].sort((a: any, b: any) => {
-            if (a.ID < b.ID) return -1;
-            if (a.ID > b.ID) return 1;
-            return 0;
-        });
         return (
             <Card>
                 <Flex
@@ -459,7 +253,13 @@ export class UserList extends Component<StoreProps> {
                 <div className="table-responsive">
                     <Table
                         loading={this.state.loading}
-                        columns={tableColumns}
+                        columns={UserTable(
+                            this.props.sendActivationCode,
+                            this.showUserProfile,
+                            this.showEditModal,
+                            this.getUsersInfo,
+                            this.handleUserStatus
+                        )}
                         dataSource={this.state.users}
                         rowKey="ID"
                         style={{ position: "relative" }}
@@ -501,10 +301,9 @@ export class UserList extends Component<StoreProps> {
     }
 }
 
-const mapStateToProps = ({ auth, account }: IState) => {
-    const { loading } = auth as IAuth;
+const mapStateToProps = ({ account }: IState) => {
     const { CompanyID, ID } = account as IAccount;
-    return { ID, CompanyID, loading };
+    return { ID, CompanyID };
 };
 
 export default connect(mapStateToProps, { sendActivationCode })(UserList);

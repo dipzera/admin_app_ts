@@ -11,7 +11,7 @@ import { THEME_CONFIG } from "../../configs/AppConfig";
 export interface ITheme {
     navCollapsed?: boolean;
     sideNavTheme?: string;
-    locale?: string;
+    locale?: "en" | "ro" | "ru";
     navType?: string;
     topNavColor?: string;
     headerNavColor?: string;

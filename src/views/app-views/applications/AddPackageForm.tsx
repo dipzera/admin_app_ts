@@ -15,11 +15,12 @@ import moment from "moment";
 import { createMarketAppPackage } from "../../../redux/actions/Applications";
 import { IState } from "../../../redux/reducers";
 import WithStringTranslate from "../../../utils/translate";
+import { IPackages } from "../../../api/types.response";
 interface IAddPackageForm {
     appID: number;
     visible: boolean;
-    close: () => any;
-    packages: any;
+    close: () => void;
+    packages: IPackages[];
 }
 const AddPackageForm = ({
     appID,
@@ -37,14 +38,15 @@ const AddPackageForm = ({
 
     const loading = useSelector((state: IState) => state["auth"].loading);
     const dispatch = useDispatch();
-    const onFinish = (values: any) => {
+    const onFinish = (values: IPackages) => {
         const Status = values.Status ? 1 : 0;
-        const { ValidDate, Range } = values;
-        const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
-        const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
+        const ValidFrom = moment(values.ValidDate![0]["_d"]).format(
+            "[/Date(]xZZ[))/]"
+        );
+        const ValidTo = moment(values.ValidDate![1]["_d"]).format(
+            "[/Date(]xZZ[))/]"
+        );
         delete values.ValidDate;
-        delete values.Range;
-        console.log({ ...values, ValidFrom, ValidTo });
         dispatch(
             createMarketAppPackage({
                 AppPackage: {
@@ -60,7 +62,7 @@ const AddPackageForm = ({
 
     const onOk = () => {
         form.validateFields()
-            .then((values) => {
+            .then((values: any) => {
                 close();
                 onFinish(values);
             })
@@ -82,7 +84,6 @@ const AddPackageForm = ({
                 name="basicInformation"
                 layout="vertical"
                 initialValues={{
-                    Range: [69, 420],
                     SortIndex: packages.length + 1,
                 }}
             >
@@ -163,12 +164,6 @@ const AddPackageForm = ({
                             <Input />
                         </Form.Item>
                     </Col>
-                    {/* Slider to get MinValue and MaxValue of package */}
-                    {/* <Col xs={24} sm={24} md={24}>
-                        <Form.Item label="Range" name="Range">
-                            <Slider range max={500} />
-                        </Form.Item>
-                    </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
                             label={WithStringTranslate(

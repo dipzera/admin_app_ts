@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
     Col,
     InputNumber,
@@ -13,12 +13,12 @@ import {
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { updateMarketAppPackage } from "../../../redux/actions/Applications";
-import { IState } from "../../../redux/reducers";
 import WithStringTranslate from "../../../utils/translate";
+import { IPackages } from "../../../api/types.response";
 interface IEditPackageForm {
-    packages: any;
+    packages: IPackages;
     visible: boolean;
-    close: () => any;
+    close: () => void;
 }
 const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
     const [form] = Form.useForm();
@@ -28,35 +28,32 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
         form.resetFields();
     }, [visible, form]);
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const Token = useSelector((state: IState) => state["auth"].token);
     const dispatch = useDispatch();
-    const onFinish = (values: any) => {
-        const { ValidDate, Range } = values;
+    const onFinish = (values: IPackages) => {
         const Status = values.Status ? 1 : 0;
-        const ValidFrom = moment(ValidDate[0]["_d"]).format("[/Date(]xZZ[))/]");
-        const ValidTo = moment(ValidDate[1]["_d"]).format("[/Date(]xZZ[))/]");
+        const ValidFrom = moment(values.ValidDate[0]["_d"]).format(
+            "[/Date(]xZZ[))/]"
+        );
+        const ValidTo = moment(values.ValidDate[1]["_d"]).format(
+            "[/Date(]xZZ[))/]"
+        );
         delete packages.Range;
         delete packages.ValidDate;
         delete values.Range;
         delete values.ValidDate;
         const AppPackage = {
             ...packages,
-            ValidFrom,
-            ValidTo,
-            // MinValue: Range[0],
-            // MaxValue: Range[1],
             ...values,
             Status,
+            ValidFrom,
+            ValidTo,
         };
         dispatch(updateMarketAppPackage(AppPackage));
     };
 
-    const onFinishFailed = () => {};
-
     const onOk = () => {
         form.validateFields()
-            .then((values) => {
+            .then((values: any) => {
                 close();
                 onFinish(values);
             })
@@ -70,7 +67,6 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
             title={WithStringTranslate("applications.Packages.Edit")}
             visible={visible}
             onCancel={close}
-            confirmLoading={isLoading}
             onOk={onOk}
         >
             <Form
@@ -156,11 +152,6 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                             <Input />
                         </Form.Item>
                     </Col>
-                    {/* <Col xs={24} sm={24} md={24}>
-                        <Form.Item label="Range" name="Range">
-                            <Slider range max={500} />
-                        </Form.Item>
-                    </Col> */}
                     <Col xs={24} sm={24} md={24}>
                         <Form.Item
                             label={WithStringTranslate(

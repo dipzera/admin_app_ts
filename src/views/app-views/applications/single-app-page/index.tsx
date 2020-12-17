@@ -27,30 +27,46 @@ import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../utils/translate";
 import { APP_NAME } from "../../../../configs/AppConfig";
-import { IAppRequest } from "../../../../api/types.request";
+import { RouteComponentProps } from "react-router-dom";
+import {
+    ILocale,
+    IMarketAppList,
+    IPackages,
+} from "../../../../api/types.response";
+import { UploadChangeParam } from "antd/lib/upload";
 
-const SingleAppPage = ({ match }: any) => {
+interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
+
+const SingleAppPage = ({ match }: ISingleAppPage) => {
     const { appID } = match.params;
     const { confirm } = Modal;
     const app = useSelector((state: IState) =>
-        state["apps"]!.find((data) => data.ID == appID)
+        state["apps"]!.find((data) => data.ID === +appID)
     );
     const dispatch = useDispatch();
-    const [edit, setEdit] = useState(false);
-    const [selectedPackage, setSelectedPackage] = useState<{
-        [key: string]: any;
-    }>();
+    const [edit, setEdit] = useState<boolean>(false);
+    const [selectedPackage, setSelectedPackage] = useState<IPackages>({
+        ValidDate: "",
+        Range: "",
+        ID: 0,
+        MaxValue: 0,
+        MinValue: 0,
+        Name: "",
+        Price: 0,
+        SortIndex: 0,
+        Status: 0,
+        ValidFrom: "",
+        ValidTo: "",
+    });
     const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
         boolean
     >(false);
     const [addPackageModalVisible, setAddPackageModalVisible] = useState<
         boolean
     >(false);
-    const showEditPackageModal = (selected: any) => {
+    const showEditPackageModal = (selected: IPackages) => {
         setSelectedPackage({
             ...selected,
-            Range: [selected.MinValue, selected.MaxValue],
-            ValidDate: [moment(selected.ValidFrom), moment(selected.ValidTo)],
         });
         setEditPackageModalVisbile(true);
     };
@@ -75,20 +91,23 @@ const SingleAppPage = ({ match }: any) => {
     };
     const [uploadLoading, setUploadLoading] = useState(false);
     const [form] = Form.useForm();
-    const [uploadedImg, setImage] = useState<any>();
-    const [shortDesc, setShortDesc] = useState<any>();
-    const [longDesc, setLongDesc] = useState<any>();
-    const [status, setStatus] = useState<number>(app!.Status);
+    const [uploadedImg, setImage] = useState<string>();
+    const [shortDesc, setShortDesc] = useState<Partial<ILocale>>({});
+    const [longDesc, setLongDesc] = useState<Partial<ILocale>>({});
     useEffect(() => {
         try {
-            setShortDesc(JSON.parse(window.atob(app!.ShortDescription)));
+            setShortDesc(
+                JSON.parse(window.atob(app!.ShortDescription.toString()))
+            );
         } catch {
             setShortDesc({ en: "", ru: "", ro: "" });
         }
     }, []);
     useEffect(() => {
         try {
-            setLongDesc(JSON.parse(window.atob(app!.LongDescription)));
+            setLongDesc(
+                JSON.parse(window.atob(app!.LongDescription.toString()))
+            );
         } catch {
             setLongDesc({ en: "", ru: "", ro: "" });
         }
@@ -106,7 +125,7 @@ const SingleAppPage = ({ match }: any) => {
         }
     }, [appID]);
 
-    const handleUploadChange = (info: any) => {
+    const handleUploadChange = (info: UploadChangeParam) => {
         if (info.file.status === "uploading") {
             setUploadLoading(true);
             return;
@@ -118,10 +137,10 @@ const SingleAppPage = ({ match }: any) => {
                     ShortDescription,
                     TermsOfUse,
                     LongDescription,
-                } = app as IAppRequest;
+                } = app as IMarketAppList;
                 dispatch(
                     updateMarketApp({
-                        ID: appID,
+                        ID: +appID,
                         LongDescription,
                         ShortDescription,
                         TermsOfUse,
@@ -133,30 +152,33 @@ const SingleAppPage = ({ match }: any) => {
                 message.success(WithStringTranslate(DONE), 1.5);
             });
         }
-        if (info.file.status === "failed") {
-            message.error(WithStringTranslate(ERROR), 1.5);
-        }
     };
 
-    const onFinish = (values: any) => {
-        const App = {
-            ID: appID,
-            TermsOfUse: app!.TermsOfUse,
-            Status: app!.Status,
-            Name: values.Name,
-            ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
-                "base64"
-            ),
-            LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
-                "base64"
-            ),
-            Photo: uploadedImg ? uploadedImg : app!.Photo,
-            // BackOfficeURI: values.BackOfficeURI,
-        };
-        message.loading(WithStringTranslate(LOADING), 1.5).then(() => {
-            dispatch(updateMarketApp(App));
-            setEdit(false);
-        });
+    const onFinish = (values: IMarketAppList) => {
+        message
+            .loading({
+                content: WithStringTranslate(LOADING),
+                key: "updatable",
+                duration: 1.5,
+            })
+            .then(() => {
+                dispatch(
+                    updateMarketApp({
+                        ID: +appID,
+                        TermsOfUse: app!.TermsOfUse,
+                        Status: app!.Status,
+                        Name: values.Name,
+                        ShortDescription: Buffer.from(
+                            JSON.stringify(shortDesc)
+                        ).toString("base64"),
+                        LongDescription: Buffer.from(
+                            JSON.stringify(longDesc)
+                        ).toString("base64"),
+                        Photo: uploadedImg ? uploadedImg : app!.Photo,
+                    })
+                );
+                setEdit(false);
+            });
     };
 
     if (!app) {
@@ -166,8 +188,8 @@ const SingleAppPage = ({ match }: any) => {
     return (
         <>
             <AddPackageForm
-                packages={app.Packages}
-                appID={appID}
+                packages={app.Packages ?? []}
+                appID={+appID}
                 close={closeAddPackageModal}
                 visible={addPackageModalVisible}
             />
@@ -232,7 +254,7 @@ const SingleAppPage = ({ match }: any) => {
                         >
                             <General
                                 app={app}
-                                status={status}
+                                status={app.Status}
                                 setLongDesc={setLongDesc}
                                 edit={edit}
                                 setShortDesc={setShortDesc}
@@ -249,7 +271,7 @@ const SingleAppPage = ({ match }: any) => {
                             key="2"
                         >
                             <Packages
-                                packages={app.Packages}
+                                packages={app.Packages ?? []}
                                 showEditPackageModal={showEditPackageModal}
                                 deletePackage={deletePackage}
                                 showAddPackageModal={showAddPackageModal}

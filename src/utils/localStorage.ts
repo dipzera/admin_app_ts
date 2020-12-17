@@ -1,6 +1,7 @@
 import { APP_NAME } from "../configs/AppConfig";
+import { IState } from "../redux/reducers";
 // Pass in Redux store's state to save it to the user's browser local storage
-export const saveState = (state: any) => {
+export const saveState = (state: IState) => {
     try {
         const serializedState = JSON.stringify(state);
         localStorage.setItem(`${APP_NAME}`, serializedState);
