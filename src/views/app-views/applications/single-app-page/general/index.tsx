@@ -121,10 +121,10 @@ const General = ({
                             }}
                         >
                             <Select.Option value={0}>
-                                <IntlMessage id="applications.status.Active" />
+                                <IntlMessage id="applications.status.NotActive" />
                             </Select.Option>
                             <Select.Option value={1}>
-                                <IntlMessage id="applications.status.NotActive" />
+                                <IntlMessage id="applications.status.Active" />
                             </Select.Option>
                         </Select>
                     </Card>
