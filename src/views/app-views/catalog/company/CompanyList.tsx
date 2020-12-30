@@ -21,7 +21,7 @@ import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import { AdminApi, AuthApi } from "../../../../api";
+import { AppService, AuthService } from "../../../../api";
 import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
@@ -64,7 +64,7 @@ export class CompanyList extends Component {
   };
 
   getCompanyList = async () => {
-    return await new AdminApi().GetCompanyList().then((data) => {
+    return await new AppService().GetCompanyList().then((data) => {
       this.setState({ loading: false });
       if (data) {
         if (data.ErrorCode === 0) {
@@ -155,13 +155,15 @@ export class CompanyList extends Component {
   };
 
   handleUserStatus = (userId: number, status: number) => {
-    return new AdminApi().ChangeCompanyStatus(userId, status);
+    return new AppService().ChangeCompanyStatus(userId, status);
   };
 
   getManagedToken = async (CompanyID: number) => {
-    return await new AuthApi().GetManagedToken(CompanyID).then((data: any) => {
-      if (data.ErrorCode === 0) return data.Token;
-    });
+    return await new AuthService()
+      .GetManagedToken(CompanyID)
+      .then((data: any) => {
+        if (data.ErrorCode === 0) return data.Token;
+      });
   };
 
   dropdownMenu = (row: ICompanyData) => (

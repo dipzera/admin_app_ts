@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
 import { UserModalEdit } from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
-import { AdminApi } from "../../../../api";
+import { AppService } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import "./table.scss";
@@ -63,7 +63,7 @@ export class UserList extends Component<StoreProps> {
   };
 
   getUsersInfo = async () => {
-    return await new AdminApi().GetAllUsers().then((data) => {
+    return await new AppService().GetAllUsers().then((data) => {
       this.setState({ loading: false });
       if (data) {
         const { ErrorCode } = data;
@@ -155,7 +155,7 @@ export class UserList extends Component<StoreProps> {
     });
   };
   handleUserStatus = async (userId: number, status: number) => {
-    return await new AdminApi().ChangeUserStatus(userId, status);
+    return await new AppService().ChangeUserStatus(userId, status);
   };
 
   render() {

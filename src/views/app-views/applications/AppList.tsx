@@ -17,9 +17,10 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import {
   IGetMarketAppListResponse,
   ILocale,
+  IMarketAppList,
 } from "../../../api/types.response";
 
-const GridItem = ({ MarketAppList }: IGetMarketAppListResponse) => {
+const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
   const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
     {}
   );
