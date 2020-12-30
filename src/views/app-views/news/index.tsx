@@ -122,70 +122,63 @@ const News = () => {
       getNews();
     }
   };
+  if (loading) {
+    return <Loading cover="content" />;
+  }
   return (
     <>
-      {loading ? (
-        <Loading cover="content" />
-      ) : (
-        <>
-          <CreateNews
-            visible={isCreateVisible}
-            close={() => setCreateVisible(false)}
-            getNews={getNews}
-            AppType={AppType}
-          />
-          <EditNews
-            visible={edit}
-            close={() => setEdit(false)}
-            news={selected}
-            getNews={getNews}
-          />
-          <Flex justifyContent="between" className="mb-4">
-            <Select
-              defaultValue={0}
-              style={{ width: "150px" }}
-              onChange={onSelect}
-            >
-              <Select.Option value={0} key={0}>
-                <b>General</b>
+      <CreateNews
+        visible={isCreateVisible}
+        close={() => setCreateVisible(false)}
+        getNews={getNews}
+        AppType={AppType}
+      />
+      <EditNews
+        visible={edit}
+        close={() => setEdit(false)}
+        news={selected}
+        getNews={getNews}
+      />
+      <Flex justifyContent="between" className="mb-4">
+        <Select defaultValue={0} style={{ width: "150px" }} onChange={onSelect}>
+          <Select.Option value={0} key={0}>
+            <b>General</b>
+          </Select.Option>
+          {apps &&
+            apps.map((app) => (
+              <Select.Option value={app.AppType ?? 0} key={app.AppType}>
+                {app.Name}
               </Select.Option>
-              {apps &&
-                apps.map((app) => (
-                  <Select.Option value={app.AppType ?? 0} key={app.AppType}>
-                    {app.Name}
-                  </Select.Option>
-                ))}
-            </Select>
-            <Button
-              icon={<PlusCircleOutlined />}
-              type="primary"
-              onClick={() => setCreateVisible(true)}
-            >
-              {" "}
-              <IntlMessage id="news.AddButton" />
-            </Button>
+            ))}
+        </Select>
+        <Button
+          icon={<PlusCircleOutlined />}
+          type="primary"
+          onClick={() => setCreateVisible(true)}
+        >
+          {" "}
+          <IntlMessage id="news.AddButton" />
+        </Button>
+      </Flex>
+      <List style={{ maxWidth: 1000, margin: "0 auto" }}>
+        {news && news.length > 0 ? (
+          news
+            .sort((a: INewsList, b: INewsList) => a.ID - b.ID)
+            .reverse()
+            .map((elm: INewsList) => (
+              <ArticleItem
+                newsData={elm}
+                key={elm.ID}
+                setSelected={setSelected}
+                setEdit={setEdit}
+              />
+            ))
+        ) : (
+          <Flex className="w-100" justifyContent="center">
+            <Empty />
           </Flex>
-          <List style={{ maxWidth: 1000, margin: "0 auto" }}>
-            {news && news.length > 0 ? (
-              news
-                .sort((a: INewsList, b: INewsList) => a.ID - b.ID)
-                .reverse()
-                .map((elm: INewsList) => (
-                  <ArticleItem
-                    newsData={elm}
-                    key={elm.ID}
-                    setSelected={setSelected}
-                    setEdit={setEdit}
-                  />
-                ))
-            ) : (
-              <Flex className="w-100" justifyContent="center">
-                <Empty />
-              </Flex>
-            )}
-          </List>
-        </>
-      )}
+        )}
+      </List>
     </>
   );
 };

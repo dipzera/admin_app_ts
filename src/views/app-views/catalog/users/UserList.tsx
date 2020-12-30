@@ -278,7 +278,6 @@ export class UserList extends Component<StoreProps> {
             this.closeEditModal();
           }}
         />
-        {/* Choose between Cascadia Code and MonoLisa fonts for VSCode */}
       </Card>
     );
   }

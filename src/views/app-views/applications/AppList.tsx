@@ -88,27 +88,24 @@ const AppList = () => {
     dispatch(hideLoading());
   }, []);
 
+  if (loading) {
+    return <Loading cover="content" />;
+  }
   return (
     <>
-      {loading ? (
-        <Loading />
-      ) : (
-        <>
-          <div
-            className={`my-4 
+      <div
+        className={`my-4 
                     container-fluid`}
-          >
-            <Row gutter={16}>
-              {apps &&
-                apps.map((elm) => (
-                  <Col xs={24} sm={24} lg={12} xl={8} xxl={6} key={elm.ID}>
-                    <GridItem MarketAppList={elm} key={elm["ID"]} />
-                  </Col>
-                ))}
-            </Row>
-          </div>
-        </>
-      )}
+      >
+        <Row gutter={16}>
+          {apps &&
+            apps.map((elm) => (
+              <Col xs={24} sm={24} lg={12} xl={8} xxl={6} key={elm.ID}>
+                <GridItem MarketAppList={elm} key={elm["ID"]} />
+              </Col>
+            ))}
+        </Row>
+      </div>
     </>
   );
 };
