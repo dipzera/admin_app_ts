@@ -49,6 +49,7 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
             ValidTo,
         };
         dispatch(updateMarketAppPackage(AppPackage));
+        debugger;
     };
 
     const onOk = () => {
@@ -73,7 +74,13 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
                 form={form}
                 name="basicInformation"
                 layout="vertical"
-                initialValues={packages}
+                initialValues={{
+                    ...packages,
+                    ValidDate: [
+                        moment(packages.ValidFrom),
+                        moment(packages.ValidTo),
+                    ],
+                }}
             >
                 <Row gutter={ROW_GUTTER}>
                     <Col xs={24} sm={24} md={12}>
