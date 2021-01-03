@@ -64,16 +64,13 @@ const NavLanguage = ({
                         onClick={() => {
                             onLocaleChange(elm["langId"]);
                             setProfileInfo({
-                                Token: token,
-                                User: {
-                                    ...account,
-                                    UiLanguage:
-                                        elm["langId"] === "ro"
-                                            ? 0
-                                            : elm["langId"] === "ru"
-                                            ? 1
-                                            : 2,
-                                },
+                                ...account,
+                                UiLanguage:
+                                    elm["langId"] === "ro"
+                                        ? 0
+                                        : elm["langId"] === "ru"
+                                        ? 1
+                                        : 2,
                             });
                         }}
                     >
