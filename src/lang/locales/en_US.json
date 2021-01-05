@@ -1,5 +1,5 @@
 {
-    "app.Cancel": "Cancel",
+  "app.Cancel": "Cancel",
   "app.Search": "Search",
   "app.Contact": "Contact",
   "auth.SignIn": "Sign In",
@@ -226,7 +226,7 @@
   "applications.Media": "Media",
   "applications.Status": "Status",
   "applications.New": "New",
-  "application.Save": "Save",
+  "applications.Save": "Save",
   "applications.Discard": "Discard",
   "applications.ClickOrDrag": "Click or drag file to upload",
   "applications.Packages.Edit": "Edit",
@@ -246,4 +246,3 @@
   "applications.Packages.Active": "Active",
   "applications.Packages.NotActive": "Not Active"
 }
-
