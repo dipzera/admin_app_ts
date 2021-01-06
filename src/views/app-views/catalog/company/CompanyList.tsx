@@ -162,7 +162,7 @@ export class CompanyList extends Component {
     return await new AuthService()
       .GetManagedToken(CompanyID)
       .then((data: any) => {
-        if (data.ErrorCode === 0) return data.Token;
+        if (data && data.ErrorCode === 0) return data.Token;
       });
   };
 
@@ -171,7 +171,7 @@ export class CompanyList extends Component {
       <Menu.Item
         onClick={async () => {
           const token = await this.getManagedToken(row.ID ?? 0);
-          window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
+          if (token) window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
         }}
       >
         <Flex alignItems="center">
