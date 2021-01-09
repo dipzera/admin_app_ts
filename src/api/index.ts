@@ -137,7 +137,8 @@ class HttpClient {
       });
     } else if (
       response.data.ErrorCode !== 0 &&
-      response.data.ErrorCode !== 118
+      response.data.ErrorCode !== 108 &&
+      response.data.ErrorCode !== -1
     ) {
       message.error({
         content: response.data.ErrorMessage,
@@ -145,7 +146,7 @@ class HttpClient {
         duration: 2.5,
       });
     }
-    if (response.data) return response.data;
+    if (response && response.data) return response.data;
   };
   private _handleError = async (error: AxiosResponse) => {
     if (error.request.status !== 200) {
