@@ -63,6 +63,8 @@ export class CompanyList extends Component {
     loading: true,
   };
 
+  mounted = true;
+
   getCompanyList = async () => {
     return await new AppService().GetCompanyList().then((data) => {
       this.setState({ loading: false });
@@ -81,7 +83,11 @@ export class CompanyList extends Component {
   };
 
   componentDidMount() {
-    this.getCompanyList();
+    if (this.mounted) this.getCompanyList();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   showUserProfile = (userInfo: ICompanyData) => {

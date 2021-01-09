@@ -145,9 +145,7 @@ class HttpClient {
         duration: 2.5,
       });
     }
-    if (response.data) {
-      return response.data;
-    }
+    if (response.data) return response.data;
   };
   private _handleError = async (error: AxiosResponse) => {
     if (error.request.status !== 200) {

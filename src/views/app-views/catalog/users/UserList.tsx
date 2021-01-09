@@ -62,6 +62,8 @@ export class UserList extends Component<StoreProps> {
     status: null,
   };
 
+  mounted = true;
+
   getUsersInfo = async () => {
     return await new AppService().GetAllUsers().then((data) => {
       this.setState({ loading: false });
@@ -88,7 +90,11 @@ export class UserList extends Component<StoreProps> {
   };
 
   componentDidMount() {
-    this.getUsersInfo();
+    if (this.mounted) this.getUsersInfo();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
   showUserProfile = (userInfo: IUsers) => {
     this.setState({
