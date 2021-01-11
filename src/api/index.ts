@@ -299,7 +299,7 @@ export class AppService extends HttpClient {
       },
     });
 
-  public UpdateNews = async (NewsData: IUpdateNewsRequest["NewsData"]) =>
+  public UpdateNews = async (NewsData: any) =>
     this.instance.post<IUpdateNewsResponse>("/UpdateNews", {
       NewsData,
     });

@@ -8,14 +8,11 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import CreateNews from "./CreateNews";
 import EditNews from "./EditNews";
-import { useDispatch, useSelector } from "react-redux";
-import { IState } from "../../../redux/reducers";
-import { getMarketApps } from "../../../redux/actions/Applications";
 import Loading from "../../../components/shared-components/Loading";
-import { INewsList } from "../../../api/types.response";
+import { IMarketAppList, INewsList } from "../../../api/types.response";
 interface IArticleItem {
   newsData: INewsList;
-  setSelected: Dispatch<SetStateAction<INewsList>>;
+  setSelected: Dispatch<SetStateAction<Partial<INewsList>>>;
   setEdit: Dispatch<SetStateAction<boolean>>;
 }
 const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
@@ -26,13 +23,13 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
           <Flex flexDirection="column">
             <div
               dangerouslySetInnerHTML={{
-                __html: newsData.Header,
+                __html: newsData.Header ?? "",
               }}
             />
             <div
               className="mt-3"
               dangerouslySetInnerHTML={{
-                __html: newsData.Content,
+                __html: newsData.Content ?? "",
               }}
             />
           </Flex>
@@ -82,20 +79,19 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
   );
 };
 const News = () => {
-  const [news, setNews] = useState<INewsList[]>();
+  const [news, setNews] = useState<INewsList[]>([]);
   const [isCreateVisible, setCreateVisible] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
-  const [selected, setSelected] = useState<INewsList>({
-    ID: 0,
-    Content: "",
-    Header: "",
-    Photo: "",
-    ProductType: 0,
-  });
+  const [selected, setSelected] = useState<Partial<INewsList>>({});
   const [AppType, setAppType] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const apps = useSelector((state: IState) => state["apps"]);
-  const dispatch = useDispatch();
+  const [apps, setApps] = useState<IMarketAppList[]>([]);
+  const getApps = async () =>
+    await new AppService().GetMarketAppList().then((data) => {
+      if (data && data.ErrorCode === 0) {
+        setApps(data.MarketAppList);
+      }
+    });
   const getNews = async (ProductType = 0) => {
     return new AppService()
       .GetNews(ProductType)
@@ -108,7 +104,7 @@ const News = () => {
         }
       })
       .then(() => {
-        dispatch(getMarketApps());
+        getApps();
       });
   };
   useEffect(() => {
@@ -163,9 +159,9 @@ const News = () => {
       <List style={{ maxWidth: 1000, margin: "0 auto" }}>
         {news && news.length > 0 ? (
           news
-            .sort((a: INewsList, b: INewsList) => a.ID - b.ID)
+            .sort((a, b) => a.ID - b.ID)
             .reverse()
-            .map((elm: INewsList) => (
+            .map((elm) => (
               <ArticleItem
                 newsData={elm}
                 key={elm.ID}

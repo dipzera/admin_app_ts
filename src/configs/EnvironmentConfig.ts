@@ -1,6 +1,6 @@
 const dev = {
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
-  API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
+  API_AUTH_URL: "http://192.168.1.182:7979/ISAuthService/json",
   CLIENT_URL: "http://localhost:3001/clientportal",
   SUBDIR_PATH: "/adminportal",
 };

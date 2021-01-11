@@ -5,41 +5,36 @@ import { ILocale, IMarketAppList } from "../../../../../api/types.response";
 import { IState } from "../../../../../redux/reducers";
 import WithStringTranslate from "../../../../../utils/translate";
 const BasicValuesStyles = {
-    paddingLeft: "10px",
+  paddingLeft: "10px",
 };
 const BasicView = ({
-    app,
-    shortDesc,
-    longDesc,
+  app,
+  shortDesc,
+  longDesc,
 }: {
-    app: IMarketAppList;
-    shortDesc: ILocale;
-    longDesc: ILocale;
+  app: IMarketAppList;
+  shortDesc: ILocale;
+  longDesc: ILocale;
 }) => {
-    const locale =
-        useSelector((state: IState) => state["theme"].locale) ?? "en";
-    return (
-        <>
-            <Form.Item label={WithStringTranslate("applications.AppName")}>
-                <div style={BasicValuesStyles}>{app.Name}</div>
-            </Form.Item>
-            <Form.Item
-                label={WithStringTranslate("applications.ShortDescription")}
-            >
-                <div style={BasicValuesStyles}>{shortDesc[locale] ?? ""}</div>
-            </Form.Item>
-            <Form.Item
-                label={WithStringTranslate("applications.LongDescription")}
-            >
-                <div
-                    style={BasicValuesStyles}
-                    className="mt-2"
-                    dangerouslySetInnerHTML={{
-                        __html: longDesc[locale] ?? "",
-                    }}
-                ></div>
-            </Form.Item>
-        </>
-    );
+  const locale = useSelector((state: IState) => state["theme"].locale) ?? "en";
+  return (
+    <>
+      <Form.Item label={WithStringTranslate("applications.AppName")}>
+        <div style={BasicValuesStyles}>{app.Name}</div>
+      </Form.Item>
+      <Form.Item label={WithStringTranslate("applications.ShortDescription")}>
+        <div style={BasicValuesStyles}>{shortDesc[locale]}</div>
+      </Form.Item>
+      <Form.Item label={WithStringTranslate("applications.LongDescription")}>
+        <div
+          style={BasicValuesStyles}
+          className="mt-2"
+          dangerouslySetInnerHTML={{
+            __html: longDesc[locale],
+          }}
+        ></div>
+      </Form.Item>
+    </>
+  );
 };
 export default BasicView;

@@ -1,6 +1,7 @@
+import * as React from "react";
+import { useEffect, useState } from "react";
 import { Col, Form, message, Modal, Row, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Flex from "../../../components/shared-components/Flex";
 import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
@@ -9,12 +10,11 @@ import TextEditor from "../applications/single-app-page/TextEditor";
 import { AppService } from "../../../api";
 import Localization from "../../../utils/Localization";
 import { INewsList } from "../../../api/types.response";
-import { IAntUpload } from "../../../types";
 import { UploadChangeParam } from "antd/lib/upload";
 interface IEditNews {
   visible: boolean;
   close: () => void;
-  news: INewsList;
+  news: Partial<INewsList>;
   getNews: (AppType: number) => void;
 }
 const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
@@ -25,9 +25,9 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
   const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     if (news) {
-      setPhoto(news.Photo);
-      setHeader(news.Header);
-      setContent(news.Content);
+      setPhoto(news.Photo ?? "");
+      setHeader(news.Header ?? "");
+      setContent(news.Content ?? "");
     }
   }, [news]);
 
@@ -64,7 +64,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
           setLoading(false);
           close();
           if (data) {
-            if (data.ErrorCode === 0) getNews(news.ProductType);
+            if (data.ErrorCode === 0) getNews(news.ProductType ?? 0);
           }
         });
     }, 1000);

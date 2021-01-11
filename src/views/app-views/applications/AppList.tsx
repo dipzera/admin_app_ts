@@ -19,6 +19,7 @@ import {
   ILocale,
   IMarketAppList,
 } from "../../../api/types.response";
+import { AppService } from "../../../api";
 
 const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
   const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
@@ -78,14 +79,17 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
 };
 
 const AppList = () => {
-  const dispatch = useDispatch();
-  const apps = useSelector((state: IState) => state["apps"]);
-  const loading = useSelector((state: IState) => state["auth"].loading);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [apps, setApps] = useState<IMarketAppList[]>([]);
+  const getApplications = () =>
+    new AppService().GetMarketAppList().then((data) => {
+      if (data && data.ErrorCode === 0) {
+        setLoading(false);
+        setApps(data.MarketAppList);
+      }
+    });
   useEffect(() => {
-    try {
-      dispatch(getMarketApps());
-    } catch {}
-    dispatch(hideLoading());
+    getApplications();
   }, []);
 
   if (loading) {

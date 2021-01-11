@@ -1,28 +1,15 @@
 import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
 import { ExperimentOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
 import PageHeaderAlt from "../../../../components/layout-components/PageHeaderAlt";
 import EditPackageForm from "../EditPackageForm";
-import { hideLoading, showLoading } from "../../../../redux/actions/Auth";
-import {
-  deleteMarketAppPackage,
-  updateMarketApp,
-} from "../../../../redux/actions/Applications";
 import AddPackageForm from "../AddPackageForm";
-import moment from "moment";
-import {
-  DELETE_PACKAGE_MSG,
-  DONE,
-  ERROR,
-  LOADING,
-} from "../../../../constants/Messages";
+import { DELETE_PACKAGE_MSG, LOADING } from "../../../../constants/Messages";
 import Packages from "./Packages";
 import TermsOfUse from "./TermsOfUse";
 import General from "./general";
-import { IState } from "../../../../redux/reducers";
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import WithStringTranslate from "../../../../utils/translate";
@@ -34,30 +21,54 @@ import {
   IPackages,
 } from "../../../../api/types.response";
 import { UploadChangeParam } from "antd/lib/upload";
+import { AppService } from "../../../../api";
+import Loading from "../../../../components/shared-components/Loading";
 
 interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
 
 const SingleAppPage = ({ match }: ISingleAppPage) => {
   const { appID } = match.params;
   const { confirm } = Modal;
-  const app = useSelector((state: IState) =>
-    state["apps"]!.find((data) => data.ID === +appID)
-  );
-  const dispatch = useDispatch();
+  const [app, setApp] = useState<Partial<IMarketAppList>>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const getApp = async () =>
+    await new AppService().GetMarketAppList().then((data) => {
+      if (data && data.ErrorCode === 0) {
+        setLoading(false);
+        const currentApp = data.MarketAppList.find((app) => app.ID === +appID);
+        document.title = `${currentApp!.Name} | ${APP_NAME}`;
+        setApp(currentApp);
+        return currentApp;
+      }
+    });
+  useEffect(() => {
+    let mounted = true;
+    if (mounted) {
+      getApp().then((app) => {
+        try {
+          setShortDesc(
+            JSON.parse(window.atob(app!.ShortDescription!.toString()))
+          );
+        } catch {
+          setShortDesc({ en: "", ru: "", ro: "" });
+        }
+        try {
+          setLongDesc(
+            JSON.parse(window.atob(app!.LongDescription!.toString()))
+          );
+        } catch {
+          setLongDesc({ en: "", ru: "", ro: "" });
+        }
+      });
+    }
+    return () => {
+      mounted = false;
+    };
+  }, []);
   const [edit, setEdit] = useState<boolean>(false);
-  const [selectedPackage, setSelectedPackage] = useState<IPackages>({
-    ValidDate: "",
-    Range: "",
-    ID: 0,
-    MaxValue: 0,
-    MinValue: 0,
-    Name: "",
-    Price: 0,
-    SortIndex: 0,
-    Status: 0,
-    ValidFrom: "",
-    ValidTo: "",
-  });
+  const [selectedPackage, setSelectedPackage] = useState<Partial<IPackages>>(
+    {}
+  );
   const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
     boolean
   >(false);
@@ -84,8 +95,14 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const deletePackage = (ID: number) => {
     confirm({
       title: DELETE_PACKAGE_MSG(ID),
-      onOk: () => {
-        dispatch(deleteMarketAppPackage(ID));
+      onOk: async () => {
+        return await new AppService()
+          .DeleteMarketAppPackage(ID)
+          .then((data) => {
+            if (data && data.ErrorCode === 0) {
+              getApp();
+            }
+          });
       },
     });
   };
@@ -95,21 +112,6 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const [shortDesc, setShortDesc] = useState<Partial<ILocale>>({});
   const [longDesc, setLongDesc] = useState<Partial<ILocale>>({});
   useEffect(() => {
-    try {
-      setShortDesc(JSON.parse(window.atob(app!.ShortDescription.toString())));
-    } catch {
-      setShortDesc({ en: "", ru: "", ro: "" });
-    }
-  }, []);
-  useEffect(() => {
-    try {
-      setLongDesc(JSON.parse(window.atob(app!.LongDescription.toString())));
-    } catch {
-      setLongDesc({ en: "", ru: "", ro: "" });
-    }
-  }, []);
-  useEffect(() => {
-    setImage(app!.Photo);
     if (edit) {
       form.setFieldsValue(app);
     }
@@ -117,6 +119,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
 
   useEffect(() => {
     if (app) {
+      setImage(app!.Photo);
       document.title = `${APP_NAME} - ${app.Name}`;
     }
   }, [appID]);
@@ -134,8 +137,8 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           TermsOfUse,
           LongDescription,
         } = app as IMarketAppList;
-        dispatch(
-          updateMarketApp({
+        return new AppService()
+          .UpdateMarketApp({
             ID: +appID,
             LongDescription,
             ShortDescription,
@@ -143,8 +146,12 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             Name,
             Photo,
           })
-        );
-        setImage(Photo);
+          .then((data) => {
+            if (data && data.ErrorCode === 0) {
+              getApp();
+              setImage(Photo);
+            }
+          });
       });
     }
   };
@@ -156,11 +163,11 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         key: "updatable",
         duration: 1.5,
       })
-      .then(() => {
-        dispatch(
-          updateMarketApp({
+      .then(async () => {
+        return await new AppService()
+          .UpdateMarketApp({
             ID: +appID,
-            TermsOfUse: app!.TermsOfUse,
+            TermsOfUse: app!.TermsOfUse ?? "",
             Status: app!.Status,
             Name: values.Name,
             ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
@@ -169,20 +176,28 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
               "base64"
             ),
-            Photo: uploadedImg ? uploadedImg : app!.Photo,
+            Photo: uploadedImg ? uploadedImg : app!.Photo ?? "",
           })
-        );
-        setEdit(false);
+          .then((data) => {
+            if (data && data.ErrorCode === 0) {
+              getApp();
+              setEdit(false);
+            }
+          });
       });
   };
 
   if (!app) {
     return <div>No app found</div>;
   }
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <>
       <AddPackageForm
+        getApp={getApp}
         packages={app.Packages ?? []}
         appID={+appID}
         close={closeAddPackageModal}
@@ -256,6 +271,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
                 uploadLoading={uploadLoading}
                 handleUploadChange={handleUploadChange}
                 longDesc={longDesc}
+                getApp={getApp}
               />
             </Tabs.TabPane>
             <Tabs.TabPane
@@ -273,7 +289,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
               tab={WithStringTranslate("applications.TermsOfUse")}
               key="3"
             >
-              <TermsOfUse app={app} />
+              <TermsOfUse app={app ?? ""} getApp={getApp} />
             </Tabs.TabPane>
           </Tabs>
         </div>
