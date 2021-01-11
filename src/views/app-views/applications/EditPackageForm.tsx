@@ -12,15 +12,21 @@ import {
 } from "antd";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
-import { updateMarketAppPackage } from "../../../redux/actions/Applications";
 import WithStringTranslate from "../../../utils/translate";
 import { IPackages } from "../../../api/types.response";
+import { AppService } from "../../../api";
 interface IEditPackageForm {
   packages: Partial<IPackages>;
   visible: boolean;
   close: () => void;
+  getApp: () => void;
 }
-const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
+const EditPackageForm = ({
+  packages,
+  visible,
+  close,
+  getApp,
+}: IEditPackageForm) => {
   const [form] = Form.useForm();
   useEffect(() => {
     if (!visible) return;
@@ -48,8 +54,11 @@ const EditPackageForm = ({ packages, visible, close }: IEditPackageForm) => {
       ValidFrom,
       ValidTo,
     };
-    dispatch(updateMarketAppPackage(AppPackage));
-    debugger;
+    return new AppService().UpdateMarketAppPackage(AppPackage).then((data) => {
+      if (data && data.ErrorCode === 0) {
+        getApp();
+      }
+    });
   };
 
   const onOk = () => {

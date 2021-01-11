@@ -8,17 +8,11 @@ import {
 import Flex from "../../../components/shared-components/Flex";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
-import { useDispatch, useSelector } from "react-redux";
-import { getMarketApps } from "../../../redux/actions/Applications";
-import { hideLoading } from "../../../redux/actions/Auth";
+import { useSelector } from "react-redux";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
 import IntlMessage from "../../../components/util-components/IntlMessage";
-import {
-  IGetMarketAppListResponse,
-  ILocale,
-  IMarketAppList,
-} from "../../../api/types.response";
+import { ILocale, IMarketAppList } from "../../../api/types.response";
 import { AppService } from "../../../api";
 
 const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {

@@ -204,6 +204,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         visible={addPackageModalVisible}
       />
       <EditPackageForm
+        getApp={getApp}
         close={closeEditPackageModal}
         packages={selectedPackage}
         visible={editPackageModalVisible}

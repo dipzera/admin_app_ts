@@ -4,7 +4,6 @@ import Flex from "../../../../components/shared-components/Flex";
 import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { updateMarketApp } from "../../../../redux/actions/Applications";
 import { IState } from "../../../../redux/reducers";
 import { ILocale, IMarketAppList } from "../../../../api/types.response";
 import { AppService } from "../../../../api";
