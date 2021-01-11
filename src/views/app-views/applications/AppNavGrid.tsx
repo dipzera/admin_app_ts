@@ -2,11 +2,12 @@ import * as React from "react";
 import { Menu } from "antd";
 import { Avatar } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
-import "./app_list.scss";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 import { Link } from "react-router-dom";
 import { MenuItemProps } from "antd/lib/menu/MenuItem";
 import { IMarketAppList } from "../../../api/types.response";
+import "./applications.scss";
+
 interface IAppNavGrid extends MenuItemProps {
   apps: IMarketAppList[];
 }

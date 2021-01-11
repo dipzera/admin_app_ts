@@ -14,6 +14,7 @@ import { IState } from "../../../redux/reducers";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { ILocale, IMarketAppList } from "../../../api/types.response";
 import { AppService } from "../../../api";
+import "./applications.scss";
 
 const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
   const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
@@ -34,7 +35,7 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
     <Card>
       <Flex className="mb-3 " justifyContent="between">
         <Link to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}>
-          <div className="cursor-pointer">
+          <div className="app-avatar cursor-pointer">
             <Avatar
               src={MarketAppList.Photo}
               icon={<ExperimentOutlined />}
@@ -61,7 +62,7 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
       </Flex>
       <div>
         <Link to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}>
-          <h3 className="mb-0 cursor-pointer ">{MarketAppList.Name}</h3>
+          <h3 className="app-link mb-0 cursor-pointer">{MarketAppList.Name}</h3>
         </Link>
         <p className="text-muted">By IntelectSoft</p>
         <div style={{ minHeight: "70px" }}>
@@ -83,7 +84,11 @@ const AppList = () => {
       }
     });
   useEffect(() => {
-    getApplications();
+    let mounted = true;
+    if (mounted) getApplications();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) {

@@ -33,7 +33,6 @@ import {
   IGetNewsResponse,
   IGetProfileInfoResponse,
   IMarketAppList,
-  INewsList,
   IPackages,
   IRefreshTokenResponse,
   IRegisterClientCompanyResponse,

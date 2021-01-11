@@ -1,5 +1,5 @@
 {
-    "app.Cancel": "Anulează",
+  "app.Cancel": "Anulează",
   "app.Search": "Caută",
   "app.Contact": "Date de contact",
   "auth.SignIn": "Intră în cont",
@@ -227,7 +227,7 @@
   "applications.Media": "Media",
   "applications.Status": "Status",
   "applications.New": "Nou",
-  "application.Save": "Salvează",
+  "applications.Save": "Salvează",
   "applications.Discard": "Anulare",
   "applications.ClickOrDrag": "Apăsați sau trageți file-ul pentru a încărca imaginea",
   "applications.Packages.Edit": "Editează",
@@ -247,4 +247,3 @@
   "applications.Packages.Active": "Activ",
   "applications.Packages.NotActive": "Neactiv"
 }
-

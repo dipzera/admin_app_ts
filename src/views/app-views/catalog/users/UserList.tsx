@@ -71,7 +71,7 @@ export class UserList extends Component<StoreProps> {
         const { ErrorCode } = data;
         if (ErrorCode === 0) {
           const filteredUsers = data.Users.filter(
-            (user: any) => user.ID !== this.props.ID
+            (user) => user.ID !== this.props.ID
           );
           const evaluatedArray = utils
             .sortData(filteredUsers, "ID")

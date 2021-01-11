@@ -108,7 +108,11 @@ const News = () => {
       });
   };
   useEffect(() => {
-    getNews();
+    let mounted = true;
+    if (mounted) getNews();
+    return () => {
+      mounted = false;
+    };
   }, []);
   const onSelect = (AppType: number) => {
     setAppType(AppType);
