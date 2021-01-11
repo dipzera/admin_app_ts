@@ -112,15 +112,13 @@ const News = () => {
   }, []);
   const onSelect = (AppType: number) => {
     setAppType(AppType);
+    setLoading(true);
     if (AppType !== 0) {
       getNews(AppType);
     } else {
       getNews();
     }
   };
-  if (loading) {
-    return <Loading cover="content" />;
-  }
   return (
     <>
       <CreateNews
@@ -156,25 +154,29 @@ const News = () => {
           <IntlMessage id="news.AddButton" />
         </Button>
       </Flex>
-      <List style={{ maxWidth: 1000, margin: "0 auto" }}>
-        {news && news.length > 0 ? (
-          news
-            .sort((a, b) => a.ID - b.ID)
-            .reverse()
-            .map((elm) => (
-              <ArticleItem
-                newsData={elm}
-                key={elm.ID}
-                setSelected={setSelected}
-                setEdit={setEdit}
-              />
-            ))
-        ) : (
-          <Flex className="w-100" justifyContent="center">
-            <Empty />
-          </Flex>
-        )}
-      </List>
+      {loading ? (
+        <Loading cover="content" />
+      ) : (
+        <List style={{ maxWidth: 1000, margin: "0 auto" }}>
+          {news && news.length > 0 ? (
+            news
+              .sort((a, b) => a.ID - b.ID)
+              .reverse()
+              .map((elm) => (
+                <ArticleItem
+                  newsData={elm}
+                  key={elm.ID}
+                  setSelected={setSelected}
+                  setEdit={setEdit}
+                />
+              ))
+          ) : (
+            <Flex className="w-100" justifyContent="center">
+              <Empty />
+            </Flex>
+          )}
+        </List>
+      )}
     </>
   );
 };
