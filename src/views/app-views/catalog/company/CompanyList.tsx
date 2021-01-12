@@ -55,7 +55,7 @@ export class CompanyList extends Component {
     selectedKeys: [],
     companiesToSearch: [],
     userProfileVisible: false,
-    selectedUser: null,
+    selectedUser: {},
     isHidden: "block",
     editModalVisible: false,
     newUserModalVisible: false,

@@ -20,7 +20,7 @@ class CompanyForm extends Component {
   formRef = React.createRef<FormInstance>();
 
   getCompanyInfo = async () => {
-    return await new AppService().GetCompanyInfo().then((data: any) => {
+    return await new AppService().GetCompanyInfo().then((data) => {
       if (data) {
         if (data.ErrorCode === 0) {
           this.setState({ ...data.Company });

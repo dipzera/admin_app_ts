@@ -13,6 +13,8 @@ import { AuthService } from "../../api";
 import { ThunkResult } from "../reducers";
 import WithStringTranslate from "../../utils/translate";
 import { IAuthorizeUserRequest } from "../../api/types.request";
+import { SUBDIR_PATH } from "../../configs/AppConfig";
+import { onHeaderNavColorChange } from "./Theme";
 
 type Actions =
   | { type: typeof AUTHENTICATED; token: string }
@@ -75,6 +77,8 @@ export const authorizeUser = (
       if (ErrorCode === 0) {
         dispatch(authenticated(Token ?? ""));
         dispatch(getProfileInfo());
+        if (SUBDIR_PATH === "/testadminportal")
+          dispatch(onHeaderNavColorChange("#DE4436"));
       }
       if (ErrorCode === 102) {
         dispatch(hideLoading());
