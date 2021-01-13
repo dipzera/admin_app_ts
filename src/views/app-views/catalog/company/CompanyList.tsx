@@ -26,7 +26,7 @@ import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import Translate from "../../../../utils/translate";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { ICompanyData } from "../../../../api/types.response";
 
 enum status {
@@ -55,13 +55,15 @@ export class CompanyList extends Component {
     selectedKeys: [],
     companiesToSearch: [],
     userProfileVisible: false,
-    selectedUser: null,
+    selectedUser: {},
     isHidden: "block",
     editModalVisible: false,
     newUserModalVisible: false,
     registerUserModalVisible: false,
     loading: true,
   };
+
+  mounted = true;
 
   getCompanyList = async () => {
     return await new AppService().GetCompanyList().then((data) => {
@@ -81,7 +83,11 @@ export class CompanyList extends Component {
   };
 
   componentDidMount() {
-    this.getCompanyList();
+    if (this.mounted) this.getCompanyList();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   showUserProfile = (userInfo: ICompanyData) => {
@@ -132,15 +138,15 @@ export class CompanyList extends Component {
     Modal.confirm({
       title:
         statusNumber === 0 || statusNumber === 2
-          ? `${WithStringTranslate("user.disable.title2")} ${row.length} ${
+          ? `${TranslateText("user.disable.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("company.plural")
-                : WithStringTranslate("company.singular")
+                ? TranslateText("company.plural")
+                : TranslateText("company.singular")
             }?`
-          : `${WithStringTranslate("user.activate.title2")} ${row.length} ${
+          : `${TranslateText("user.activate.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("company.plural")
-                : WithStringTranslate("company.singular")
+                ? TranslateText("company.plural")
+                : TranslateText("company.singular")
             }?`,
       onOk: async () => {
         await Promise.all(
@@ -162,7 +168,7 @@ export class CompanyList extends Component {
     return await new AuthService()
       .GetManagedToken(CompanyID)
       .then((data: any) => {
-        if (data.ErrorCode === 0) return data.Token;
+        if (data && data.ErrorCode === 0) return data.Token;
       });
   };
 
@@ -171,7 +177,7 @@ export class CompanyList extends Component {
       <Menu.Item
         onClick={async () => {
           const token = await this.getManagedToken(row.ID ?? 0);
-          window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
+          if (token) window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
         }}
       >
         <Flex alignItems="center">
@@ -342,10 +348,10 @@ export class CompanyList extends Component {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.activate")} (${
+                      ? `${TranslateText("user.activate")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.activate")}`}
+                      : `${TranslateText("user.activate")}`}
                   </Button>
                   <Button
                     type="ghost"
@@ -358,10 +364,10 @@ export class CompanyList extends Component {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.disable")} (${
+                      ? `${TranslateText("user.disable")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.disable")}`}
+                      : `${TranslateText("user.disable")}`}
                   </Button>
                 </>
               )}

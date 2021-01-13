@@ -14,7 +14,7 @@ import "./table.scss";
 import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { IUsers } from "../../../../api/types.response";
 import UserTable from "./UserTable";
 
@@ -62,6 +62,8 @@ export class UserList extends Component<StoreProps> {
     status: null,
   };
 
+  mounted = true;
+
   getUsersInfo = async () => {
     return await new AppService().GetAllUsers().then((data) => {
       this.setState({ loading: false });
@@ -69,7 +71,7 @@ export class UserList extends Component<StoreProps> {
         const { ErrorCode } = data;
         if (ErrorCode === 0) {
           const filteredUsers = data.Users.filter(
-            (user: any) => user.ID !== this.props.ID
+            (user) => user.ID !== this.props.ID
           );
           const evaluatedArray = utils
             .sortData(filteredUsers, "ID")
@@ -88,7 +90,11 @@ export class UserList extends Component<StoreProps> {
   };
 
   componentDidMount() {
-    this.getUsersInfo();
+    if (this.mounted) this.getUsersInfo();
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
   showUserProfile = (userInfo: IUsers) => {
     this.setState({
@@ -132,15 +138,15 @@ export class UserList extends Component<StoreProps> {
     Modal.confirm({
       title:
         statusNumber === 0 || statusNumber === 2
-          ? `${WithStringTranslate("user.disable.title2")} ${row.length} ${
+          ? `${TranslateText("user.disable.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("user.plural")
-                : WithStringTranslate("user.singular")
+                ? TranslateText("user.plural")
+                : TranslateText("user.singular")
             }?`
-          : `${WithStringTranslate("user.activate.title2")} ${row.length} ${
+          : `${TranslateText("user.activate.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("user.plural")
-                : WithStringTranslate("user.singular")
+                ? TranslateText("user.plural")
+                : TranslateText("user.singular")
             }?`,
       onOk: async () => {
         await Promise.all(
@@ -178,7 +184,7 @@ export class UserList extends Component<StoreProps> {
         <Flex className="mb-1" mobileFlex={false} justifyContent="between">
           <div className="mr-md-3 mb-3">
             <Input
-              placeholder={WithStringTranslate("app.Search")}
+              placeholder={TranslateText("app.Search")}
               prefix={<SearchOutlined />}
               onChange={(e) => onSearch(e)}
             />
@@ -198,10 +204,10 @@ export class UserList extends Component<StoreProps> {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.activate")} (${
+                      ? `${TranslateText("user.activate")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.activate")}`}
+                      : `${TranslateText("user.activate")}`}
                   </Button>
                   <Button
                     type="ghost"
@@ -214,10 +220,10 @@ export class UserList extends Component<StoreProps> {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.disable")} (${
+                      ? `${TranslateText("user.disable")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.disable")}`}
+                      : `${TranslateText("user.disable")}`}
                   </Button>
                 </>
               )}

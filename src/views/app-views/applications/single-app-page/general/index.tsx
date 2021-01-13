@@ -1,18 +1,18 @@
+import * as React from "react";
+import { useState } from "react";
 import { Button, Card, Col, message, Row, Select, Tooltip } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { LoadingOutlined, EditOutlined } from "@ant-design/icons";
-import React from "react";
 import { ImageSvg } from "../../../../../assets/svg/icon";
 import CustomIcon from "../../../../../components/util-components/CustomIcon";
 import Flex from "../../../../../components/shared-components/Flex";
 import BasicView from "./BasicView";
 import BasicEdit from "./BasicEdit";
-import { useDispatch, useSelector } from "react-redux";
-import { changeMarketAppStatus } from "../../../../../redux/actions/Applications";
-import { IState } from "../../../../../redux/reducers";
 import Utils from "../../../../../utils";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
-import WithStringTranslate from "../../../../../utils/translate";
+import TranslateText from "../../../../../utils/translate";
+import { AppService } from "../../../../../api";
+import { DONE } from "../../../../../constants/Messages";
 const imageUploadProps: any = {
   name: "file",
   multiple: false,
@@ -32,9 +32,9 @@ const General = ({
   shortDesc,
   setShortDesc,
   longDesc,
+  getApp,
 }: any) => {
-  const loading = useSelector((state: IState) => state["auth"].loading);
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   return (
     <>
       <Row gutter={16}>
@@ -68,7 +68,7 @@ const General = ({
           </Card>
         </Col>
         <Col xs={24} sm={24} md={7}>
-          <Card title={WithStringTranslate("applications.Media")}>
+          <Card title={TranslateText("applications.Media")}>
             <Dragger
               {...imageUploadProps}
               customRequest={(file) => Utils.dummyRequest(file)}
@@ -98,15 +98,29 @@ const General = ({
               )}
             </Dragger>
           </Card>
-          <Card title={WithStringTranslate("applications.Status")}>
+          <Card title={TranslateText("applications.Status")}>
             <Select
               className="w-100"
               placeholder="Status"
               defaultValue={status}
-              loading={loading}
               disabled={loading}
               onChange={(value) => {
-                dispatch(changeMarketAppStatus(app.ID, value));
+                setLoading(true);
+                setTimeout(async () => {
+                  return await new AppService()
+                    .ChangeMarketAppStatus(app.ID, value)
+                    .then((data) => {
+                      if (data && data.ErrorCode === 0) {
+                        setLoading(false);
+                        getApp();
+                        message.success({
+                          content: TranslateText(DONE),
+                          key: "updatable",
+                          duration: 1,
+                        });
+                      }
+                    });
+                }, 1000);
               }}
             >
               <Select.Option value={0}>

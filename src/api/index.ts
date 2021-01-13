@@ -4,7 +4,7 @@ import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import { IAccount } from "../redux/reducers/Account";
 import store from "../redux/store";
-import WithStringTranslate from "../utils/translate";
+import TranslateText from "../utils/translate";
 import {
   IActivateUserRequest,
   IAuthorizeUserRequest,
@@ -33,7 +33,6 @@ import {
   IGetNewsResponse,
   IGetProfileInfoResponse,
   IMarketAppList,
-  INewsList,
   IPackages,
   IRefreshTokenResponse,
   IRegisterClientCompanyResponse,
@@ -125,7 +124,7 @@ class HttpClient {
             const key = "updatable";
             message
               .loading({
-                content: WithStringTranslate("message.ExpireTime"),
+                content: TranslateText("message.ExpireTime"),
                 key,
                 duration: 1.5,
               })
@@ -137,7 +136,8 @@ class HttpClient {
       });
     } else if (
       response.data.ErrorCode !== 0 &&
-      response.data.ErrorCode !== 118
+      response.data.ErrorCode !== 108 &&
+      response.data.ErrorCode !== -1
     ) {
       message.error({
         content: response.data.ErrorMessage,
@@ -145,7 +145,7 @@ class HttpClient {
         duration: 2.5,
       });
     }
-    return response.data;
+    if (response && response.data) return response.data;
   };
   private _handleError = async (error: AxiosResponse) => {
     if (error.request.status !== 200) {
@@ -298,7 +298,7 @@ export class AppService extends HttpClient {
       },
     });
 
-  public UpdateNews = async (NewsData: IUpdateNewsRequest["NewsData"]) =>
+  public UpdateNews = async (NewsData: any) =>
     this.instance.post<IUpdateNewsResponse>("/UpdateNews", {
       NewsData,
     });

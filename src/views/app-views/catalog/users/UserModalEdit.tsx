@@ -4,7 +4,7 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import AppLocale from "../../../../lang";
 import { AppService } from "../../../../api";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 import { IAccount } from "../../../../redux/reducers/Account";
 export const UserModalEdit = ({
@@ -66,7 +66,7 @@ export const UserModalEdit = ({
           if (data.ErrorCode === 0) {
             getUsersInfo().then(() =>
               message.success({
-                content: WithStringTranslate(DONE),
+                content: TranslateText(DONE),
                 key: "updatable",
                 duration: 1.5,
               })
@@ -99,7 +99,7 @@ export const UserModalEdit = ({
       destroyOnClose
       title={<IntlMessage id="user.edit.title" />}
       visible={visible}
-      okText={` ${WithStringTranslate("account.EditProfile.SaveChange")}`}
+      okText={` ${TranslateText("account.EditProfile.SaveChange")}`}
       onCancel={onCancel}
       confirmLoading={isLoading}
       onOk={onOk}

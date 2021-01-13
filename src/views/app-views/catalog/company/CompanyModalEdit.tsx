@@ -5,7 +5,7 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AppService } from "../../../../api";
 import { ICompanyData } from "../../../../api/types.response";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 
 export const CompanyModalEdit = ({
@@ -37,7 +37,7 @@ export const CompanyModalEdit = ({
           if (data.ErrorCode === 0) {
             getCompanyList().then(() =>
               message.success({
-                content: WithStringTranslate(DONE),
+                content: TranslateText(DONE),
                 key: "updatable",
                 duration: 1.5,
               })
@@ -53,7 +53,7 @@ export const CompanyModalEdit = ({
       destroyOnClose
       title={<IntlMessage id="company.edit.title" />}
       visible={visible}
-      okText={` ${WithStringTranslate("account.EditProfile.SaveChange")}`}
+      okText={` ${TranslateText("account.EditProfile.SaveChange")}`}
       onCancel={onCancel}
       confirmLoading={loading}
       onOk={() => {

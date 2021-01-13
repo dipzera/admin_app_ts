@@ -1,7 +1,7 @@
 const dev = {
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
-  CLIENT_URL: "https://eservicii.md/testclientportal",
+  CLIENT_URL: "http://localhost:3001/clientportal",
   SUBDIR_PATH: "/adminportal",
 };
 
@@ -13,8 +13,8 @@ const prod = {
 };
 
 const test = {
-  API_APP_URL: "https://api.edi.md/ISAdminWebAppServiceTest/json",
-  API_AUTH_URL: "https://api.edi.md/ISAuthServiceTest/json",
+  API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
+  API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
   CLIENT_URL: "https://eservicii.md/testclientportal",
   SUBDIR_PATH: "/testadminportal",
 };

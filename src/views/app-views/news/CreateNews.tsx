@@ -8,8 +8,9 @@ import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
 import TextEditor from "../applications/single-app-page/TextEditor";
 import { AppService } from "../../../api";
-import Localization from "../../../utils/Localization";
 import { UploadChangeParam } from "antd/lib/upload";
+import TranslateText from "../../../utils/translate";
+
 interface ICreateNews {
   getNews: (AppType: number) => void;
   visible: boolean;
@@ -31,13 +32,13 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
   const onUploadAvatar = (info: UploadChangeParam) => {
     if (info.file.status === "uploading") {
       message.loading({
-        content: <Localization msg={UPLOADING} />,
+        content: TranslateText(UPLOADING),
         key: "updatable",
       });
     }
     if (info.file.status === "done") {
       message.success({
-        content: <Localization msg={DONE} />,
+        content: TranslateText(DONE),
         key: "updatable",
         duration: 1,
       });
@@ -103,7 +104,7 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
             beforeUpload={(info) => Utils.beforeUpload(info)}
           >
             {photo ? (
-              <img src={photo} alt="photo" style={{ width: "100%" }} />
+              <img src={photo} alt="News" style={{ width: "100%" }} />
             ) : (
               uploadButton
             )}

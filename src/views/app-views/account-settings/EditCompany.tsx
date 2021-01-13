@@ -10,7 +10,7 @@ import MaskedInput from "antd-mask-input";
 import { DONE, UPDATING, UPLOADING } from "../../../constants/Messages";
 import { AppService } from "../../../api";
 import Utils from "../../../utils";
-import WithStringTranslate from "../../../utils/translate";
+import TranslateText from "../../../utils/translate";
 import { ICompanyData } from "../../../api/types.response";
 import { FormInstance } from "antd/lib/form";
 import { UploadChangeParam } from "antd/lib/upload";
@@ -20,7 +20,7 @@ class CompanyForm extends Component {
   formRef = React.createRef<FormInstance>();
 
   getCompanyInfo = async () => {
-    return await new AppService().GetCompanyInfo().then((data: any) => {
+    return await new AppService().GetCompanyInfo().then((data) => {
       if (data) {
         if (data.ErrorCode === 0) {
           this.setState({ ...data.Company });
@@ -53,13 +53,13 @@ class CompanyForm extends Component {
     const onFinish = async (values: ICompanyData) => {
       const key = "updatable";
       message.loading({
-        content: WithStringTranslate(UPDATING),
+        content: TranslateText(UPDATING),
         key,
       });
       setTimeout(async () => {
         this.updateCompany({ ...values }).then(() =>
           message.success({
-            content: WithStringTranslate(DONE),
+            content: TranslateText(DONE),
             key: "updatable",
             duration: 1,
           })
@@ -75,14 +75,14 @@ class CompanyForm extends Component {
       const key = "updatable";
       if (info.file.status === "uploading") {
         message.loading({
-          content: WithStringTranslate(UPLOADING),
+          content: TranslateText(UPLOADING),
           key,
         });
         return;
       }
       if (info.file.status === "done") {
         message.success({
-          content: WithStringTranslate(DONE),
+          content: TranslateText(DONE),
           key: "updatable",
           duration: 1,
         });

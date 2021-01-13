@@ -4,7 +4,7 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AppService, AuthService } from "../../../../api";
 import { DONE } from "../../../../constants/Messages";
-import Localization from "../../../../utils/Localization";
+import TranslateText from "../../../../utils/translate";
 
 export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
   const [form] = Form.useForm();
@@ -37,7 +37,7 @@ export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
           const { ErrorCode, ErrorMessage } = data;
           if (ErrorCode === 0) {
             message.success({
-              content: <Localization msg={DONE} />,
+              content: TranslateText(DONE),
               key: "updatable",
             });
             getUsersInfo();

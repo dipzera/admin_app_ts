@@ -9,7 +9,7 @@ import { AuthService } from "../../../api";
 import { IState } from "../../../redux/reducers";
 import { IAuth } from "../../../redux/reducers/Auth";
 import { ITheme } from "../../../redux/reducers/Theme";
-import WithStringTranslate from "../../../utils/translate";
+import TranslateText from "../../../utils/translate";
 import { FormInstance } from "antd/lib/form";
 import { IChangePasswordRequest } from "../../../api/types.request";
 export class ChangePassword extends Component {
@@ -36,8 +36,7 @@ export class ChangePassword extends Component {
         .then((data) => {
           if (data) {
             const { ErrorCode } = data;
-            if (ErrorCode === 0)
-              message.success(WithStringTranslate(DONE), 1.5);
+            if (ErrorCode === 0) message.success(TranslateText(DONE), 1.5);
           }
         });
     }, 1500);
