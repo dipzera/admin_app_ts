@@ -14,7 +14,7 @@ import TranslateText from "../../../utils/translate";
 interface ICreateNews {
   getNews: (AppType: number) => void;
   visible: boolean;
-  close: any;
+  close: () => void;
   AppType: number;
 }
 const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {

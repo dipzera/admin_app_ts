@@ -63,9 +63,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
         .then(async (data) => {
           setLoading(false);
           close();
-          if (data) {
-            if (data.ErrorCode === 0) getNews(news.ProductType ?? 0);
-          }
+          if (data && data.ErrorCode === 0) getNews(news.ProductType ?? 0);
         });
     }, 1000);
   };

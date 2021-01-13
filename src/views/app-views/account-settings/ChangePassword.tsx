@@ -34,10 +34,8 @@ export class ChangePassword extends Component {
           OldPassword: Utils.encryptInput(currentPassword, API_PUBLIC_KEY),
         })
         .then((data) => {
-          if (data) {
-            const { ErrorCode } = data;
-            if (ErrorCode === 0) message.success(TranslateText(DONE), 1.5);
-          }
+          if (data && data.ErrorCode === 0)
+            message.success(TranslateText(DONE), 1.5);
         });
     }, 1500);
     this.onReset();

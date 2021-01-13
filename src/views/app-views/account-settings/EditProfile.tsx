@@ -1,6 +1,7 @@
 import React from "react";
 import { Component } from "react";
 import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
+import ValidateErrorEntity from "rc-field-form/lib/Form";
 import { UserOutlined } from "@ant-design/icons";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Flex from "../../../components/shared-components/Flex";
@@ -34,10 +35,6 @@ class EditProfile extends Component<IEditProfile> {
           ...values,
         });
       }, 1000);
-    };
-
-    const onFinishFailed = (errorInfo: any) => {
-      console.log("Failed:", errorInfo);
     };
 
     const onUploadAavater = (info: UploadChangeParam) => {
@@ -96,7 +93,6 @@ class EditProfile extends Component<IEditProfile> {
             layout="vertical"
             initialValues={account}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
           >
             <Row>
               <Col xs={24} sm={24} md={24} lg={16}>

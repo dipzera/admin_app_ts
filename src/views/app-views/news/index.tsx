@@ -35,16 +35,6 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
           </Flex>
           <div style={{ position: "absolute", bottom: 15 }}>
             <Flex alignItems="center">
-              <span>IntelectSoft</span>
-              <span
-                style={{
-                  fontSize: 20,
-                  color: "black",
-                  margin: "0 5px 0",
-                }}
-              >
-                &nbsp;&bull;&nbsp;
-              </span>
               <span style={{ color: "black" }}>
                 {newsData.CreateDate &&
                   moment

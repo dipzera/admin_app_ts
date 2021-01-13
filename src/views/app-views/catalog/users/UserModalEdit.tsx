@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Input, Row, Col, Form, Modal, message, Select, Empty } from "antd";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import AppLocale from "../../../../lang";
 import { AppService } from "../../../../api";
 import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
@@ -14,48 +13,16 @@ export const UserModalEdit = ({
   getUsersInfo,
 }: any) => {
   const [form] = Form.useForm();
-  const [companies, setCompanies] = useState<any>();
-  const [showOptions, setShowOptions] = useState<boolean>(false);
-  const [currentCompany, setCurrentCompany] = useState<any>();
+
   /*  Destroy initialValues of form after Modal is closed */
   useEffect(() => {
     if (!visible) return;
     form.resetFields();
   }, [visible, form]);
 
-  // useEffect(() => {
-  //     if (visible) {
-  //         new AdminApi().GetBasicCompanyList().then((data: any) => {
-  //             if (data) {
-  //                 const { CompanyList, ErrorCode } = data;
-  //                 if (ErrorCode === 0) {
-  //                     setCompanies(CompanyList);
-  //                 }
-  //             }
-  //         });
-  //     }
-  // }, [visible]);
-
-  // useEffect(() => {
-  //     if (companies) {
-  //         setCurrentCompany(
-  //             companies
-  //                 .filter((company) => company.ID === data.CompanyID)
-  //                 .map((company) => company.Name)
-  //         );
-  //     }
-  // }, [companies]);
-  const onSearch = (value: any) => {
-    if (value.length > 1) {
-      setShowOptions(true);
-    } else {
-      setShowOptions(false);
-    }
-  };
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onFinish = (values: IAccount) => {
+  const onFinish = async (values: IAccount) => {
     return new AppService()
       .UpdateUser({
         ...data,
@@ -76,8 +43,6 @@ export const UserModalEdit = ({
       });
   };
 
-  const onFinishFailed = () => {};
-
   const onOk = () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -93,7 +58,6 @@ export const UserModalEdit = ({
         });
     }, 1000);
   };
-  const { Option } = Select;
   return (
     <Modal
       destroyOnClose
@@ -162,40 +126,6 @@ export const UserModalEdit = ({
               <Input />
             </Form.Item>
           </Col>
-          {/* <Col xs={24} sm={24} md={24}>
-                        <Form.Item
-                            label={"Company"}
-                            name="CompanyID"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please choose your company!",
-                                },
-                            ]}
-                        >
-                            <Select
-                                onSearch={onSearch}
-                                allowClear
-                                placeholder={currentCompany}
-                                showSearch
-                                filterOption={(input, option) =>
-                                    option!.title
-                                        .toUpperCase()
-                                        .indexOf(input.toUpperCase()) !== -1
-                                }
-                            >
-                                {companies &&
-                                    companies.map((company) => (
-                                        <Option
-                                            value={company.ID}
-                                            key={company.ID}
-                                        >
-                                            {company.Name}
-                                        </Option>
-                                    ))}
-                            </Select>
-                        </Form.Item>
-                    </Col> */}
         </Row>
       </Form>
     </Modal>

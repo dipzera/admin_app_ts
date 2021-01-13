@@ -35,11 +35,7 @@ class CompanyForm extends Component {
         Company: { ...this.state, ...values },
       })
       .then(async (data) => {
-        if (data) {
-          if (data.ErrorCode === 0) {
-            this.getCompanyInfo();
-          }
-        }
+        if (data && data.ErrorCode === 0) this.getCompanyInfo();
       });
   };
   componentDidMount() {

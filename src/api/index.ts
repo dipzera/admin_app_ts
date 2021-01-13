@@ -10,10 +10,7 @@ import {
   IAuthorizeUserRequest,
   IChangePasswordRequest,
   ICreateMarketAppPackageRequest,
-  IRegisterClientCompanyRequest,
-  IRegisterUserRequest,
   IUpdateCompanyRequest,
-  IUpdateNewsRequest,
 } from "./types.request";
 import {
   IActivateUserResponse,
@@ -73,12 +70,21 @@ class HttpClient {
     this.instance.interceptors.request.use(
       (config) => {
         console.log(config);
+        /*
+         * To avoid passing the Token as query a param everytime,
+         * pass it here by default
+         */
         if (config.method === "get") {
           config.params = {
             Token: this._token,
             ...config.params,
           };
         }
+
+        /*
+         * To avoid passing the Token inside body everytime,
+         * pass it here by default
+         */
         if (config.method === "post") {
           config.data = {
             ...config.data,
@@ -98,43 +104,46 @@ class HttpClient {
     console.log(response);
     if (response.data.ErrorCode === 118) {
       return await this._RefreshToken().then(async (data) => {
-        if (data) {
-          const { ErrorCode, Token } = data;
-          if (ErrorCode === 0) {
-            store.dispatch(authenticated(Token));
-            if (response.config.method === "get") {
-              response.config.params = {
-                ...response.config.params,
-                Token,
-              };
-              return await axios
-                .request(response.config)
-                .then((response) => response.data);
-            }
-            if (response.config.method === "post") {
-              response.config.data = {
-                ...JSON.parse(response.config.data),
-                Token,
-              };
-              return await axios
-                .request(response.config)
-                .then((response) => response.data);
-            }
-          } else {
-            const key = "updatable";
-            message
-              .loading({
-                content: TranslateText("message.ExpireTime"),
-                key,
-                duration: 1.5,
-              })
-              .then(() => {
-                store.dispatch(signOut());
-              });
+        if (data && data.ErrorCode === 0) {
+          const { Token } = data;
+          store.dispatch(authenticated(Token));
+
+          // If the last request was a GET, we pass the Token as param
+          if (response.config.method === "get") {
+            response.config.params = {
+              ...response.config.params,
+              Token,
+            };
+            return await axios
+              .request(response.config)
+              .then((response) => response.data);
           }
+
+          // If the last request was a POST, we pass the Token inside body
+          if (response.config.method === "post") {
+            response.config.data = {
+              ...JSON.parse(response.config.data),
+              Token,
+            };
+            return await axios
+              .request(response.config)
+              .then((response) => response.data);
+          }
+        } else {
+          // In case RefreshToken fails, we log out the user
+          message
+            .loading({
+              content: TranslateText("message.ExpireTime"),
+              key: "updatable",
+              duration: 1.5,
+            })
+            .then(() => {
+              store.dispatch(signOut());
+            });
         }
       });
     } else if (
+      // Handle the rest of errors here
       response.data.ErrorCode !== 0 &&
       response.data.ErrorCode !== 108 &&
       response.data.ErrorCode !== -1
@@ -145,9 +154,12 @@ class HttpClient {
         duration: 2.5,
       });
     }
-    if (response && response.data) return response.data;
+    // Always return data by default
+    return response.data;
   };
+
   private _handleError = async (error: AxiosResponse) => {
+    // Handle all non 200 requests here
     if (error.request.status !== 200) {
       message.error({
         content: error.toString(),

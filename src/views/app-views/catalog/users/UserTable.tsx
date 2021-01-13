@@ -10,7 +10,7 @@ import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { Menu, Modal, Tag } from "antd";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import TranslateText from "../../../../utils/translate";
+import WithStringTranslate from "../../../../utils/translate";
 import Flex from "../../../../components/shared-components/Flex";
 import {
   EyeOutlined,
@@ -19,7 +19,7 @@ import {
   EditOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { status } from "./UserList";
+import { status } from "./";
 
 const UserTable = (
   sendActivationCode: (ID: number) => void,
@@ -38,7 +38,7 @@ const UserTable = (
           onClick={() =>
             Modal.confirm({
               title:
-                TranslateText("user.sendCodeModal.title") +
+                WithStringTranslate("user.sendCodeModal.title") +
                 " " +
                 row.FirstName +
                 "?",
@@ -77,7 +77,7 @@ const UserTable = (
         <Menu.Item
           onClick={async () => {
             Modal.confirm({
-              title: TranslateText("user.activate.title"),
+              title: WithStringTranslate("user.activate.title"),
               onOk: async () => {
                 await handleUserStatus(row.ID, status.active).then(() => {
                   getUsersInfo();
@@ -97,7 +97,7 @@ const UserTable = (
         <Menu.Item
           onClick={async () => {
             Modal.confirm({
-              title: TranslateText("user.disable.title"),
+              title: WithStringTranslate("user.disable.title"),
               onOk: async () => {
                 await handleUserStatus(row.ID, status.disabled).then(() => {
                   getUsersInfo();
@@ -116,6 +116,7 @@ const UserTable = (
       ) : null}
     </Menu>
   );
+
   let tableColumns: ColumnsType<IUsers> = [
     {
       title: <IntlMessage id="user.Title" />,
