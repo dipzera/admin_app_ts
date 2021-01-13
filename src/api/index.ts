@@ -4,7 +4,7 @@ import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import { IAccount } from "../redux/reducers/Account";
 import store from "../redux/store";
-import WithStringTranslate from "../utils/translate";
+import TranslateText from "../utils/translate";
 import {
   IActivateUserRequest,
   IAuthorizeUserRequest,
@@ -124,7 +124,7 @@ class HttpClient {
             const key = "updatable";
             message
               .loading({
-                content: WithStringTranslate("message.ExpireTime"),
+                content: TranslateText("message.ExpireTime"),
                 key,
                 duration: 1.5,
               })

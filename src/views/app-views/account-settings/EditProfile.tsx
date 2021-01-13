@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Component } from "react";
 import { Form, Avatar, Button, Input, Row, Col, message, Upload } from "antd";
 import { UserOutlined } from "@ant-design/icons";
@@ -7,13 +7,13 @@ import Flex from "../../../components/shared-components/Flex";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { setProfileInfo } from "../../../redux/actions/Account";
 import { connect } from "react-redux";
-import { DONE, ERROR, UPLOADING } from "../../../constants/Messages";
+import { UPLOADING } from "../../../constants/Messages";
 import Utils from "../../../utils";
 import { IState } from "../../../redux/reducers";
 import { IAccount } from "../../../redux/reducers/Account";
-import Localization from "../../../utils/Localization";
 import { UploadChangeParam } from "antd/lib/upload";
-import WithStringTranslate from "../../../utils/translate";
+import TranslateText from "../../../utils/translate";
+
 interface IEditProfile {
   setProfileInfo: (accountInfo: IAccount) => void;
   account: IAccount;
@@ -25,7 +25,7 @@ class EditProfile extends Component<IEditProfile> {
     const onFinish = (values: IAccount) => {
       const key = "updatable";
       message.loading({
-        content: WithStringTranslate("message.Updating"),
+        content: TranslateText("message.Updating"),
         key,
       });
       setTimeout(async () => {
@@ -44,7 +44,7 @@ class EditProfile extends Component<IEditProfile> {
       const key = "updatable";
       if (info.file.status === "uploading") {
         message.loading({
-          content: WithStringTranslate(UPLOADING),
+          content: TranslateText(UPLOADING),
           key,
         });
         return;

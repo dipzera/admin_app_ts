@@ -10,7 +10,7 @@ import BasicView from "./BasicView";
 import BasicEdit from "./BasicEdit";
 import Utils from "../../../../../utils";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
-import WithStringTranslate from "../../../../../utils/translate";
+import TranslateText from "../../../../../utils/translate";
 import { AppService } from "../../../../../api";
 import { DONE } from "../../../../../constants/Messages";
 const imageUploadProps: any = {
@@ -68,7 +68,7 @@ const General = ({
           </Card>
         </Col>
         <Col xs={24} sm={24} md={7}>
-          <Card title={WithStringTranslate("applications.Media")}>
+          <Card title={TranslateText("applications.Media")}>
             <Dragger
               {...imageUploadProps}
               customRequest={(file) => Utils.dummyRequest(file)}
@@ -98,7 +98,7 @@ const General = ({
               )}
             </Dragger>
           </Card>
-          <Card title={WithStringTranslate("applications.Status")}>
+          <Card title={TranslateText("applications.Status")}>
             <Select
               className="w-100"
               placeholder="Status"
@@ -114,7 +114,7 @@ const General = ({
                         setLoading(false);
                         getApp();
                         message.success({
-                          content: WithStringTranslate(DONE),
+                          content: TranslateText(DONE),
                           key: "updatable",
                           duration: 1,
                         });

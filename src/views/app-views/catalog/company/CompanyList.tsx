@@ -26,7 +26,7 @@ import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import Translate from "../../../../utils/translate";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { ICompanyData } from "../../../../api/types.response";
 
 enum status {
@@ -138,15 +138,15 @@ export class CompanyList extends Component {
     Modal.confirm({
       title:
         statusNumber === 0 || statusNumber === 2
-          ? `${WithStringTranslate("user.disable.title2")} ${row.length} ${
+          ? `${TranslateText("user.disable.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("company.plural")
-                : WithStringTranslate("company.singular")
+                ? TranslateText("company.plural")
+                : TranslateText("company.singular")
             }?`
-          : `${WithStringTranslate("user.activate.title2")} ${row.length} ${
+          : `${TranslateText("user.activate.title2")} ${row.length} ${
               row.length > 1
-                ? WithStringTranslate("company.plural")
-                : WithStringTranslate("company.singular")
+                ? TranslateText("company.plural")
+                : TranslateText("company.singular")
             }?`,
       onOk: async () => {
         await Promise.all(
@@ -348,10 +348,10 @@ export class CompanyList extends Component {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.activate")} (${
+                      ? `${TranslateText("user.activate")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.activate")}`}
+                      : `${TranslateText("user.activate")}`}
                   </Button>
                   <Button
                     type="ghost"
@@ -364,10 +364,10 @@ export class CompanyList extends Component {
                     }
                   >
                     {this.state.selectedRows.length > 1
-                      ? `${WithStringTranslate("user.disable")} (${
+                      ? `${TranslateText("user.disable")} (${
                           this.state.selectedRows.length
                         })`
-                      : `${WithStringTranslate("user.disable")}`}
+                      : `${TranslateText("user.disable")}`}
                   </Button>
                 </>
               )}

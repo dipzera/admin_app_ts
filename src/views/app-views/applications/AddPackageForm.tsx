@@ -13,7 +13,7 @@ import {
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { IState } from "../../../redux/reducers";
-import WithStringTranslate from "../../../utils/translate";
+import TranslateText from "../../../utils/translate";
 import { IPackages } from "../../../api/types.response";
 import { AppService } from "../../../api";
 interface IAddPackageForm {
@@ -79,7 +79,7 @@ const AddPackageForm = ({
   return (
     <Modal
       destroyOnClose
-      title={WithStringTranslate("applications.Packages.Add")}
+      title={TranslateText("applications.Packages.Add")}
       visible={visible}
       onCancel={close}
       confirmLoading={loading}
@@ -96,7 +96,7 @@ const AddPackageForm = ({
         <Row gutter={ROW_GUTTER}>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.Name")}
+              label={TranslateText("applications.Packages.Name")}
               name="Name"
               rules={[
                 {
@@ -110,7 +110,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.Price")}
+              label={TranslateText("applications.Packages.Price")}
               name="Price"
               rules={[
                 {
@@ -128,7 +128,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.MinValue")}
+              label={TranslateText("applications.Packages.MinValue")}
               name="MinValue"
               rules={[
                 {
@@ -146,7 +146,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.MaxValue")}
+              label={TranslateText("applications.Packages.MaxValue")}
               name="MaxValue"
               rules={[
                 {
@@ -164,7 +164,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={24}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.ValidDate")}
+              label={TranslateText("applications.Packages.ValidDate")}
               name="ValidDate"
               rules={[
                 {
@@ -178,7 +178,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.SortIndex")}
+              label={TranslateText("applications.Packages.SortIndex")}
               name="SortIndex"
             >
               <InputNumber />
@@ -186,7 +186,7 @@ const AddPackageForm = ({
           </Col>
           <Col xs={24} sm={24} md={12}>
             <Form.Item
-              label={WithStringTranslate("applications.Packages.Activate")}
+              label={TranslateText("applications.Packages.Activate")}
               name="Status"
               valuePropName={"checked"}
             >

@@ -12,7 +12,7 @@ import TermsOfUse from "./TermsOfUse";
 import General from "./general";
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import WithStringTranslate from "../../../../utils/translate";
+import TranslateText from "../../../../utils/translate";
 import { APP_NAME } from "../../../../configs/AppConfig";
 import { RouteComponentProps } from "react-router-dom";
 import {
@@ -159,7 +159,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const onFinish = (values: IMarketAppList) => {
     message
       .loading({
-        content: WithStringTranslate(LOADING),
+        content: TranslateText(LOADING),
         key: "updatable",
         duration: 1.5,
       })
@@ -256,10 +256,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             style={{ marginTop: 30 }}
             onChange={() => setEdit(false)}
           >
-            <Tabs.TabPane
-              tab={WithStringTranslate("applications.General")}
-              key="1"
-            >
+            <Tabs.TabPane tab={TranslateText("applications.General")} key="1">
               <General
                 app={app}
                 status={app.Status}
@@ -275,10 +272,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
                 getApp={getApp}
               />
             </Tabs.TabPane>
-            <Tabs.TabPane
-              tab={WithStringTranslate("applications.Packages")}
-              key="2"
-            >
+            <Tabs.TabPane tab={TranslateText("applications.Packages")} key="2">
               <Packages
                 packages={app.Packages ?? []}
                 showEditPackageModal={showEditPackageModal}
@@ -287,7 +281,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
               />
             </Tabs.TabPane>
             <Tabs.TabPane
-              tab={WithStringTranslate("applications.TermsOfUse")}
+              tab={TranslateText("applications.TermsOfUse")}
               key="3"
             >
               <TermsOfUse app={app ?? ""} getApp={getApp} />

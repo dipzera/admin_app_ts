@@ -11,7 +11,7 @@ import { getProfileInfo } from "./Account";
 import { DONE } from "../../constants/Messages";
 import { AuthService } from "../../api";
 import { ThunkResult } from "../reducers";
-import WithStringTranslate from "../../utils/translate";
+import TranslateText from "../../utils/translate";
 import { IAuthorizeUserRequest } from "../../api/types.request";
 import { SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
@@ -57,7 +57,7 @@ export const sendActivationCode = (
       const { ErrorMessage, ErrorCode } = data;
       if (ErrorCode === 0)
         message.success({
-          content: WithStringTranslate(DONE),
+          content: TranslateText(DONE),
           key: "updatable",
           duration: 2,
         });
@@ -86,8 +86,8 @@ export const authorizeUser = (
       } else if (ErrorCode === 108) {
         dispatch(hideLoading());
         Modal.confirm({
-          title: WithStringTranslate("auth.ConfirmRegistration.Title"),
-          content: WithStringTranslate("auth.ConfirmRegistration.Content"),
+          title: TranslateText("auth.ConfirmRegistration.Title"),
+          content: TranslateText("auth.ConfirmRegistration.Content"),
           onOk: () => {
             dispatch(sendActivationCode());
           },

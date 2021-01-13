@@ -4,7 +4,7 @@ import { onLocaleChange } from "./Theme";
 import { AppService } from "../../api";
 import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
-import WithStringTranslate from "../../utils/translate";
+import TranslateText from "../../utils/translate";
 import { DONE } from "../../constants/Messages";
 
 export const updateSettings = (payload: { [key: string]: any }) => ({
@@ -42,7 +42,7 @@ export const setProfileInfo = (accountInfo: IAccount): ThunkResult<void> => {
         if (data.ErrorCode === 0) {
           dispatch(getProfileInfo());
           message.success({
-            content: WithStringTranslate(DONE),
+            content: TranslateText(DONE),
             key: "updatable",
             duration: 1,
           });

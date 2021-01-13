@@ -15,11 +15,10 @@ interface UserViewProps {
 }
 
 export class CompanyView extends Component<UserViewProps> {
+  state = {};
   componentDidUpdate(prevProps: any) {
     if (this.props.data) {
-      Object.keys(this.props.data).map((key) => {
-        console.log(key);
-      });
+      Object.keys(this.props.data).map((key) => {});
     }
   }
   render() {
@@ -32,6 +31,7 @@ export class CompanyView extends Component<UserViewProps> {
         closable={false}
         visible={visible}
       >
+        {data && Object.keys(data).map((key: any) => {})}
         <div className="text-center mt-3">
           <Avatar size={80} src={data?.Logo} icon={<UserOutlined />} />
           <h3 className="mt-2 mb-0">{data?.JuridicalName}</h3>

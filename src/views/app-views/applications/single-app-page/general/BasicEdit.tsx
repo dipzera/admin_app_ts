@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
 import Flex from "../../../../../components/shared-components/Flex";
 import { IState } from "../../../../../redux/reducers";
-import WithStringTranslate from "../../../../../utils/translate";
+import TranslateText from "../../../../../utils/translate";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import { ILocale } from "../../../../../api/types.response";
 import { ITextArea } from "../TermsOfUse";
@@ -77,7 +77,7 @@ const BasicEdit = ({
     <>
       <Form.Item
         name="Name"
-        label={WithStringTranslate("applications.AppName")}
+        label={TranslateText("applications.AppName")}
         rules={rules.name}
       >
         <Input />
