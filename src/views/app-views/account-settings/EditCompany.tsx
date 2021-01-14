@@ -21,11 +21,9 @@ class CompanyForm extends Component {
 
   getCompanyInfo = async () => {
     return await new AppService().GetCompanyInfo().then((data) => {
-      if (data) {
-        if (data.ErrorCode === 0) {
-          this.setState({ ...data.Company });
-          this.formRef["current"]!.setFieldsValue(data.Company);
-        }
+      if (data && data.ErrorCode === 0) {
+        this.setState({ ...data.Company });
+        this.formRef["current"]!.setFieldsValue(data.Company);
       }
     });
   };

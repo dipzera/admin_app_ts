@@ -39,20 +39,20 @@ class CompanyView extends Component<IUserView> {
             <IntlMessage id="account.company.General" />
           </h6>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.IDNO" />{" "}
             </div>
             <span className=" text-dark">{data?.IDNO}</span>
           </div>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.JuridicalName" />{" "}
             </div>
             <span className=" text-dark">{data?.JuridicalName}</span>
           </div>
 
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.CommercialName" />{" "}
             </div>
             <span className=" text-dark">{data?.CommercialName}</span>
@@ -60,7 +60,7 @@ class CompanyView extends Component<IUserView> {
 
           {data?.VATCode && (
             <div className="p-1">
-              <div>
+              <div className="text-muted">
                 <IntlMessage id="account.company.VATCode" />
               </div>
               <span className=" text-dark">{data?.VATCode}</span>
@@ -72,19 +72,19 @@ class CompanyView extends Component<IUserView> {
             <IntlMessage id="account.company.Bank" />{" "}
           </h6>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.Bank" />
             </div>
             <span className=" text-dark">{data?.Bank}</span>
           </div>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.IBAN" />
             </div>
             <span className=" text-dark">{data?.IBAN}</span>
           </div>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.BIC" />
             </div>
             <span className=" text-dark">{data?.BIC}</span>
@@ -95,13 +95,13 @@ class CompanyView extends Component<IUserView> {
             <IntlMessage id="company.Address" />
           </h6>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.JuridicalAddress" />
             </div>
             <span className=" text-dark">{data?.JuridicalAddress}</span>
           </div>
           <div className="p-1">
-            <div>
+            <div className="text-muted">
               <IntlMessage id="account.company.OfficeAddress" />
             </div>
             <span className=" text-dark">{data?.OfficeAddress}</span>

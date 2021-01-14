@@ -225,10 +225,18 @@ class Utils {
         const image: any = document.createElement("img");
         image.src = event!.target!.result;
         image.onload = function () {
-          const { width, height } = image;
-          if (width === height) resolve();
-          else {
+          const isSquare = image.width === image.height;
+          const isJpgOrPng =
+            file.type === "image/jpeg" || file.type === "image/png";
+          if (!isSquare) {
             message.error("Image must be 1:1 format");
+          }
+          if (!isJpgOrPng) {
+            message.error("You can only upload JPG/PNG file!");
+          }
+          if (isSquare && isJpgOrPng) {
+            resolve();
+          } else {
             reject();
           }
         };

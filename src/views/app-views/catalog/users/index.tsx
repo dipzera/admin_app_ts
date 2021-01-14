@@ -45,7 +45,7 @@ interface StoreProps {
   ID?: number;
 }
 export class UserList extends Component<StoreProps> {
-  state: Readonly<UserListStateProps> = {
+  state: UserListStateProps = {
     users: [],
     selectedRows: [],
     selectedKeys: [],
