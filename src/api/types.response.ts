@@ -55,6 +55,7 @@ export interface ICompanyData {
   OfficeAddress?: string;
   PostalCode?: string;
   ShortName?: string;
+  PhoneNumber?: string;
   Status?: number;
   VATCode?: number;
   WebSite?: string;

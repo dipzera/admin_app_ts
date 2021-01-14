@@ -4,18 +4,18 @@ import { SearchOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import UserView from "./UserView";
 import { connect } from "react-redux";
 import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
-import { UserModalEdit } from "./UserModalEdit";
+import UserModalEdit from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
 import { AppService } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
-import "./table.scss";
 import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import TranslateText from "../../../../utils/translate";
 import { IUsers } from "../../../../api/types.response";
 import UserTable from "./UserTable";
+import "./table.scss";
 
 export enum status {
   inactive = 0,
@@ -29,7 +29,7 @@ interface UserListStateProps {
   selectedKeys: any;
   usersToSearch: IUsers[];
   userProfileVisible: boolean;
-  selectedUser: IUsers | null;
+  selectedUser: any;
   isHidden: string;
   editModalVisible: boolean;
   newUserModalVisible: boolean;
@@ -40,12 +40,12 @@ interface UserListStateProps {
 }
 
 interface StoreProps {
-  sendActivationCode?: any;
+  sendActivationCode: (ID: number) => void;
   CompanyID?: number;
   ID?: number;
 }
 export class UserList extends Component<StoreProps> {
-  state: UserListStateProps = {
+  state: Readonly<UserListStateProps> = {
     users: [],
     selectedRows: [],
     selectedKeys: [],
@@ -70,11 +70,11 @@ export class UserList extends Component<StoreProps> {
           (user) => user.ID !== this.props.ID
         );
         const evaluatedArray = utils.sortData(filteredUsers, "ID").reverse();
-        /*
-         * Create 2 different states for users data in order to be able,
-         * to search through them.
-         */
 
+        /*
+         Create 2 different states for users data in order to be able,
+         to search through them.
+         */
         if (this.mounted) {
           this.setState({
             usersToSearch: evaluatedArray,
@@ -272,7 +272,6 @@ export class UserList extends Component<StoreProps> {
           getUsersInfo={this.getUsersInfo}
         />
         <UserModalEdit
-          signOut={signOut}
           getUsersInfo={this.getUsersInfo}
           data={selectedUser}
           visible={this.state.editModalVisible}

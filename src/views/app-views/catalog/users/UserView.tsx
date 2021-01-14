@@ -11,10 +11,10 @@ import IntlMessage from "../../../../components/util-components/IntlMessage";
 interface UserViewProps {
   data: any;
   visible: boolean;
-  close: any;
+  close: () => void;
 }
 
-export class UserView extends Component<UserViewProps> {
+class UserView extends Component<UserViewProps> {
   render() {
     const { data, visible, close } = this.props;
     return (
@@ -53,12 +53,6 @@ export class UserView extends Component<UserViewProps> {
               <IntlMessage id="user.CompanyID" />: {data?.CompanyID}
             </span>
           </p>
-          {/* <p>
-            <CalendarOutlined />
-            <span className="ml-3 text-dark">
-              Born in {data?.personalInfo.birthday}
-            </span>
-          </p> */}
         </div>
         <div className="mt-5">
           <h6 className="text-muted text-uppercase mb-3">
@@ -74,42 +68,7 @@ export class UserView extends Component<UserViewProps> {
               {data?.Email ? data?.Email : "-"}
             </span>
           </p>
-          {/* <p>
-            <CompassOutlined />
-            <span className="ml-3 text-dark">
-              {data?.personalInfo.location}
-            </span>
-          </p> */}
         </div>
-        {/* <div className="mt-5">
-          <h6 className="text-muted text-uppercase mb-3">Social profiles</h6>
-          <p>
-            <FacebookOutlined />
-            <a href="/#" className="ml-3 text-dark">
-              {data?.personalInfo.facebook ? data?.personalInfo.facebook : "-"}
-            </a>
-          </p>
-          <p>
-            <TwitterOutlined />
-            <a href="/#" className="ml-3 text-dark">
-              {data?.personalInfo.twitter ? data?.personalInfo.twitter : "-"}
-            </a>
-          </p>
-          <p>
-            <InstagramOutlined />
-            <a href="/#" className="ml-3 text-dark">
-              {data?.personalInfo.instagram
-                ? data?.personalInfo.instagram
-                : "-"}
-            </a>
-          </p>
-          <p>
-            <GlobalOutlined />
-            <a href="/#" className="ml-3 text-dark">
-              {data?.personalInfo.site ? data?.personalInfo.site : "-"}
-            </a>
-          </p>
-        </div> */}
       </Drawer>
     );
   }

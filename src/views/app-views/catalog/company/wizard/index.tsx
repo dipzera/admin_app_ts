@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Steps } from "antd";
-import { PageHeaderAlt } from "../../../../../components/layout-components/PageHeaderAlt";
-import Flex from "../../../../../components/shared-components/Flex";
 import CompanyFormWizard from "./CompanyFormWizard";
 import UserFormWizard from "./UserFormWizard";
 import { IWizard, WizardContext } from "./WizardContext";

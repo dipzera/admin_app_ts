@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Input, Row, Col, Form, Modal, message, Select, Empty } from "antd";
+import { Input, Row, Col, Form, Modal, message } from "antd";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
 import { AppService } from "../../../../api";
 import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 import { IAccount } from "../../../../redux/reducers/Account";
-export const UserModalEdit = ({
+import { IUsers } from "../../../../api/types.response";
+interface IUserModalEdit {
+  data: IUsers;
+  visible: boolean;
+  onCancel: () => void;
+  getUsersInfo: () => Promise<void>;
+}
+const UserModalEdit = ({
   data,
   visible,
   onCancel,
   getUsersInfo,
-}: any) => {
+}: IUserModalEdit) => {
   const [form] = Form.useForm();
 
   /*  Destroy initialValues of form after Modal is closed */
@@ -29,16 +36,14 @@ export const UserModalEdit = ({
         ...values,
       })
       .then((data) => {
-        if (data) {
-          if (data.ErrorCode === 0) {
-            getUsersInfo().then(() =>
-              message.success({
-                content: TranslateText(DONE),
-                key: "updatable",
-                duration: 1.5,
-              })
-            );
-          }
+        if (data && data.ErrorCode === 0) {
+          getUsersInfo().then(() =>
+            message.success({
+              content: TranslateText(DONE),
+              key: "updatable",
+              duration: 1.5,
+            })
+          );
         }
       });
   };
@@ -131,3 +136,5 @@ export const UserModalEdit = ({
     </Modal>
   );
 };
+
+export default UserModalEdit;

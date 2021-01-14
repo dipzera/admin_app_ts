@@ -49,7 +49,9 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
             <img
               src={newsData.Photo}
               alt="Article"
-              style={{ maxWidth: "100%" }}
+              style={{
+                maxWidth: "100%",
+              }}
             />
           )}
         </div>

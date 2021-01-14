@@ -13,7 +13,7 @@ import {
 import UserView from "./CompanyView";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import { connect } from "react-redux";
-import { CompanyModalEdit } from "./CompanyModalEdit";
+import CompanyModalEdit from "./CompanyModalEdit";
 import { ColumnsType } from "antd/lib/table";
 import { Link } from "react-router-dom";
 import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
@@ -39,7 +39,7 @@ interface CompanyStateProps<T> {
   selectedKeys: any;
   companiesToSearch: T;
   userProfileVisible: boolean;
-  selectedUser: ICompanyData | null;
+  selectedUser: ICompanyData;
   isHidden: string;
   editModalVisible: boolean;
   newUserModalVisible: boolean;

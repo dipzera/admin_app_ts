@@ -8,12 +8,18 @@ import { ICompanyData } from "../../../../api/types.response";
 import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 
-export const CompanyModalEdit = ({
+interface ICompanyModalEdit {
+  data: ICompanyData;
+  visible: boolean;
+  onCancel: () => void;
+  getCompanyList: () => Promise<void>;
+}
+const CompanyModalEdit = ({
   data,
   visible,
   onCancel,
   getCompanyList,
-}: any) => {
+}: ICompanyModalEdit) => {
   const [form] = Form.useForm();
 
   const [mask, setMask] = useState<any>();
@@ -299,3 +305,5 @@ export const CompanyModalEdit = ({
     </Modal>
   );
 };
+
+export default CompanyModalEdit;

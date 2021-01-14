@@ -31,7 +31,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
     }
   }, [news]);
 
-  const onUploadAvatar = (info: UploadChangeParam) => {
+  const onUploadAvatar = (info: any) => {
     if (info.file.status === "uploading") {
       message.loading({
         content: TranslateText(UPLOADING),
@@ -74,6 +74,8 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+
+  var isSquare: any;
   return (
     <Modal
       visible={visible}
@@ -100,7 +102,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
             className="avatar-uploader"
             listType="picture-card"
             customRequest={Utils.dummyRequest}
-            beforeUpload={(info) => Utils.beforeUpload(info)}
+            beforeUpload={Utils.beforeUploadArticle}
           >
             {Photo ? (
               <img src={Photo} alt="News" style={{ width: "100%" }} />
