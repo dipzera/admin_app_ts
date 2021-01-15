@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+// @ts-ignore
+import { Draggable } from "react-drag-reorder";
 import { Button, Card, Col, Empty, Menu, Row, Tag } from "antd";
 import Flex from "../../../../components/shared-components/Flex";
 import {
@@ -12,7 +14,6 @@ import EllipsisDropdown from "../../../../components/shared-components/EllipsisD
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { IPackages } from "../../../../api/types.response";
-// @ts-ignore
 
 const ItemHeader = ({ packages }: { packages: IPackages }) => (
   <>
@@ -89,95 +90,25 @@ const CardItem = ({
   packages,
   showEditPackageModal,
   deletePackage,
-  index,
 }: {
   packages: IPackages;
   showEditPackageModal: (packages: IPackages) => void;
   deletePackage: (ID: number) => void;
-  index: number;
 }) => {
-  useEffect(() => {
-    var dragged: any;
-    var dropZone: any;
-    document.addEventListener("drag", function (event) {}, false);
-    document.addEventListener(
-      "dragstart",
-      function (event) {
-        dragged = event.target;
-        // @ts-ignore
-        dropZone = event.target.parentNode;
-        // @ts-ignore
-        dragged.style.opacity = 0.1;
-      },
-      false
-    );
-
-    document.addEventListener(
-      "dragend",
-      function (event) {
-        // @ts-ignore
-        event.target.style.opacity = "";
-      },
-      false
-    );
-
-    document.addEventListener(
-      "dragover",
-      function (event) {
-        event.preventDefault();
-      },
-      false
-    );
-
-    document.addEventListener("dragenter", function (event) {}, false);
-
-    document.addEventListener("dragleave", function (event) {}, false);
-
-    document.addEventListener("drop", function (event) {
-      event.preventDefault();
-      const current = event.target;
-      // @ts-ignore
-      if (current.className == "dropzone") {
-        // @ts-ignore
-        dropZone.appendChild(current.querySelectorAll(".draggable")[0]);
-        // @ts-ignore
-        current.appendChild(dragged);
-      }
-    });
-  }, []);
   return (
-    <div
-      className="dropzone"
-      data-index={(index + 1).toString()}
-      style={{
-        background: "transparent",
-        padding: "30px",
-        border: "1px dashed #ccc",
-        borderRadius: "5px",
-      }}
-    >
-      <div
-        className="draggable"
-        draggable="true"
-        data-index={packages.SortIndex.toString()}
-        onDragStart={(event) => event.dataTransfer.setData("text/plain", "")}
-        style={{ cursor: "grab" }}
-      >
-        <Card>
-          <Flex alignItems="center" justifyContent="between">
-            <ItemHeader packages={packages} />
-            <ItemAction
-              deletePackage={deletePackage}
-              packages={packages}
-              showEditPackageModal={showEditPackageModal}
-            />
-          </Flex>
-          <div className="mt-2">
-            <ItemFooter packages={packages} />
-          </div>
-        </Card>
+    <Card className="mx-2">
+      <Flex alignItems="center" justifyContent="between">
+        <ItemHeader packages={packages} />
+        <ItemAction
+          deletePackage={deletePackage}
+          packages={packages}
+          showEditPackageModal={showEditPackageModal}
+        />
+      </Flex>
+      <div className="mt-2">
+        <ItemFooter packages={packages} />
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -216,26 +147,33 @@ const Packages = ({
         </div>
       </Flex>
       <div className="my-4 container-fluid">
-        <Row gutter={16}>
+        <Draggable>
           {sortedPackages.length > 0 ? (
             sortedPackages.map((elm, index) => (
-              <Col xs={24} sm={24} lg={8} xl={8} xxl={6} key={elm["ID"]}>
-                <CardItem
-                  index={index}
-                  packages={elm}
-                  showEditPackageModal={showEditPackageModal}
-                  deletePackage={deletePackage}
-                />
-              </Col>
+              <CardItem
+                packages={elm}
+                showEditPackageModal={showEditPackageModal}
+                deletePackage={deletePackage}
+              />
             ))
           ) : (
             <Flex className="w-100" justifyContent="center">
               <Empty />
             </Flex>
           )}
-        </Row>
+        </Draggable>
       </div>
     </>
   );
 };
 export default Packages;
+
+//<Col
+//xs={24}
+//sm={24}
+//lg={8}
+//xl={8}
+//xxl={6}
+//key={elm["ID"]}
+//className="slide"
+//>
