@@ -1,5 +1,6 @@
 import { message } from "antd";
 import { RcFile } from "antd/es/upload/interface";
+// @ts-ignore
 import { JSEncrypt } from "jsencrypt";
 class Utils {
   /**
