@@ -54,11 +54,13 @@ const EditPackageForm = ({
       ValidFrom,
       ValidTo,
     };
-    return new AppService().UpdateMarketAppPackage(AppPackage).then((data) => {
-      if (data && data.ErrorCode === 0) {
-        getApp();
-      }
-    });
+    return new AppService()
+      .UpdateMarketAppPackage([AppPackage])
+      .then((data) => {
+        if (data && data.ErrorCode === 0) {
+          getApp();
+        }
+      });
   };
 
   const onOk = () => {

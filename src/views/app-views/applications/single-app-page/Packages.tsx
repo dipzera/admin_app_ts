@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  ReactText,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 // @ts-ignore
-import { Draggable } from "react-drag-reorder";
 import { Button, Card, Col, Empty, Menu, Row, Tag } from "antd";
 import Flex from "../../../../components/shared-components/Flex";
 import {
@@ -14,6 +19,10 @@ import EllipsisDropdown from "../../../../components/shared-components/EllipsisD
 import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { IPackages } from "../../../../api/types.response";
+// @ts-ignore
+import { MuuriComponent } from "muuri-react";
+import { update } from "lodash";
+import { AppService } from "../../../../api";
 
 const ItemHeader = ({ packages }: { packages: IPackages }) => (
   <>
@@ -96,7 +105,7 @@ const CardItem = ({
   deletePackage: (ID: number) => void;
 }) => {
   return (
-    <Card className="mx-2">
+    <Card style={{ cursor: "grab" }}>
       <Flex alignItems="center" justifyContent="between">
         <ItemHeader packages={packages} />
         <ItemAction
@@ -117,16 +126,37 @@ const Packages = ({
   showEditPackageModal,
   deletePackage,
   showAddPackageModal,
+  getMarketApps,
 }: {
   packages: IPackages[];
   showEditPackageModal: (packages: IPackages) => void;
   deletePackage: (ID: number) => void;
   showAddPackageModal: () => void;
+  getMarketApps: () => void;
 }) => {
-  const [sortedPackages, setSortedPackages] = useState<IPackages[]>(packages);
-  useEffect(() => {
-    setSortedPackages(Utils.sortData(packages, "SortIndex"));
-  }, [packages]);
+  const children = packages.map(
+    // @ts-ignore
+    (elm: any, index) => (
+      <Col
+        xs={24}
+        sm={24}
+        lg={8}
+        xl={8}
+        xxl={6}
+        className="mb-3 mr-5"
+        style={{ maxWidth: "250px", maxHeight: "250px" }}
+        key={index + 1}
+        // @ts-ignore
+        id={elm["SortIndex"]}
+      >
+        <CardItem
+          packages={elm}
+          showEditPackageModal={showEditPackageModal}
+          deletePackage={deletePackage}
+        />
+      </Col>
+    )
+  );
   return (
     <>
       <Flex justifyContent="between" alignItems="center" className="py-2">
@@ -146,34 +176,31 @@ const Packages = ({
           </Button>
         </div>
       </Flex>
-      <div className="my-4 container-fluid">
-        <Draggable>
-          {sortedPackages.length > 0 ? (
-            sortedPackages.map((elm, index) => (
-              <CardItem
-                packages={elm}
-                showEditPackageModal={showEditPackageModal}
-                deletePackage={deletePackage}
-              />
-            ))
-          ) : (
-            <Flex className="w-100" justifyContent="center">
-              <Empty />
-            </Flex>
-          )}
-        </Draggable>
+      <div className="container-fluid">
+        <MuuriComponent
+          dragEnabled
+          sort={useCallback((a, b) => {
+            return a.id - b.id;
+          }, [])}
+          dragSortPredicate={{
+            action: "swap",
+          }}
+          onDragEnd={(item) => {
+            const grid = item.getGrid();
+            const items = grid.getItems();
+            const keys = items.map((item) => item.getKey());
+            for (let i = 0; i < packages.length; i++) {
+              // @ts-ignore
+              packages[i].SortIndex = keys[i];
+            }
+            console.log({ packages, keys });
+            //return new AppService().UpdateMarketAppPackage(newArr);
+          }}
+        >
+          {children}
+        </MuuriComponent>
       </div>
     </>
   );
 };
 export default Packages;
-
-//<Col
-//xs={24}
-//sm={24}
-//lg={8}
-//xl={8}
-//xxl={6}
-//key={elm["ID"]}
-//className="slide"
-//>

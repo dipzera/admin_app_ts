@@ -188,10 +188,10 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   };
 
   if (!app) {
-    return <div>No app found</div>;
+    return <Loading cover="content" />;
   }
   if (loading) {
-    return <Loading />;
+    return <Loading cover="content" />;
   }
 
   return (
@@ -275,6 +275,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             <Tabs.TabPane tab={TranslateText("applications.Packages")} key="2">
               <Packages
                 packages={app.Packages ?? []}
+                getMarketApps={getApp}
                 showEditPackageModal={showEditPackageModal}
                 deletePackage={deletePackage}
                 showAddPackageModal={showAddPackageModal}

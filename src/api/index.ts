@@ -282,9 +282,9 @@ export class AppService extends HttpClient {
     Package: ICreateMarketAppPackageRequest
   ) => this.instance.post("/CreateMarketAppPackage", Package);
 
-  public UpdateMarketAppPackage = async (AppPackage: IPackages) =>
+  public UpdateMarketAppPackage = async (AppPackages: IPackages[]) =>
     this.instance.post<IUpdatePackageResponse>("/UpdateMarketAppPackage", {
-      AppPackage,
+      AppPackages,
     });
 
   public DeleteMarketAppPackage = async (ID: number) =>
