@@ -28,7 +28,6 @@ interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
 
 const SingleAppPage = ({ match }: ISingleAppPage) => {
   const { appID } = match.params;
-  const { confirm } = Modal;
   const [app, setApp] = useState<Partial<IMarketAppList>>();
   const [loading, setLoading] = useState<boolean>(true);
   const getApp = async () =>
@@ -42,28 +41,20 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       }
     });
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      getApp().then((app) => {
-        try {
-          setShortDesc(
-            JSON.parse(window.atob(app!.ShortDescription!.toString()))
-          );
-        } catch {
-          setShortDesc({ en: "", ru: "", ro: "" });
-        }
-        try {
-          setLongDesc(
-            JSON.parse(window.atob(app!.LongDescription!.toString()))
-          );
-        } catch {
-          setLongDesc({ en: "", ru: "", ro: "" });
-        }
-      });
-    }
-    return () => {
-      mounted = false;
-    };
+    getApp().then((app) => {
+      try {
+        setShortDesc(
+          JSON.parse(window.atob(app!.ShortDescription!.toString()))
+        );
+      } catch {
+        setShortDesc({ en: "", ru: "", ro: "" });
+      }
+      try {
+        setLongDesc(JSON.parse(window.atob(app!.LongDescription!.toString())));
+      } catch {
+        setLongDesc({ en: "", ru: "", ro: "" });
+      }
+    });
   }, []);
   const [edit, setEdit] = useState<boolean>(false);
   const [selectedPackage, setSelectedPackage] = useState<Partial<IPackages>>(
@@ -93,7 +84,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   };
 
   const deletePackage = (ID: number) => {
-    confirm({
+    Modal.confirm({
       title: DELETE_PACKAGE_MSG(ID),
       onOk: async () => {
         return await new AppService()

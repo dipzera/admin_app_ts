@@ -1,20 +1,19 @@
 import * as React from "react";
 import { useState } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Menu, Dropdown, Empty, Tooltip } from "antd";
+import { Menu, Dropdown, Tooltip } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
-import { AppNavGrid } from "./AppNavGrid";
-import { useSelector } from "react-redux";
+import AppNavGrid from "./AppNavGrid";
 import Loading from "../../../components/shared-components/Loading";
-import { IState } from "../../../redux/reducers";
 import { IMarketAppList } from "../../../api/types.response";
 import { AppService } from "../../../api";
 const AppStoreNav = () => {
-  const loading = useSelector((state: IState) => state["auth"].loading);
+  const [loading, setLoading] = useState<boolean>(true);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
   const renderApps = async () =>
     await new AppService().GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
+        setLoading(false);
         setApps(data.MarketAppList);
       }
     });
@@ -30,7 +29,6 @@ const AppStoreNav = () => {
       ) : (
         <AppNavGrid apps={apps ?? []} />
       )}
-      {apps!.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
     </Menu>
   );
 

@@ -1,12 +1,6 @@
-import React, {
-  ReactText,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback } from "react";
 // @ts-ignore
-import { Button, Card, Col, Empty, Menu, Row, Tag } from "antd";
+import { Button, Card, Col, Menu, Row, Tag } from "antd";
 import Flex from "../../../../components/shared-components/Flex";
 import {
   CheckCircleOutlined,
@@ -16,13 +10,10 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import Utils from "../../../../utils";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { IPackages } from "../../../../api/types.response";
 // @ts-ignore
 import { MuuriComponent } from "muuri-react";
-import { update } from "lodash";
-import { AppService } from "../../../../api";
 
 const ItemHeader = ({ packages }: { packages: IPackages }) => (
   <>
@@ -145,7 +136,7 @@ const Packages = ({
         xxl={6}
         className="mb-3 mr-5"
         style={{ maxWidth: "250px", maxHeight: "250px" }}
-        key={index + 1}
+        key={elm["ID"]}
         // @ts-ignore
         id={elm["SortIndex"]}
       >
