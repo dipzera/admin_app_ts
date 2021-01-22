@@ -1,6 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 // @ts-ignore
-import { Button, Card, Col, Menu, Row, Tag } from "antd";
+import { Button, Card, Col, Menu, Tag, Tooltip } from "antd";
+import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
 import {
   CheckCircleOutlined,
@@ -11,9 +12,11 @@ import {
 } from "@ant-design/icons";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { IPackages } from "../../../../api/types.response";
+import { IMarketAppList, IPackages } from "../../../../api/types.response";
 // @ts-ignore
 import { MuuriComponent } from "muuri-react";
+import Utils from "../../../../utils";
+import { AppService } from "../../../../api";
 
 const ItemHeader = ({ packages }: { packages: IPackages }) => (
   <>
@@ -123,9 +126,14 @@ const Packages = ({
   showEditPackageModal: (packages: IPackages) => void;
   deletePackage: (ID: number) => void;
   showAddPackageModal: () => void;
-  getMarketApps: () => void;
+  getMarketApps: () => Promise<IMarketAppList | undefined>;
 }) => {
-  const children = packages.map(
+  const [pckgs, setPckgs] = useState<any>(
+    Utils.sortData(packages, "SortIndex")
+  );
+  const [swappable, setSwappable] = useState<boolean>(false);
+
+  const children = pckgs.map(
     // @ts-ignore
     (elm: any, index) => (
       <Col
@@ -134,11 +142,10 @@ const Packages = ({
         lg={8}
         xl={8}
         xxl={6}
-        className="mb-3 mr-5"
-        style={{ maxWidth: "250px", maxHeight: "250px" }}
-        key={elm["ID"]}
-        // @ts-ignore
-        id={elm["SortIndex"]}
+        className="mb-4 mr-4"
+        style={{ minWidth: "300px", maxHeight: "250px" }}
+        key={elm.SortIndex}
+        id={index + 1}
       >
         <CardItem
           packages={elm}
@@ -155,9 +162,31 @@ const Packages = ({
           <IntlMessage id="applications.Packages" />
         </h2>
         <div>
+          <Tooltip title="Discard">
+            <Button
+              className={swappable ? "mr-3" : "d-none"}
+              onClick={() => setSwappable(false)}
+              danger
+            >
+              <CloseOutlined />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Confirm">
+            <Button
+              type="ghost"
+              className={swappable ? "" : "d-none"}
+              onClick={() =>
+                new AppService().UpdateMarketAppPackage(pckgs).then((data) => {
+                  if (data) window.location.reload();
+                })
+              }
+            >
+              <CheckOutlined />
+            </Button>
+          </Tooltip>
           <Button
             type="primary"
-            className="ml-2 "
+            className="ml-3"
             onClick={() => showAddPackageModal()}
           >
             <PlusOutlined />{" "}
@@ -170,22 +199,16 @@ const Packages = ({
       <div className="container-fluid">
         <MuuriComponent
           dragEnabled
-          sort={useCallback((a, b) => {
-            return a.id - b.id;
-          }, [])}
-          dragSortPredicate={{
-            action: "swap",
-          }}
+          dragSortPredicate={{ action: "swap" }}
           onDragEnd={(item) => {
+            setSwappable(true);
             const grid = item.getGrid();
             const items = grid.getItems();
             const keys = items.map((item) => item.getKey());
-            for (let i = 0; i < packages.length; i++) {
+            for (let i = 0; i < pckgs.length; i++) {
               // @ts-ignore
-              packages[i].SortIndex = keys[i];
+              pckgs[i].SortIndex = keys[i];
             }
-            console.log({ packages, keys });
-            //return new AppService().UpdateMarketAppPackage(newArr);
           }}
         >
           {children}
