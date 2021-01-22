@@ -1,5 +1,6 @@
-import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
+import { Route } from "react-router-dom";
+import { Button, Form, message, Modal, Tabs } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
@@ -186,7 +187,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   }
 
   return (
-    <>
+    <Route>
       <AddPackageForm
         getApp={getApp}
         packages={app.Packages ?? []}
@@ -281,7 +282,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           </Tabs>
         </div>
       </Form>
-    </>
+    </Route>
   );
 };
 export default SingleAppPage;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { Menu, Dropdown, Tooltip } from "antd";

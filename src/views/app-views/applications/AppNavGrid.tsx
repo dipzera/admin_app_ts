@@ -3,12 +3,12 @@ import { Menu } from "antd";
 import { Avatar } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
-import { NavLink } from "react-router-dom";
+import { NavLink, RouteComponentProps, withRouter } from "react-router-dom";
 import { MenuItemProps } from "antd/lib/menu/MenuItem";
 import { IMarketAppList } from "../../../api/types.response";
 import "./applications.scss";
 
-interface IAppNavGrid extends MenuItemProps {
+interface IAppNavGrid extends MenuItemProps, RouteComponentProps {
   apps: IMarketAppList[];
 }
 const AppNavGrid = (props: IAppNavGrid) => {
@@ -33,4 +33,4 @@ const AppNavGrid = (props: IAppNavGrid) => {
     </>
   );
 };
-export default AppNavGrid;
+export default withRouter(AppNavGrid);

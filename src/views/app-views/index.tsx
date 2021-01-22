@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Loading from "../../components/shared-components/Loading";
 import { APP_PREFIX_PATH } from "../../configs/AppConfig";
+import SingleAppPage from "./applications/single-app-page";
 
 const AppViews = () => {
   return (
@@ -26,7 +27,9 @@ const AppViews = () => {
         />
         <Route
           path={`${APP_PREFIX_PATH}/applications/:appID`}
-          component={lazy(() => import(`./applications/single-app-page`))}
+          render={(props) => (
+            <SingleAppPage {...props} key={props.match.params.appID} />
+          )}
         />
         <Route
           path={`${APP_PREFIX_PATH}/catalog/companies`}
