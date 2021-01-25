@@ -28,11 +28,12 @@ import Loading from "../../../../components/shared-components/Loading";
 interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
 
 const SingleAppPage = ({ match }: ISingleAppPage) => {
+  const instance = new AppService();
   const { appID } = match.params;
   const [app, setApp] = useState<Partial<IMarketAppList>>();
   const [loading, setLoading] = useState<boolean>(true);
   const getApp = async () =>
-    await new AppService().GetMarketAppList().then((data) => {
+    await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
         const currentApp = data.MarketAppList.find((app) => app.ID === +appID);
@@ -56,6 +57,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         setLongDesc({ en: "", ru: "", ro: "" });
       }
     });
+    return () => instance._source.cancel();
   }, []);
   const [edit, setEdit] = useState<boolean>(false);
   const [selectedPackage, setSelectedPackage] = useState<Partial<IPackages>>(
@@ -88,13 +90,11 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
     Modal.confirm({
       title: DELETE_PACKAGE_MSG(ID),
       onOk: async () => {
-        return await new AppService()
-          .DeleteMarketAppPackage(ID)
-          .then((data) => {
-            if (data && data.ErrorCode === 0) {
-              getApp();
-            }
-          });
+        return instance.DeleteMarketAppPackage(ID).then((data) => {
+          if (data && data.ErrorCode === 0) {
+            getApp();
+          }
+        });
       },
     });
   };
@@ -129,7 +129,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           TermsOfUse,
           LongDescription,
         } = app as IMarketAppList;
-        return new AppService()
+        return instance
           .UpdateMarketApp({
             ID: +appID,
             LongDescription,
@@ -156,7 +156,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         duration: 1.5,
       })
       .then(async () => {
-        return await new AppService()
+        return await instance
           .UpdateMarketApp({
             ID: +appID,
             TermsOfUse: app!.TermsOfUse ?? "",

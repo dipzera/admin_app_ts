@@ -62,12 +62,13 @@ export class CompanyList extends Component {
     loading: true,
   };
 
-  mounted = true;
+  private AppInstance = new AppService();
+  private AuthInstance = new AuthService();
 
   getCompanyList = async () => {
-    return await new AppService().GetCompanyList().then((data) => {
-      this.setState({ loading: false });
+    return await this.AppInstance.GetCompanyList().then((data) => {
       if (data && data.ErrorCode === 0) {
+        this.setState({ loading: false });
         const evaluatedCompanies = utils
           .sortData(data.CompanyList, "ID")
           .reverse();
@@ -86,11 +87,12 @@ export class CompanyList extends Component {
   };
 
   componentDidMount() {
-    if (this.mounted) this.getCompanyList();
+    this.getCompanyList();
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this.AppInstance._source.cancel();
+    this.AuthInstance._source.cancel();
   }
 
   showUserProfile = (userInfo: ICompanyData) => {
@@ -164,15 +166,13 @@ export class CompanyList extends Component {
   };
 
   handleUserStatus = (userId: number, status: number) => {
-    return new AppService().ChangeCompanyStatus(userId, status);
+    return this.AppInstance.ChangeCompanyStatus(userId, status);
   };
 
   getManagedToken = async (CompanyID: number) => {
-    return await new AuthService()
-      .GetManagedToken(CompanyID)
-      .then((data: any) => {
-        if (data && data.ErrorCode === 0) return data.Token;
-      });
+    return await this.AuthInstance.GetManagedToken(CompanyID).then((data) => {
+      if (data && data.ErrorCode === 0) return data.Token;
+    });
   };
 
   dropdownMenu = (row: ICompanyData) => (

@@ -71,6 +71,7 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
   );
 };
 const News = () => {
+  const instance = new AppService();
   const [news, setNews] = useState<INewsList[]>([]);
   const [isCreateVisible, setCreateVisible] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
@@ -79,32 +80,22 @@ const News = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
   const getApps = async () =>
-    await new AppService().GetMarketAppList().then((data) => {
-      if (data && data.ErrorCode === 0) {
-        setApps(data.MarketAppList);
-      }
+    await instance.GetMarketAppList().then((data) => {
+      if (data && data.ErrorCode === 0) setApps(data.MarketAppList);
     });
   const getNews = async (ProductType = 0) => {
-    return new AppService()
-      .GetNews(ProductType)
-      .then((data) => {
-        setLoading(false);
-        if (data) {
-          if (data.ErrorCode === 0) {
-            setNews(data.NewsList);
-          }
-        }
-      })
-      .then(() => {
-        getApps();
-      });
+    return instance.GetNews(ProductType).then((data) => {
+      setLoading(false);
+      if (data && data.ErrorCode === 0) setNews(data.NewsList);
+    });
   };
   useEffect(() => {
-    let mounted = true;
-    if (mounted) getNews();
-    return () => {
-      mounted = false;
-    };
+    getNews();
+    return () => instance._source.cancel();
+  }, []);
+  useEffect(() => {
+    getApps();
+    return () => instance._source.cancel();
   }, []);
   const onSelect = (AppType: number) => {
     setAppType(AppType);

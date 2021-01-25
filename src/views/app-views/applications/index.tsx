@@ -74,21 +74,19 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
 };
 
 const AppList = () => {
+  const instance = new AppService();
   const [loading, setLoading] = useState<boolean>(true);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
   const getApplications = () =>
-    new AppService().GetMarketAppList().then((data) => {
+    instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
         setApps(data.MarketAppList);
       }
     });
   useEffect(() => {
-    let mounted = true;
-    if (mounted) getApplications();
-    return () => {
-      mounted = false;
-    };
+    getApplications();
+    return () => instance._source.cancel();
   }, []);
 
   if (loading) {

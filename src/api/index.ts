@@ -1,5 +1,5 @@
 import { message } from "antd";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse, CancelTokenSource } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
 import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
 import { IAccount } from "../redux/reducers/Account";
@@ -50,12 +50,14 @@ declare module "axios" {
 class HttpClient {
   public readonly instance: AxiosInstance;
   public _token: string;
+  public _source: CancelTokenSource;
 
   public constructor(baseURL: string) {
     this.instance = axios.create({
       baseURL,
     });
     this._token = store.getState().auth.token;
+    this._source = axios.CancelToken.source();
     this._initializeResponseInterceptor();
     this._initializeRequestInterceptor();
   }

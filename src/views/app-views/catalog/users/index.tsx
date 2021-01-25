@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { signOut, sendActivationCode } from "../../../../redux/actions/Auth";
 import UserModalEdit from "./UserModalEdit";
 import { UserModalAdd } from "./UserModalAdd";
-import { AppService } from "../../../../api";
+import { AppService, AuthService } from "../../../../api";
 import Flex from "../../../../components/shared-components/Flex";
 import utils from "../../../../utils";
 import { IState } from "../../../../redux/reducers";
@@ -61,11 +61,12 @@ export class UserList extends Component<StoreProps> {
     status: null,
   };
 
-  private mounted = true;
+  private AppInstance = new AppService();
+  private AuthInstance = new AuthService();
   getUsersInfo = async () => {
-    return await new AppService().GetAllUsers().then((data) => {
-      this.setState({ loading: false });
+    return await this.AppInstance.GetAllUsers().then((data) => {
       if (data && data.ErrorCode === 0) {
+        this.setState({ loading: false });
         const filteredUsers = data.Users.filter(
           (user) => user.ID !== this.props.ID
         );
@@ -75,12 +76,10 @@ export class UserList extends Component<StoreProps> {
          Create 2 different states for users data in order to be able,
          to search through them.
          */
-        if (this.mounted) {
-          this.setState({
-            usersToSearch: evaluatedArray,
-            users: evaluatedArray,
-          });
-        }
+        this.setState({
+          usersToSearch: evaluatedArray,
+          users: evaluatedArray,
+        });
       }
     });
   };
@@ -90,7 +89,8 @@ export class UserList extends Component<StoreProps> {
   }
 
   componentWillUnmount() {
-    this.mounted = false;
+    this.AppInstance._source.cancel();
+    this.AuthInstance._source.cancel();
   }
   showUserProfile = (userInfo: IUsers) => {
     this.setState({
@@ -157,7 +157,7 @@ export class UserList extends Component<StoreProps> {
     });
   };
   handleUserStatus = async (userId: number, status: number) => {
-    return await new AppService().ChangeUserStatus(userId, status);
+    return await this.AppInstance.ChangeUserStatus(userId, status);
   };
 
   render() {

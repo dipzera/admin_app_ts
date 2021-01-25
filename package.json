@@ -1,7 +1,7 @@
 {
   "name": "admin-portal-app",
   "version": "1.1.0",
-  "homepage": "/adminportal",
+  "homepage": "/testadminportal",
   "private": true,
   "scripts": {
     "start": "react-scripts start",
