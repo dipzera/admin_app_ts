@@ -61,7 +61,7 @@ class CompanyForm extends Component {
         key,
       });
       setTimeout(async () => {
-        this.updateCompany({ ...CompanyData, ...values });
+        this.updateCompany(values);
       }, 1000);
     };
 
@@ -81,15 +81,31 @@ class CompanyForm extends Component {
       if (info.file.status === "done") {
         Utils.getBase64(info.file.originFileObj, async (imageUrl: string) => {
           await this.updateCompany({
-            ...CompanyData,
             Logo: imageUrl,
+          }).then(() => {
+            this.setState({
+              Company: { ...this.state.Company, Logo: imageUrl },
+            });
           });
         });
       }
     };
 
     const onRemoveAvater = async () => {
-      await this.updateCompany({ ...this.state, Logo: "" }).then(() => {
+      if (!this.state.Company.Logo) {
+        return;
+      }
+      const key = "updatable";
+      message.loading({
+        content: TranslateText(UPLOADING),
+        key,
+      });
+      await this.updateCompany({ Logo: "" }).then(() => {
+        message.success({
+          content: TranslateText(DONE),
+          key,
+          duration: 1,
+        });
         this.setState({ Company: { ...this.state.Company, Logo: "" } });
       });
     };
