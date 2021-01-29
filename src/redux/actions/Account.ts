@@ -38,15 +38,13 @@ export const getProfileInfo = (): ThunkResult<void> => {
 export const setProfileInfo = (accountInfo: IAccount): ThunkResult<void> => {
   return async (dispatch) => {
     return new AppService().UpdateUser(accountInfo).then((data) => {
-      if (data) {
-        if (data.ErrorCode === 0) {
-          dispatch(getProfileInfo());
-          message.success({
-            content: TranslateText(DONE),
-            key: "updatable",
-            duration: 1,
-          });
-        }
+      if (data && data.ErrorCode === 0) {
+        dispatch(getProfileInfo());
+        message.success({
+          content: TranslateText(DONE),
+          key: "updatable",
+          duration: 1,
+        });
       }
     });
   };

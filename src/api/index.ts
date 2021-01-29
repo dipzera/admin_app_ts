@@ -73,7 +73,7 @@ class HttpClient {
       (config) => {
         console.log(config);
         /*
-         * To avoid passing the Token as query a param everytime,
+         * To avoid passing the Token as a param everytime we wanna make a request,
          * pass it here by default
          */
         if (config.method === "get") {
@@ -84,7 +84,7 @@ class HttpClient {
         }
 
         /*
-         * To avoid passing the Token inside body everytime,
+         * To avoid passing the Token inside body everytime we wanna make a request,
          * pass it here by default
          */
         if (config.method === "post") {

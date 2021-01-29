@@ -14,15 +14,18 @@ import TranslateText from "../../../utils/translate";
 import { ICompanyData } from "../../../api/types.response";
 import { FormInstance } from "antd/lib/form";
 import { UploadChangeParam } from "antd/lib/upload";
+import Loading from "../../../components/shared-components/Loading";
 
 class CompanyForm extends Component {
-  state = {} as ICompanyData;
+  state = { loading: true, Company: {} as ICompanyData };
   formRef = React.createRef<FormInstance>();
 
   getCompanyInfo = async () => {
+    this.setState({ loading: true });
     return await new AppService().GetCompanyInfo().then((data) => {
+      this.setState({ loading: false });
       if (data && data.ErrorCode === 0) {
-        this.setState({ ...data.Company });
+        this.setState({ Company: { ...data.Company } });
         this.formRef["current"]!.setFieldsValue(data.Company);
       }
     });
@@ -30,10 +33,16 @@ class CompanyForm extends Component {
   updateCompany = async (values: ICompanyData) => {
     return await new AppService()
       .UpdateCompany({
-        Company: { ...this.state, ...values },
+        Company: { ...this.state.Company, ...values },
       })
       .then(async (data) => {
-        if (data && data.ErrorCode === 0) this.getCompanyInfo();
+        if (data && data.ErrorCode === 0) {
+          message.success({
+            content: TranslateText(DONE),
+            key: "updatable",
+            duration: 1,
+          });
+        }
       });
   };
   componentDidMount() {
@@ -44,6 +53,7 @@ class CompanyForm extends Component {
     const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
       this.setState({ [e.target.name]: e.target.value });
     };
+    const CompanyData = this.state.Company;
     const onFinish = async (values: ICompanyData) => {
       const key = "updatable";
       message.loading({
@@ -51,13 +61,7 @@ class CompanyForm extends Component {
         key,
       });
       setTimeout(async () => {
-        this.updateCompany({ ...values }).then(() =>
-          message.success({
-            content: TranslateText(DONE),
-            key: "updatable",
-            duration: 1,
-          })
-        );
+        this.updateCompany({ ...CompanyData, ...values });
       }, 1000);
     };
 
@@ -75,27 +79,22 @@ class CompanyForm extends Component {
         return;
       }
       if (info.file.status === "done") {
-        message.success({
-          content: TranslateText(DONE),
-          key: "updatable",
-          duration: 1,
-        });
         Utils.getBase64(info.file.originFileObj, async (imageUrl: string) => {
           await this.updateCompany({
-            ...this.state,
+            ...CompanyData,
             Logo: imageUrl,
           });
         });
-        return;
       }
     };
 
     const onRemoveAvater = async () => {
       await this.updateCompany({ ...this.state, Logo: "" }).then(() => {
-        this.setState({ ...this.state, Logo: "" });
+        this.setState({ Company: { ...this.state.Company, Logo: "" } });
       });
     };
 
+    if (this.state.loading) return <Loading align="center" />;
     return (
       <>
         <Flex
@@ -103,7 +102,11 @@ class CompanyForm extends Component {
           mobileFlex={false}
           className="text-center text-md-left"
         >
-          <Avatar size={90} src={this.state.Logo} icon={<UserOutlined />} />
+          <Avatar
+            size={90}
+            src={this.state.Company.Logo}
+            icon={<UserOutlined />}
+          />
           <div className="ml-md-3 mt-md-0 mt-3">
             <Upload
               customRequest={Utils.dummyRequest}
