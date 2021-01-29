@@ -18,22 +18,11 @@ import { IState } from "../../redux/reducers";
 import { IAccount } from "../../redux/reducers/Account";
 import TranslateText from "../../utils/translate";
 const menuItem = [
-  // {
-  // 	title: "Edit Profile",
-  // 	icon: EditOutlined ,
-  // 	path: "/app/account-settings"
-  //   },
-
   {
     title: <IntlMessage id={"header.profile.AccountSettings"} />,
     icon: SettingOutlined,
     path: "/app/settings",
   },
-  //   {
-  // 	title: "Billing",
-  // 	icon: ShopOutlined ,
-  // 	path: "/app/account-settings/billing"
-  // },
   {
     title: <IntlMessage id={"header.profile.HelpCenter"} />,
     icon: QuestionCircleOutlined,

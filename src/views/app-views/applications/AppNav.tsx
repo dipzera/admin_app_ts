@@ -61,7 +61,10 @@ const AppStoreNav = () => {
     >
       <Menu mode={"horizontal"}>
         <Menu.Item>
-          <Tooltip title={<IntlMessage id={"header.applications"} />}>
+          <Tooltip
+            title={<IntlMessage id={"header.applications"} />}
+            placement="bottom"
+          >
             <AppstoreOutlined className={"nav-icon"} />
           </Tooltip>
         </Menu.Item>
