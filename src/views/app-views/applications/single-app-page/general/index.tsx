@@ -110,8 +110,8 @@ const General = ({
                 return await new AppService()
                   .ChangeMarketAppStatus(app.ID, value)
                   .then((data) => {
+                    setLoading(false);
                     if (data && data.ErrorCode === 0) {
-                      setLoading(false);
                       getApp();
                       message.success({
                         content: TranslateText(DONE),

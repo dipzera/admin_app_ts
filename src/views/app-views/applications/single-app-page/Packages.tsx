@@ -1,5 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
-// @ts-ignore
+import React, { useState } from "react";
 import { Button, Card, Col, Menu, Tag, Tooltip } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";

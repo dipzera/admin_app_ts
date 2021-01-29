@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 const Dashboard = () => {
-    return <div>Dashboard component works</div>;
+  return <div>Dashboard component works</div>;
 };
 
 export default Dashboard;
