@@ -103,24 +103,23 @@ const General = ({
               className="w-100"
               placeholder="Status"
               defaultValue={status}
+              loading={loading}
               disabled={loading}
-              onChange={(value) => {
+              onChange={async (value) => {
                 setLoading(true);
-                setTimeout(async () => {
-                  return await new AppService()
-                    .ChangeMarketAppStatus(app.ID, value)
-                    .then((data) => {
-                      if (data && data.ErrorCode === 0) {
-                        setLoading(false);
-                        getApp();
-                        message.success({
-                          content: TranslateText(DONE),
-                          key: "updatable",
-                          duration: 1,
-                        });
-                      }
-                    });
-                }, 1000);
+                return await new AppService()
+                  .ChangeMarketAppStatus(app.ID, value)
+                  .then((data) => {
+                    if (data && data.ErrorCode === 0) {
+                      setLoading(false);
+                      getApp();
+                      message.success({
+                        content: TranslateText(DONE),
+                        key: "updatable",
+                        duration: 1,
+                      });
+                    }
+                  });
               }}
             >
               <Select.Option value={0}>

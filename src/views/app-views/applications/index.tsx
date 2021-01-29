@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Avatar, Card } from "antd";
+import { Row, Col, Tag, Avatar, Card, Empty } from "antd";
 import {
   ExperimentOutlined,
   CheckCircleOutlined,
@@ -34,7 +34,7 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
   return (
     <Card>
       <Flex className="mb-3 " justifyContent="between">
-        <Link to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}>
+        <Link to={`${APP_PREFIX_PATH}/id/${MarketAppList.ID}`}>
           <div className="app-avatar cursor-pointer">
             <Avatar
               src={MarketAppList.Photo}
@@ -61,7 +61,7 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
         )}
       </Flex>
       <div>
-        <Link to={`${APP_PREFIX_PATH}/applications/${MarketAppList.ID}`}>
+        <Link to={`${APP_PREFIX_PATH}/id/${MarketAppList.ID}`}>
           <h3 className="app-link mb-0 cursor-pointer">{MarketAppList.Name}</h3>
         </Link>
         <p className="text-muted">By IntelectSoft</p>
@@ -91,6 +91,9 @@ const AppList = () => {
 
   if (loading) {
     return <Loading cover="content" />;
+  }
+  if (!apps) {
+    return <Empty />;
   }
   return (
     <>

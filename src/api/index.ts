@@ -148,7 +148,8 @@ class HttpClient {
       // Handle the rest of errors here
       response.data.ErrorCode !== 0 &&
       response.data.ErrorCode !== 108 &&
-      response.data.ErrorCode !== -1
+      response.data.ErrorCode !== -1 &&
+      response.data.ErrorCode !== 102
     ) {
       message.error({
         content: response.data.ErrorMessage,

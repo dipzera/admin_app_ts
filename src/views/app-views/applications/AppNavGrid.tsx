@@ -16,7 +16,7 @@ const AppNavGrid = (props: IAppNavGrid) => {
     <>
       {props.apps.map((app) => (
         <Menu.Item key={app.ID} {...props} className="app-list__item">
-          <NavLink to={`${APP_PREFIX_PATH}/applications/${app.ID}`}>
+          <NavLink to={`${APP_PREFIX_PATH}/id/${app.ID}`}>
             <div className="text-center">
               <Avatar
                 src={app.Photo}

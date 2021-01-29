@@ -26,7 +26,7 @@ const AppViews = () => {
           component={lazy(() => import(`./news`))}
         />
         <Route
-          path={`${APP_PREFIX_PATH}/applications/:appID`}
+          path={`${APP_PREFIX_PATH}/id/:appID`}
           render={(props) => (
             <SingleAppPage {...props} key={props.match.params.appID} />
           )}
