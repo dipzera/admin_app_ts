@@ -98,7 +98,13 @@ const CardItem = ({
   deletePackage: (ID: number) => void;
 }) => {
   return (
-    <Card style={{ cursor: "grab" }}>
+    <Card
+      style={{
+        cursor: "grab",
+        height: "220px",
+        width: "350px",
+      }}
+    >
       <Flex alignItems="center" justifyContent="between">
         <ItemHeader packages={packages} />
         <ItemAction
@@ -141,8 +147,7 @@ const Packages = ({
         lg={8}
         xl={8}
         xxl={6}
-        className="m-2"
-        style={{ minWidth: "300px", maxHeight: "250px" }}
+        style={{ margin: "15px" }}
         key={elm.SortIndex}
         id={index + 1}
       >

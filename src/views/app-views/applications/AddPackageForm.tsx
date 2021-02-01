@@ -50,7 +50,7 @@ const AddPackageForm = ({
       "[/Date(]xZZ[))/]"
     );
     delete values.ValidDate;
-    return await new AppService()
+    await new AppService()
       .CreateMarketAppPackage({
         AppPackage: {
           ...values,

@@ -58,7 +58,7 @@ const EditPackageForm = ({
       .UpdateMarketAppPackage([AppPackage])
       .then((data) => {
         if (data && data.ErrorCode === 0) {
-          getApp();
+          window.location.reload();
         }
       });
   };
