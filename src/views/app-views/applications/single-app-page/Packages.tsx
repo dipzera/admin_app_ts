@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Menu, Tag, Tooltip } from "antd";
+import { Button, Card, Col, Menu, Row, Tag, Tooltip } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
 import {
@@ -141,7 +141,7 @@ const Packages = ({
         lg={8}
         xl={8}
         xxl={6}
-        className="mb-4 mr-4"
+        className="m-2"
         style={{ minWidth: "300px", maxHeight: "250px" }}
         key={elm.SortIndex}
         id={index + 1}
