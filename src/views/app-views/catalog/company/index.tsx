@@ -35,6 +35,7 @@ enum status {
 
 interface CompanyStateProps<T> {
   companies: T;
+  pageSize: number;
   selectedRows: T;
   selectedKeys: any;
   companiesToSearch: T;
@@ -50,6 +51,7 @@ interface CompanyStateProps<T> {
 export class CompanyList extends Component {
   state: CompanyStateProps<ICompanyData[]> = {
     companies: [],
+    pageSize: 10,
     selectedRows: [],
     selectedKeys: [],
     companiesToSearch: [],
@@ -77,7 +79,6 @@ export class CompanyList extends Component {
          * Create 2 different states for users data in order to be able,
          * to search through them.
          */
-        this.setState({ companies: [...evaluatedCompanies] });
         this.setState({
           companies: evaluatedCompanies,
           companiesToSearch: evaluatedCompanies,
@@ -255,11 +256,8 @@ export class CompanyList extends Component {
   );
   onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
-    const searchArray = value
-      ? this.state.companies
-      : this.state.companiesToSearch;
-    const data = utils.wildCardSearch(searchArray, value);
-    this.setState({ users: data });
+    const data = utils.wildCardSearch(this.state.companiesToSearch, value);
+    this.setState({ companies: data });
   };
 
   render() {
@@ -400,6 +398,14 @@ export class CompanyList extends Component {
               type: "checkbox",
               preserveSelectedRowKeys: false,
               ...this.rowSelection,
+            }}
+            pagination={{
+              total: this.state.companies.length,
+              pageSize: this.state.pageSize,
+              showSizeChanger: true,
+              onShowSizeChange: (current, size) => {
+                this.setState({ pageSize: size });
+              },
             }}
           />
         </div>

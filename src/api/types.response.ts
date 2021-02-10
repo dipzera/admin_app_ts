@@ -12,6 +12,7 @@ export interface IChangeUserStatusResponse extends ApiResponse {}
 
 /* Users */
 export interface IUsers {
+  key?: keyof IUsers;
   Company: string;
   CompanyID: number;
   Email: string;
@@ -40,6 +41,7 @@ export interface IGetBasicCompaniesListResponse extends ApiResponse {
   }[];
 }
 export interface ICompanyData {
+  key?: keyof ICompanyData;
   BIC?: string;
   Bank?: string;
   Email?: string;

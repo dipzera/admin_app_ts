@@ -131,6 +131,11 @@ const UserTable = (
           />
         </div>
       ),
+      sorter: (a, b) => {
+        if (a.FirstName! < b.FirstName!) return -1;
+        if (a.FirstName! > b.FirstName!) return 1;
+        return 0;
+      },
     },
     {
       title: <IntlMessage id="company.Title" />,

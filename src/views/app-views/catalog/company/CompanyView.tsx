@@ -121,7 +121,19 @@ class CompanyView extends Component<IUserView> {
           </p>
           <p>
             <GlobalOutlined />
-            <span className="ml-3 text-dark">{data?.WebSite}</span>
+            <a
+              className="ml-3 text-dark"
+              href={
+                data && data.WebSite
+                  ? data.WebSite!.match(new RegExp("^(http|https):"))
+                    ? data.WebSite
+                    : "//" + data.WebSite
+                  : ""
+              }
+              target="_blank"
+            >
+              {data?.WebSite}
+            </a>
           </p>
         </div>
       </Drawer>

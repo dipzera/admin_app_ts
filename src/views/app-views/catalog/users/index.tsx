@@ -25,6 +25,7 @@ export enum status {
 
 interface UserListStateProps {
   users: IUsers[];
+  pageSize: number;
   selectedRows: IUsers[];
   selectedKeys: any;
   usersToSearch: IUsers[];
@@ -47,6 +48,7 @@ interface StoreProps {
 export class UserList extends Component<StoreProps> {
   state: UserListStateProps = {
     users: [],
+    pageSize: 10,
     selectedRows: [],
     selectedKeys: [],
     usersToSearch: [],
@@ -71,11 +73,7 @@ export class UserList extends Component<StoreProps> {
           (user) => user.ID !== this.props.ID
         );
         const evaluatedArray = utils.sortData(filteredUsers, "ID").reverse();
-
-        /*
-         Create 2 different states for users data in order to be able,
-         to search through them.
-         */
+        // One state to show, one state to search through
         this.setState({
           usersToSearch: evaluatedArray,
           users: evaluatedArray,
@@ -170,8 +168,7 @@ export class UserList extends Component<StoreProps> {
 
     const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value;
-      const searchArray = value ? users : usersToSearch;
-      const data = utils.wildCardSearch(searchArray, value);
+      const data = utils.wildCardSearch(usersToSearch, value);
       this.setState({ users: data });
     };
 
@@ -238,6 +235,14 @@ export class UserList extends Component<StoreProps> {
         <div className="table-responsive">
           <Table
             loading={this.state.loading}
+            pagination={{
+              total: this.state.users.length,
+              showSizeChanger: true,
+              pageSize: this.state.pageSize,
+              onShowSizeChange: (current, size) => {
+                this.setState({ pageSize: size });
+              },
+            }}
             columns={UserTable(
               this.props.sendActivationCode,
               this.showUserProfile,

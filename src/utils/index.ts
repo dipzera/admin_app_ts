@@ -2,6 +2,8 @@ import { message } from "antd";
 import { RcFile } from "antd/es/upload/interface";
 // @ts-ignore
 import { JSEncrypt } from "jsencrypt";
+import { ICompanyData, IUsers } from "../api/types.response";
+
 class Utils {
   /**
    * Get first character from first & last sentences of a username
@@ -149,28 +151,27 @@ class Utils {
    * @param {any} value  - target value
    * @return {Array} Array that removed target object
    */
-  static deleteArrayRow(list: any, key: any, value: any) {
+  static deleteArrayRow<T>(list: T[], key: keyof T, value: any) {
     let data = list;
     if (list) {
-      data = list.filter((item: any) => item[key] !== value);
+      data = list.filter((item) => item[key] !== value);
     }
     return data;
   }
 
-  /**
-   * Wild card search on all property of the object
-   * @param {Number | String} input - any value to search
-   * @param {Array} list - array for search
-   * @return {Array} array of object contained keyword
-   */
-  static wildCardSearch(list: any, input: any) {
-    const searchText = (item: any) => {
+  static hasKey<O>(obj: O, key: keyof any): key is keyof O {
+    return key in obj;
+  }
+
+  static wildCardSearch<T>(list: T[], input: string) {
+    list = list.filter((item) => {
       for (let key in item) {
-        if (item[key] == null) {
+        if (item[key] === null || key === "Logo" || key === "Photo") {
           continue;
         }
         if (
           item[key]
+            //@ts-ignore
             .toString()
             .toUpperCase()
             .indexOf(input.toString().toUpperCase()) !== -1
@@ -178,8 +179,7 @@ class Utils {
           return true;
         }
       }
-    };
-    list = list.filter((value: any) => searchText(value));
+    });
     return list;
   }
 
