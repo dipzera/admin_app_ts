@@ -36,7 +36,7 @@ const LoginForm = ({
   const onLogin = ({ email, password }: { [key: string]: string }) => {
     showLoading();
     setTimeout(() => {
-      authorizeUser(email, password);
+      authorizeUser(email, Utils.encryptInput(password, API_PUBLIC_KEY));
     }, 1000);
   };
 
