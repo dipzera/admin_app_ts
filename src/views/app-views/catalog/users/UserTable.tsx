@@ -1,9 +1,6 @@
 import React from "react";
 import { ColumnsType } from "antd/lib/table";
-import {
-  IChangeUserStatusResponse,
-  IUsers,
-} from "../../../../api/types.response";
+import { IUsers } from "../../../../api/app/types";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { UserOutlined } from "@ant-design/icons";
@@ -20,16 +17,14 @@ import {
   ArrowRightOutlined,
 } from "@ant-design/icons";
 import { status } from "./";
+import { ApiResponse } from "../../../../api/types";
 
 const UserTable = (
   sendActivationCode: (ID: number) => void,
   showUserProfile: (userInfo: IUsers) => void,
   showEditModal: (userInfo: IUsers) => void,
   getUsersInfo: () => void,
-  handleUserStatus: (
-    userId: number,
-    status: number
-  ) => Promise<IChangeUserStatusResponse>
+  handleUserStatus: (userId: number, status: number) => Promise<ApiResponse>
 ) => {
   let dropdownMenu = (row: IUsers) => (
     <Menu>

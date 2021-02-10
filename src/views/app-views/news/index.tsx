@@ -3,13 +3,13 @@ import { EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import * as React from "react";
 import Flex from "../../../components/shared-components/Flex";
-import { AppService } from "../../../api";
+import { AppService } from "../../../api/app";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import CreateNews from "./CreateNews";
 import EditNews from "./EditNews";
 import Loading from "../../../components/shared-components/Loading";
-import { IMarketAppList, INewsList } from "../../../api/types.response";
+import { IMarketAppList, INewsList } from "../../../api/app/types";
 interface IArticleItem {
   newsData: INewsList;
   setSelected: Dispatch<SetStateAction<Partial<INewsList>>>;

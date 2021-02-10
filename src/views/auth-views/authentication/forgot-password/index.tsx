@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { PASSWORD_SENT } from "../../../../constants/Messages";
-import { AuthService } from "../../../../api";
+import { AuthService } from "../../../../api/auth";
 
 const backgroundStyle = {
   backgroundImage: `url(${process.env.PUBLIC_URL}/img/others/img-17.jpg)`,

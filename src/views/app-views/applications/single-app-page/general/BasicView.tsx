@@ -1,7 +1,7 @@
 import { Form } from "antd";
 import React from "react";
 import { useSelector } from "react-redux";
-import { ILocale, IMarketAppList } from "../../../../../api/types.response";
+import { ILocale, IMarketAppList } from "../../../../../api/app/types";
 import { IState } from "../../../../../redux/reducers";
 import TranslateText from "../../../../../utils/translate";
 const BasicValuesStyles = {

@@ -1,8 +1,7 @@
 import { message } from "antd";
-import { RcFile } from "antd/es/upload/interface";
 // @ts-ignore
 import { JSEncrypt } from "jsencrypt";
-import { ICompanyData, IUsers } from "../api/types.response";
+import { ICompanyData, IUsers } from "../api/app/types";
 
 class Utils {
   /**
@@ -144,13 +143,6 @@ class Utils {
     return data;
   }
 
-  /**
-   * Remove object from array by value
-   * @param {Array} list - array of objects
-   * @param {String} key - object key target
-   * @param {any} value  - target value
-   * @return {Array} Array that removed target object
-   */
   static deleteArrayRow<T>(list: T[], key: keyof T, value: any) {
     let data = list;
     if (list) {

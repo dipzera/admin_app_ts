@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Input, Row, Col, Form, Modal, message } from "antd";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import { AppService } from "../../../../api";
+import { AppService } from "../../../../api/app";
 import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 import { IAccount } from "../../../../redux/reducers/Account";
-import { IUsers } from "../../../../api/types.response";
+import { IUsers } from "../../../../api/app/types";
 interface IUserModalEdit {
   data: IUsers;
   visible: boolean;

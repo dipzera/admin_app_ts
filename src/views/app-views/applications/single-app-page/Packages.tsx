@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Col, Menu, Row, Tag, Tooltip } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
@@ -11,13 +11,13 @@ import {
 } from "@ant-design/icons";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { IMarketAppList, IPackages } from "../../../../api/types.response";
+import { IMarketAppList, IAppPackage } from "../../../../api/app/types";
 // @ts-ignore
 import { MuuriComponent } from "muuri-react";
 import Utils from "../../../../utils";
-import { AppService } from "../../../../api";
+import { AppService } from "../../../../api/app";
 
-const ItemHeader = ({ packages }: { packages: IPackages }) => (
+const ItemHeader = ({ packages }: { packages: IAppPackage }) => (
   <>
     <Flex>
       <h4 className="mb-0">{packages.Name}</h4>
@@ -42,7 +42,7 @@ const ItemHeader = ({ packages }: { packages: IPackages }) => (
   </>
 );
 
-const ItemFooter = ({ packages }: { packages: IPackages }) => (
+const ItemFooter = ({ packages }: { packages: IAppPackage }) => (
   <div>
     <h5>
       <IntlMessage id="applications.Packages.Pricing" />
@@ -64,8 +64,8 @@ const ItemAction = ({
   showEditPackageModal,
   deletePackage,
 }: {
-  packages: IPackages;
-  showEditPackageModal: (packages: IPackages) => void;
+  packages: IAppPackage;
+  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
 }) => (
   <EllipsisDropdown
@@ -93,8 +93,8 @@ const CardItem = ({
   showEditPackageModal,
   deletePackage,
 }: {
-  packages: IPackages;
-  showEditPackageModal: (packages: IPackages) => void;
+  packages: IAppPackage;
+  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
 }) => {
   return (
@@ -127,8 +127,8 @@ const Packages = ({
   showAddPackageModal,
   getMarketApps,
 }: {
-  packages: IPackages[];
-  showEditPackageModal: (packages: IPackages) => void;
+  packages: IAppPackage[];
+  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
   showAddPackageModal: () => void;
   getMarketApps: () => Promise<IMarketAppList | undefined>;
@@ -205,13 +205,15 @@ const Packages = ({
           dragEnabled
           dragSortPredicate={{ action: "swap" }}
           onDragEnd={(item) => {
-            setSwappable(true);
-            const grid = item.getGrid();
-            const items = grid.getItems();
-            const keys = items.map((item) => item.getKey());
-            for (let i = 0; i < pckgs.length; i++) {
-              // @ts-ignore
-              pckgs[i].SortIndex = keys[i];
+            if (pckgs.length > 1) {
+              setSwappable(true);
+              const grid = item.getGrid();
+              const items = grid.getItems();
+              const keys = items.map((item) => item.getKey());
+              for (let i = 0; i < pckgs.length; i++) {
+                // @ts-ignore
+                pckgs[i].SortIndex = keys[i];
+              }
             }
           }}
         >

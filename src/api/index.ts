@@ -1,53 +1,16 @@
 import { message } from "antd";
 import axios, { AxiosInstance, AxiosResponse, CancelTokenSource } from "axios";
 import { API_APP_URL, API_AUTH_URL } from "../configs/AppConfig";
-import { authenticated, hideLoading, signOut } from "../redux/actions/Auth";
-import { IAccount } from "../redux/reducers/Account";
+import { AUTHENTICATED, HIDE_LOADING, SIGNOUT } from "../redux/constants/Auth";
 import store from "../redux/store";
 import TranslateText from "../utils/translate";
-import {
-  IActivateUserRequest,
-  IAuthorizeUserRequest,
-  IChangePasswordRequest,
-  ICreateMarketAppPackageRequest,
-  IUpdateCompanyRequest,
-} from "./types.request";
-import {
-  IActivateUserResponse,
-  IAuthorizeUserResponse,
-  IChangeCompanyStatusResponse,
-  IChangeMarketAppStatusResponse,
-  IChangePasswordResponse,
-  IChangeUserStatusResponse,
-  ICompanyData,
-  IDeleteMarketAppPackageResponse,
-  IGetAllUsersInfoResponse,
-  IGetBasicCompaniesListResponse,
-  IGetCompanyInfoResponse,
-  IGetCompanyListResponse,
-  IGetManagedTokenResponse,
-  IGetMarketAppListResponse,
-  IGetNewsResponse,
-  IGetProfileInfoResponse,
-  IMarketAppList,
-  IPackages,
-  IRefreshTokenResponse,
-  IRegisterClientCompanyResponse,
-  IRegisterUserResponse,
-  IResetPasswordResponse,
-  ISendActivationCodeResponse,
-  IUpdateMarketAppResponse,
-  IUpdateNewsResponse,
-  IUpdatePackageResponse,
-  IUpdateUserResponse,
-} from "./types.response";
-const publicIp = require("react-public-ip");
+import { ApiDecorator, ApiResponse } from "./types";
 
 declare module "axios" {
   interface AxiosResponse<T> extends Promise<T> {}
 }
 
-class HttpClient {
+class HttpService {
   public readonly instance: AxiosInstance;
   public _token: string;
   public _source: CancelTokenSource;
@@ -82,11 +45,6 @@ class HttpClient {
             ...config.params,
           };
         }
-
-        /*
-         * To avoid passing the Token inside body everytime we wanna make a request,
-         * pass it here by default
-         */
         if (config.method === "post") {
           config.data = {
             ...config.data,
@@ -100,7 +58,9 @@ class HttpClient {
   };
 
   private _RefreshToken = async () =>
-    this.instance.get<IRefreshTokenResponse>(`${API_AUTH_URL}/RefreshToken`);
+    this.instance.get<ApiDecorator<ApiResponse, "Token", string>>(
+      `${API_AUTH_URL}/RefreshToken`
+    );
 
   private _handleResponse = async (response: AxiosResponse) => {
     console.log(response);
@@ -108,7 +68,7 @@ class HttpClient {
       return await this._RefreshToken().then(async (data) => {
         if (data && data.ErrorCode === 0) {
           const { Token } = data;
-          store.dispatch(authenticated(Token));
+          store.dispatch({ type: AUTHENTICATED, token: Token });
 
           // If the last request was a GET, we pass the Token as param
           if (response.config.method === "get") {
@@ -140,7 +100,7 @@ class HttpClient {
               duration: 1.5,
             })
             .then(() => {
-              store.dispatch(signOut());
+              store.dispatch({ type: SIGNOUT });
             });
         }
       });
@@ -170,151 +130,7 @@ class HttpClient {
         duration: 10,
       });
     }
-    store.dispatch(hideLoading());
+    store.dispatch({ type: HIDE_LOADING });
   };
 }
-export class AuthService extends HttpClient {
-  public constructor() {
-    super(`${API_AUTH_URL}`);
-  }
-
-  public Login = async (data: IAuthorizeUserRequest) =>
-    this.instance.post<IAuthorizeUserResponse>("/AuthorizeUser", {
-      ...data,
-      info: (await publicIp.v4()) || ("" as string),
-    });
-
-  public SendActivationCode = async (UserID?: number) =>
-    this.instance.get<ISendActivationCodeResponse>("/SendActivationCode", {
-      params: { UserID },
-    });
-
-  public ResetPassword = async (Email: string) =>
-    this.instance.post<IResetPasswordResponse>("/ResetPassword", {
-      Email,
-      info: (await publicIp.v4()) || "",
-    });
-
-  public RegisterUser = async (data: IAccount) =>
-    this.instance.post<IRegisterUserResponse>("/RegisterUser", {
-      ...data,
-    });
-
-  public GetManagedToken = async (CompanyID: number) =>
-    this.instance.get<IGetManagedTokenResponse>("/GetManagedToken", {
-      params: { CompanyID },
-    });
-
-  public ChangePassword = async (data: IChangePasswordRequest) =>
-    this.instance.post<IChangePasswordResponse>("/ChangePassword", data);
-
-  public ActivateUser = async (params: IActivateUserRequest) =>
-    this.instance.get<IActivateUserResponse>("/ActivateUser", {
-      params /* Param is a token took from the browser url */,
-    });
-}
-
-export class AppService extends HttpClient {
-  public constructor() {
-    super(`${API_APP_URL}`);
-  }
-
-  public GetAllUsers = async () =>
-    this.instance.get<IGetAllUsersInfoResponse>("/GetAllUsersInfo");
-
-  public GetCompanyList = async () =>
-    this.instance.get<IGetCompanyListResponse>("/GetCompanyList");
-
-  public GetBasicCompanyList = async () =>
-    this.instance.get<IGetBasicCompaniesListResponse>("/GetBasicCompaniesList");
-
-  public ChangeCompanyStatus = async (ID: number, Status: number) =>
-    this.instance.get<IChangeCompanyStatusResponse>("/ChangeCompanyStatus", {
-      params: {
-        ID,
-        Status,
-      },
-    });
-
-  public ChangeUserStatus = async (ID: number, Status: number) =>
-    this.instance.get<IChangeUserStatusResponse>("/ChangeUserStatus", {
-      params: {
-        ID,
-        Status,
-      },
-    });
-  public UpdateUser = async (data: IAccount) =>
-    this.instance.post<IUpdateUserResponse>("/UpdateUser", {
-      User: {
-        ...data,
-      },
-    });
-
-  public RegisterClientCompany = async (data: ICompanyData) =>
-    this.instance.post<IRegisterClientCompanyResponse>(
-      "/RegisterClientCompany",
-      {
-        Company: {
-          ...data,
-        },
-        info: (await publicIp.v4()) || "",
-      }
-    );
-
-  public UpdateCompany = async (data: IUpdateCompanyRequest) =>
-    this.instance.post("/UpdateCompany", {
-      ...data,
-      info: (await publicIp.v4()) || "",
-    });
-
-  public GetProfileInfo = async () =>
-    this.instance.get<IGetProfileInfoResponse>("/GetProfileInfo");
-
-  public GetCompanyInfo = async () =>
-    this.instance.get<IGetCompanyInfoResponse>("/GetCompanyInfo");
-
-  public GetMarketAppList = async () =>
-    this.instance.get<IGetMarketAppListResponse>("/GetMarketAppList");
-
-  public UpdateMarketApp = async (App: IMarketAppList) =>
-    this.instance.post<IUpdateMarketAppResponse>("/UpdateMarketApp", {
-      App,
-    });
-
-  public CreateMarketAppPackage = async (
-    Package: ICreateMarketAppPackageRequest
-  ) => this.instance.post("/CreateMarketAppPackage", Package);
-
-  public UpdateMarketAppPackage = async (AppPackages: IPackages[]) =>
-    this.instance.post<IUpdatePackageResponse>("/UpdateMarketAppPackage", {
-      AppPackages,
-    });
-
-  public DeleteMarketAppPackage = async (ID: number) =>
-    this.instance.post<IDeleteMarketAppPackageResponse>(
-      "/DeleteMarketAppPackage",
-      {
-        ID,
-      }
-    );
-
-  public ChangeMarketAppStatus = async (ID: number, Status: number) =>
-    this.instance.get<IChangeMarketAppStatusResponse>(
-      "/ChangeMarketAppStatus",
-      {
-        params: { ID, Status },
-      }
-    );
-
-  public GetNews = async (ProductType: number) =>
-    this.instance.get<IGetNewsResponse>("/GetNews", {
-      params: {
-        ProductType,
-      },
-    });
-
-  public UpdateNews = async (NewsData: any) =>
-    this.instance.post<IUpdateNewsResponse>("/UpdateNews", {
-      NewsData,
-    });
-}
+export default HttpService;

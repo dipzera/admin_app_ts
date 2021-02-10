@@ -5,7 +5,7 @@ import { ExperimentOutlined } from "@ant-design/icons";
 import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 import { NavLink, RouteComponentProps, withRouter } from "react-router-dom";
 import { MenuItemProps } from "antd/lib/menu/MenuItem";
-import { IMarketAppList } from "../../../api/types.response";
+import { IMarketAppList } from "../../../api/app/types";
 import "./applications.scss";
 
 interface IAppNavGrid extends MenuItemProps, RouteComponentProps {

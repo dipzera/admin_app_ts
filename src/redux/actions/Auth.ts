@@ -9,10 +9,9 @@ import {
 import { message, Modal } from "antd";
 import { getProfileInfo } from "./Account";
 import { DONE } from "../../constants/Messages";
-import { AuthService } from "../../api";
+import { AuthService } from "../../api/auth";
 import { ThunkResult } from "../reducers";
 import TranslateText from "../../utils/translate";
-import { IAuthorizeUserRequest } from "../../api/types.request";
 import { SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
 
@@ -67,9 +66,10 @@ export const sendActivationCode = (
 };
 
 export const authorizeUser = (
-  serverData: IAuthorizeUserRequest
+  email: string,
+  password: string
 ): ThunkResult<void> => async (dispatch) => {
-  return new AuthService().Login(serverData).then((data) => {
+  return new AuthService().Login(email, password).then((data) => {
     dispatch(hideLoading());
     /* Handle errors here */
     if (data) {

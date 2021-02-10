@@ -19,10 +19,10 @@ import { RouteComponentProps } from "react-router-dom";
 import {
   ILocale,
   IMarketAppList,
-  IPackages,
-} from "../../../../api/types.response";
+  IAppPackage,
+} from "../../../../api/app/types";
 import { UploadChangeParam } from "antd/lib/upload";
-import { AppService } from "../../../../api";
+import { AppService } from "../../../../api/app";
 import Loading from "../../../../components/shared-components/Loading";
 
 interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
@@ -60,7 +60,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
     return () => instance._source.cancel();
   }, []);
   const [edit, setEdit] = useState<boolean>(false);
-  const [selectedPackage, setSelectedPackage] = useState<Partial<IPackages>>(
+  const [selectedPackage, setSelectedPackage] = useState<Partial<IAppPackage>>(
     {}
   );
   const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
@@ -69,7 +69,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const [addPackageModalVisible, setAddPackageModalVisible] = useState<boolean>(
     false
   );
-  const showEditPackageModal = (selected: IPackages) => {
+  const showEditPackageModal = (selected: IAppPackage) => {
     setSelectedPackage({
       ...selected,
     });

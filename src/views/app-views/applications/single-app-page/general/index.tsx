@@ -11,7 +11,7 @@ import BasicEdit from "./BasicEdit";
 import Utils from "../../../../../utils";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import TranslateText from "../../../../../utils/translate";
-import { AppService } from "../../../../../api";
+import { AppService } from "../../../../../api/app";
 import { DONE } from "../../../../../constants/Messages";
 const imageUploadProps: any = {
   name: "file",

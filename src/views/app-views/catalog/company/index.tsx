@@ -20,13 +20,14 @@ import { APP_PREFIX_PATH, CLIENT_URL } from "../../../../configs/AppConfig";
 import utils from "../../../../utils";
 import Flex from "../../../../components/shared-components/Flex";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import { AppService, AuthService } from "../../../../api";
+import { AuthService } from "../../../../api/auth";
+import { AppService } from "../../../../api/app";
 import { IState } from "../../../../redux/reducers";
 import { IAccount } from "../../../../redux/reducers/Account";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import Translate from "../../../../utils/translate";
 import TranslateText from "../../../../utils/translate";
-import { ICompanyData } from "../../../../api/types.response";
+import { ICompanyData } from "../../../../api/app/types";
 
 enum status {
   active = 1,

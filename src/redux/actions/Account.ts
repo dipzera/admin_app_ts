@@ -1,7 +1,7 @@
 import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { AppService } from "../../api";
+import { AppService } from "../../api/app";
 import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
 import TranslateText from "../../utils/translate";

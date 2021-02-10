@@ -2,7 +2,8 @@ import { Row, Col, Input, Modal, Form, message, Select, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import { AppService, AuthService } from "../../../../api";
+import { AuthService } from "../../../../api/auth";
+import { AppService } from "../../../../api/app";
 import { DONE } from "../../../../constants/Messages";
 import TranslateText from "../../../../utils/translate";
 

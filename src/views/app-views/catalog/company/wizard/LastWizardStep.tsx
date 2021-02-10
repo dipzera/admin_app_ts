@@ -1,6 +1,7 @@
 import { message } from "antd";
 import React, { useEffect, useState } from "react";
-import { AppService, AuthService } from "../../../../../api";
+import { AuthService } from "../../../../../api/auth";
+import { AppService } from "../../../../../api/app";
 import Flex from "../../../../../components/shared-components/Flex";
 import Loading from "../../../../../components/shared-components/Loading";
 import { IWizard, WizardContext } from "./WizardContext";

@@ -7,7 +7,7 @@ import {
   GlobalOutlined,
 } from "@ant-design/icons";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
-import { ICompanyData } from "../../../../api/types.response";
+import { ICompanyData } from "../../../../api/app/types";
 
 interface IUserView {
   data: ICompanyData;

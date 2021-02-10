@@ -3,8 +3,8 @@ import { Input, Row, Col, Form, Modal, message } from "antd";
 import MaskedInput from "antd-mask-input";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import { AppService } from "../../../../api";
-import { ICompanyData } from "../../../../api/types.response";
+import { AppService } from "../../../../api/app";
+import { ICompanyData } from "../../../../api/app/types";
 import TranslateText from "../../../../utils/translate";
 import { DONE } from "../../../../constants/Messages";
 

@@ -12,8 +12,8 @@ import { useSelector } from "react-redux";
 import Loading from "../../../components/shared-components/Loading";
 import { IState } from "../../../redux/reducers";
 import IntlMessage from "../../../components/util-components/IntlMessage";
-import { ILocale, IMarketAppList } from "../../../api/types.response";
-import { AppService } from "../../../api";
+import { ILocale, IMarketAppList } from "../../../api/app/types";
+import { AppService } from "../../../api/app";
 import "./applications.scss";
 
 const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {

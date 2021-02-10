@@ -13,10 +13,11 @@ import {
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import TranslateText from "../../../utils/translate";
-import { IPackages } from "../../../api/types.response";
-import { AppService } from "../../../api";
+import { IAppPackage } from "../../../api/app/types";
+import { AppService } from "../../../api/app";
+import { IAppPackageValues } from "./AddPackageForm";
 interface IEditPackageForm {
-  packages: Partial<IPackages>;
+  packages: Partial<IAppPackage>;
   visible: boolean;
   close: () => void;
   getApp: () => void;
@@ -35,7 +36,7 @@ const EditPackageForm = ({
   }, [visible, form]);
 
   const dispatch = useDispatch();
-  const onFinish = (values: IPackages) => {
+  const onFinish = (values: IAppPackageValues) => {
     const Status = values.Status ? 1 : 0;
     const ValidFrom = moment(values.ValidDate[0]["_d"]).format(
       "[/Date(]xZZ[))/]"
@@ -43,8 +44,6 @@ const EditPackageForm = ({
     const ValidTo = moment(values.ValidDate[1]["_d"]).format(
       "[/Date(]xZZ[))/]"
     );
-    delete packages.Range;
-    delete packages.ValidDate;
     delete values.Range;
     delete values.ValidDate;
     const AppPackage = {

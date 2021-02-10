@@ -7,8 +7,8 @@ import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
 import TextEditor from "../applications/single-app-page/TextEditor";
-import { AppService } from "../../../api";
-import { INewsList } from "../../../api/types.response";
+import { AppService } from "../../../api/app";
+import { INewsList } from "../../../api/app/types";
 import { UploadChangeParam } from "antd/lib/upload";
 import TranslateText from "../../../utils/translate";
 interface IEditNews {

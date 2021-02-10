@@ -5,8 +5,8 @@ import { Menu, Dropdown, Tooltip, Empty } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import AppNavGrid from "./AppNavGrid";
 import Loading from "../../../components/shared-components/Loading";
-import { IMarketAppList } from "../../../api/types.response";
-import { AppService } from "../../../api";
+import { IMarketAppList } from "../../../api/app/types";
+import { AppService } from "../../../api/app";
 import Scrollbars from "react-custom-scrollbars";
 const AppStoreNav = () => {
   const [loading, setLoading] = useState<boolean>(true);
