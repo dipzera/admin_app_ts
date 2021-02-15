@@ -84,17 +84,21 @@ const News = () => {
       if (data && data.ErrorCode === 0) setApps(data.MarketAppList);
     });
   const getNews = async (ProductType = 0) => {
-    return instance.GetNews(ProductType).then((data) => {
-      setLoading(false);
-      if (data && data.ErrorCode === 0) setNews(data.NewsList);
-    });
+    return instance
+      .GetNews(ProductType)
+      .then(async (data) => {
+        setLoading(false);
+        if (data && data.ErrorCode === 0) {
+          setNews(data.NewsList);
+          return data.ErrorCode;
+        }
+      })
+      .then(async (errorCode) => {
+        if (errorCode === 0) await getApps();
+      });
   };
   useEffect(() => {
     getNews();
-    return () => instance._source.cancel();
-  }, []);
-  useEffect(() => {
-    getApps();
     return () => instance._source.cancel();
   }, []);
   const onSelect = (AppType: number) => {

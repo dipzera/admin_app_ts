@@ -31,6 +31,9 @@ class HttpService {
       this._handleError
     );
   };
+  private setToken = (Token: string) => {
+    this._token = Token;
+  };
   public _initializeRequestInterceptor = () => {
     this.instance.interceptors.request.use(
       (config) => {
@@ -68,17 +71,15 @@ class HttpService {
       return await this._RefreshToken().then(async (data) => {
         if (data && data.ErrorCode === 0) {
           const { Token } = data;
+          this.setToken(Token);
           store.dispatch({ type: AUTHENTICATED, token: Token });
-
           // If the last request was a GET, we pass the Token as param
           if (response.config.method === "get") {
             response.config.params = {
               ...response.config.params,
               Token,
             };
-            return await axios
-              .request(response.config)
-              .then((response) => response.data);
+            return await this.instance.request(response.config);
           }
 
           // If the last request was a POST, we pass the Token inside body
@@ -87,9 +88,7 @@ class HttpService {
               ...JSON.parse(response.config.data),
               Token,
             };
-            return await axios
-              .request(response.config)
-              .then((response) => response.data);
+            return await this.instance.request(response.config);
           }
         } else {
           // In case RefreshToken fails, we log out the user
