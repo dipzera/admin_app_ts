@@ -51,7 +51,7 @@ export const hideLoading = () => ({
 export const sendActivationCode = (
   UserID?: number
 ): ThunkResult<void> => async (dispatch) => {
-  return new AuthService().SendActivationCode(UserID).then((data) => {
+  return await new AuthService().SendActivationCode(UserID).then((data) => {
     if (data) {
       const { ErrorMessage, ErrorCode } = data;
       if (ErrorCode === 0)

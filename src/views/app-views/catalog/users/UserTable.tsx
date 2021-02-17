@@ -37,8 +37,8 @@ const UserTable = (
                 " " +
                 row.FirstName +
                 "?",
-              onOk: () => {
-                sendActivationCode(row.ID);
+              onOk: async () => {
+                await sendActivationCode(row.ID);
               },
               onCancel: () => {},
             })
@@ -74,9 +74,8 @@ const UserTable = (
             Modal.confirm({
               title: WithStringTranslate("user.activate.title"),
               onOk: async () => {
-                await handleUserStatus(row.ID, status.active).then(() => {
-                  getUsersInfo();
-                });
+                await handleUserStatus(row.ID, status.active);
+                await getUsersInfo();
               },
             });
           }}
@@ -94,9 +93,8 @@ const UserTable = (
             Modal.confirm({
               title: WithStringTranslate("user.disable.title"),
               onOk: async () => {
-                await handleUserStatus(row.ID, status.disabled).then(() => {
-                  getUsersInfo();
-                });
+                await handleUserStatus(row.ID, status.disabled);
+                await getUsersInfo();
               },
             });
           }}
