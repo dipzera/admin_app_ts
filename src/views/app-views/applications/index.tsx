@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Avatar, Card, Empty } from "antd";
+import { Row, Col, Tag, Avatar, Card, Empty, Button, Spin } from "antd";
 import {
   ExperimentOutlined,
   CheckCircleOutlined,
@@ -15,8 +15,22 @@ import IntlMessage from "../../../components/util-components/IntlMessage";
 import { ILocale, IMarketAppList } from "../../../api/app/types";
 import { AppService } from "../../../api/app";
 import "./applications.scss";
+import ToggleAppButton from "./ToggleAppButton";
+import Utils from "../../../utils";
 
-const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
+export enum EnApp {
+  ACTIVATED = 1,
+  DISABLED = 0,
+}
+const GridItem = ({
+  MarketAppList,
+  getApplications,
+  setSpinLoading,
+}: {
+  MarketAppList: IMarketAppList;
+  getApplications: () => void;
+  setSpinLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
     {}
   );
@@ -69,6 +83,14 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
           {shortDescription ? shortDescription[locale] : null}
         </div>
       </div>
+      <div className="text-right">
+        <ToggleAppButton
+          getApplications={getApplications}
+          appStatus={MarketAppList.Status ?? 0}
+          appID={MarketAppList.ID}
+          setSpinLoading={setSpinLoading}
+        />
+      </div>
     </Card>
   );
 };
@@ -76,14 +98,17 @@ const GridItem = ({ MarketAppList }: { MarketAppList: IMarketAppList }) => {
 const AppList = () => {
   const instance = new AppService();
   const [loading, setLoading] = useState<boolean>(true);
+  const [spinLoading, setSpinLoading] = useState<boolean>(false);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
-  const getApplications = () =>
-    instance.GetMarketAppList().then((data) => {
+  const getApplications = async () => {
+    return await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
-        setApps(data.MarketAppList);
+        setSpinLoading(false);
+        setApps(Utils.sortData(data.MarketAppList, "ID"));
       }
     });
+  };
   useEffect(() => {
     getApplications();
     return () => instance._source.cancel();
@@ -96,7 +121,7 @@ const AppList = () => {
     return <Empty />;
   }
   return (
-    <>
+    <Spin spinning={spinLoading}>
       <div
         className={`my-4 
                     container-fluid`}
@@ -105,12 +130,17 @@ const AppList = () => {
           {apps &&
             apps.map((elm) => (
               <Col xs={24} sm={24} lg={12} xl={8} xxl={6} key={elm.ID}>
-                <GridItem MarketAppList={elm} key={elm["ID"]} />
+                <GridItem
+                  MarketAppList={elm}
+                  key={elm["ID"]}
+                  getApplications={getApplications}
+                  setSpinLoading={setSpinLoading}
+                />
               </Col>
             ))}
         </Row>
       </div>
-    </>
+    </Spin>
   );
 };
 

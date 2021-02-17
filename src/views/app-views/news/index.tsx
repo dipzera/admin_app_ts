@@ -84,18 +84,13 @@ const News = () => {
       if (data && data.ErrorCode === 0) setApps(data.MarketAppList);
     });
   const getNews = async (ProductType = 0) => {
-    return instance
-      .GetNews(ProductType)
-      .then(async (data) => {
-        setLoading(false);
-        if (data && data.ErrorCode === 0) {
-          setNews(data.NewsList);
-          return data.ErrorCode;
-        }
-      })
-      .then(async (errorCode) => {
-        if (errorCode === 0) await getApps();
-      });
+    return instance.GetNews(ProductType).then(async (data) => {
+      setLoading(false);
+      if (data && data.ErrorCode === 0) {
+        setNews(data.NewsList);
+        await getApps();
+      }
+    });
   };
   useEffect(() => {
     getNews();
