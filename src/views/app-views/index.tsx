@@ -79,6 +79,14 @@ const AppViews = () => {
           path={`${APP_PREFIX_PATH}/settings`}
           component={lazy(() => import(`./account-settings`))}
         />
+        <Route
+          path={`${APP_PREFIX_PATH}/overview`}
+          component={lazy(() => import(`./overview`))}
+        />
+        <Route
+          path={`${APP_PREFIX_PATH}/manage`}
+          component={lazy(() => import(`./manage`))}
+        />
         <Redirect
           from={`${APP_PREFIX_PATH}`}
           to={`${APP_PREFIX_PATH}/dashboard`}

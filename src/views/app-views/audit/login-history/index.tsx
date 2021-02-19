@@ -1,7 +1,9 @@
-import React from 'react';
+import Empty from "antd/es/empty";
+import React from "react";
 
 const AuditLoginHistory = () => {
-  return (<div>LoginHistory component works!</div>)
-}
+  return <Empty />;
+};
 
 export default AuditLoginHistory;
+
