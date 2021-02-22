@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Overview = () => {
-  return <div>Overview</div>;
+const Overview = (props: any) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  return <></>;
 };
 export default Overview;
