@@ -44,7 +44,7 @@ const InstanceCard = ({ match, instance }: any) => {
       <div style={{ position: "absolute", top: 10, right: 10 }}>
         <Button>
           <Link
-            to={`${match.url}/edit?cloud=${query.get("cloud")}&id=${
+            to={`${match.url}/instance/edit?cloud=${query.get("cloud")}&id=${
               instance.ID
             }`}
           >
@@ -96,7 +96,9 @@ const Instance = ({ match, history, location }: any) => {
             <span>
               No instances found!
               <br />
-              <Link to={`${match.url}/create?cloud=${query.get("cloud")}`}>
+              <Link
+                to={`${match.url}/instance/create?cloud=${query.get("cloud")}`}
+              >
                 Create
               </Link>{" "}
               database instance!
@@ -123,7 +125,7 @@ const Instance = ({ match, history, location }: any) => {
           <h4 className="mt-3">Database instances</h4>
         </div>
         <Button type="primary">
-          <Link to={`${match.url}/create?cloud=${query.get("cloud")}`}>
+          <Link to={`${match.url}/instance/create?cloud=${query.get("cloud")}`}>
             Create instance
           </Link>
         </Button>

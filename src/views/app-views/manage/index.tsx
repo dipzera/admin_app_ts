@@ -42,13 +42,13 @@ const Manage = (props: any) => {
                 />
               </div>
             </Route>
-            <Route path={`${props.match.url}/instance`}>
+            <Route exact path={`${props.match.url}/instance`}>
               <Instance {...props} />
             </Route>
-            <Route path={`${props.match.url}/create`}>
+            <Route path={`${props.match.url}/instance/create`}>
               <InstanceCreate {...props} />
             </Route>
-            <Route path={`${props.match.url}/edit/`}>
+            <Route path={`${props.match.url}/instance/edit`}>
               <InstanceEdit {...props} />
             </Route>
           </Switch>
