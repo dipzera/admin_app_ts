@@ -24,11 +24,18 @@ const Manage = (props: any) => {
                 Public
               </Link>
             </Button>
-            <Button>
+            <Button className="mr-3">
               <Link
                 to={`${props.match.url}/instance?cloud=${EnDbServerLocation.PRIVATE}`}
               >
                 Private
+              </Link>
+            </Button>
+            <Button>
+              <Link
+                to={`${props.match.url}/instance?cloud=${EnDbServerLocation.SAAS}`}
+              >
+                SaaS
               </Link>
             </Button>
           </div>

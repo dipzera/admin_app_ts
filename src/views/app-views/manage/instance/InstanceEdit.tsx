@@ -34,7 +34,11 @@ const InstanceEdit = (props: any) => {
     return await managementInstance.GetDbInstance().then(async (data) => {
       setLoading(false);
       if (data && data.ErrorCode === 0) {
-        if (+query.get("cloud")! === EnDbServerLocation.PRIVATE) {
+        // If it's public or saas cloud we get dbservices in order to connect the database to a dbservice
+        if (
+          +query.get("cloud")! === EnDbServerLocation.PRIVATE ||
+          +query.get("cloud")! === EnDbServerLocation.SAAS
+        ) {
           await getDbServices();
         }
         const currentDbInstance = data.DBInstances.find(
@@ -132,18 +136,19 @@ const InstanceEdit = (props: any) => {
                     <Form.Item label="Backup password" name="BackupPassword">
                       <Input />
                     </Form.Item>
-                    {+query.get("cloud")! === EnDbServerLocation.PRIVATE && (
-                      <Form.Item label="Database services">
-                        <Select>
-                          {dbServices &&
-                            dbServices.map((service: any) => (
-                              <Select.Option value={service.ID}>
-                                {service.ServerName}
-                              </Select.Option>
-                            ))}
-                        </Select>
-                      </Form.Item>
-                    )}
+                    {+query.get("cloud")! === EnDbServerLocation.PRIVATE ||
+                      (+query.get("cloud")! === EnDbServerLocation.SAAS && (
+                        <Form.Item label="Database services">
+                          <Select>
+                            {dbServices &&
+                              dbServices.map((service: any) => (
+                                <Select.Option value={service.ID}>
+                                  {service.ServerName}
+                                </Select.Option>
+                              ))}
+                          </Select>
+                        </Form.Item>
+                      ))}
                   </Col>
                 </Row>
                 <Button type="primary" htmlType="submit">

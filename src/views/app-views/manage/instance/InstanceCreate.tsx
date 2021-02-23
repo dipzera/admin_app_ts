@@ -53,7 +53,11 @@ const InstanceCreate = (props: any) => {
       });
   };
   useEffect(() => {
-    if (+query.get("cloud")! === EnDbServerLocation.PRIVATE) {
+    // If it's public or saas cloud we get dbservices in order to connect the database to a dbservice
+    if (
+      +query.get("cloud")! === EnDbServerLocation.PRIVATE ||
+      +query.get("cloud")! === EnDbServerLocation.SAAS
+    ) {
       getDbServices();
     }
     return () => managementInstance._source.cancel();
@@ -122,18 +126,19 @@ const InstanceCreate = (props: any) => {
                     <Form.Item label="Backup password" name="BackupPassword">
                       <Input />
                     </Form.Item>
-                    {+query.get("cloud")! === EnDbServerLocation.PRIVATE && (
-                      <Form.Item label="Database services" name="DBServiceID">
-                        <Select>
-                          {dbServices &&
-                            dbServices.map((service: any) => (
-                              <Select.Option value={service.ID}>
-                                {service.ServerName}
-                              </Select.Option>
-                            ))}
-                        </Select>
-                      </Form.Item>
-                    )}
+                    {+query.get("cloud")! === EnDbServerLocation.PRIVATE ||
+                      (+query.get("cloud")! === EnDbServerLocation.SAAS && (
+                        <Form.Item label="Database services" name="DBServiceID">
+                          <Select>
+                            {dbServices &&
+                              dbServices.map((service: any) => (
+                                <Select.Option value={service.ID}>
+                                  {service.ServerName}
+                                </Select.Option>
+                              ))}
+                          </Select>
+                        </Form.Item>
+                      ))}
                   </Col>
                 </Row>
                 <Button type="primary" htmlType="submit">
