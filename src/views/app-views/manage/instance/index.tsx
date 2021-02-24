@@ -143,7 +143,7 @@ const Instance = ({ match, history, location }: any) => {
       </Flex>
       <Row gutter={ROW_GUTTER}>
         {instances.map((element: any) => (
-          <Col xs={24} sm={24} lg={8} key={element.ID}>
+          <Col xs={24} sm={24} lg={6} key={element.ID}>
             <InstanceCard match={match} instance={element} />
           </Col>
         ))}

@@ -17,21 +17,21 @@ const Manage = (props: any) => {
       <Switch>
         <Route exact path={props.match.url}>
           <h1 className="text-center mt-5 mb-5">Choose cloud</h1>
-          <div className="m-auto d-flex justify-content-between w-50">
-            <div className="text-center">
+          <div className="m-auto d-flex justify-content-between w-50 flex-wrap cloud">
+            <div className="text-center cloud-item">
               <Link
                 to={`${props.match.url}/instance?cloud=${EnDbServerLocation.PUBLIC}`}
               >
                 <Avatar
                   src={`${process.env.PUBLIC_URL}/img/cloud-sharing.svg`}
-                  className="cloud-item"
+                  className="cloud-img"
                   size={128}
                   style={{ padding: 20 }}
                 />
               </Link>
               <h5 className="mt-3">Public Cloud</h5>
             </div>
-            <div className="text-center">
+            <div className="text-center cloud-item">
               <Link
                 to={`${props.match.url}/instance?cloud=${EnDbServerLocation.PRIVATE}`}
               >
@@ -39,12 +39,12 @@ const Manage = (props: any) => {
                   src={`${process.env.PUBLIC_URL}/img/cloud-computing.svg`}
                   size={128}
                   style={{ padding: 20 }}
-                  className="cloud-item"
+                  className="cloud-img"
                 />
               </Link>
               <h5 className="mt-3">Private Cloud</h5>
             </div>
-            <div className="text-center">
+            <div className="text-center cloud-item">
               <Popover
                 title={"What is Software-as-a-Service (SaaS)?"}
                 content={
@@ -57,7 +57,7 @@ const Manage = (props: any) => {
                 >
                   <Avatar
                     src={`${process.env.PUBLIC_URL}/img/saas.svg`}
-                    className="cloud-item"
+                    className="cloud-img"
                     size={128}
                     style={{ padding: 20 }}
                   />
