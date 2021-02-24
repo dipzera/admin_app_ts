@@ -8,6 +8,7 @@ import {
 import Instance from "./instance";
 import InstanceCreate from "./instance/InstanceCreate";
 import InstanceEdit from "./instance/InstanceEdit";
+import InstanceForm from "./instance/InstanceForm";
 import "./manage.scss";
 
 const Manage = (props: any) => {
