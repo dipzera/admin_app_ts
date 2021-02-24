@@ -11,6 +11,7 @@ import {
   Row,
   Spin,
   Table,
+  Tooltip,
 } from "antd";
 import {
   ExperimentOutlined,
@@ -28,6 +29,7 @@ import {
   IDbServices,
 } from "../../../../api/app/management-db/types";
 import useQuery from "../../../../utils/hooks/useQuery";
+import { APP_NAME } from "../../../../configs/AppConfig";
 const InstanceCard = ({ match, instance }: any) => {
   const query = useQuery();
   return (
@@ -42,15 +44,17 @@ const InstanceCard = ({ match, instance }: any) => {
         </Flex>
       </Flex>
       <div style={{ position: "absolute", top: 10, right: 10 }}>
-        <Button>
-          <Link
-            to={`${match.url}/instance/edit?cloud=${query.get("cloud")}&id=${
-              instance.ID
-            }`}
-          >
-            <EditOutlined />
-          </Link>
-        </Button>
+        <Tooltip title="Edit">
+          <Button>
+            <Link
+              to={`${match.url}/instance/edit?cloud=${query.get("cloud")}&id=${
+                instance.ID
+              }`}
+            >
+              <EditOutlined />
+            </Link>
+          </Button>
+        </Tooltip>
       </div>
     </Card>
   );
@@ -74,6 +78,13 @@ const Instance = ({ match, history, location }: any) => {
       }
     });
   useEffect(() => {
+    document.title = `${
+      +query.get("cloud")! === EnDbServerLocation.PUBLIC
+        ? "Public"
+        : +query.get("cloud")! === EnDbServerLocation.PRIVATE
+        ? "Private"
+        : "SaaS"
+    } Cloud | ${APP_NAME}`;
     getDbInstance();
     return () => management._source.cancel();
   }, []);

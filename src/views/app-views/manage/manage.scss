@@ -1,0 +1,6 @@
+.cloud-item:hover {
+  transform: scale(1.05);
+}
+.cloud-item {
+  transition: transform .3s;
+}
