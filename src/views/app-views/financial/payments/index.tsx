@@ -1,6 +1,7 @@
+import { Empty } from "antd";
 import React from "react";
 
 const Payments = () => {
-  return <div> Payment Works!</div>;
+  return <Empty />;
 };
 export default Payments;

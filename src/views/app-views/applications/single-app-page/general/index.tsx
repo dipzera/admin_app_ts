@@ -11,7 +11,7 @@ import BasicEdit from "./BasicEdit";
 import Utils from "../../../../../utils";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import TranslateText from "../../../../../utils/translate";
-import { AppService } from "../../../../../api";
+import { AppService } from "../../../../../api/app";
 import { DONE } from "../../../../../constants/Messages";
 const imageUploadProps: any = {
   name: "file",
@@ -103,24 +103,23 @@ const General = ({
               className="w-100"
               placeholder="Status"
               defaultValue={status}
+              loading={loading}
               disabled={loading}
-              onChange={(value) => {
+              onChange={async (value) => {
                 setLoading(true);
-                setTimeout(async () => {
-                  return await new AppService()
-                    .ChangeMarketAppStatus(app.ID, value)
-                    .then((data) => {
-                      if (data && data.ErrorCode === 0) {
-                        setLoading(false);
-                        getApp();
-                        message.success({
-                          content: TranslateText(DONE),
-                          key: "updatable",
-                          duration: 1,
-                        });
-                      }
-                    });
-                }, 1000);
+                return await new AppService()
+                  .ChangeMarketAppStatus(app.ID, value)
+                  .then((data) => {
+                    setLoading(false);
+                    if (data && data.ErrorCode === 0) {
+                      getApp();
+                      message.success({
+                        content: TranslateText(DONE),
+                        key: "updatable",
+                        duration: 1,
+                      });
+                    }
+                  });
               }}
             >
               <Select.Option value={0}>

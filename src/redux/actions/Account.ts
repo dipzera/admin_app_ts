@@ -1,7 +1,7 @@
 import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
 import { onLocaleChange } from "./Theme";
-import { AppService } from "../../api";
+import { AppService } from "../../api/app";
 import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
 import TranslateText from "../../utils/translate";
@@ -38,15 +38,13 @@ export const getProfileInfo = (): ThunkResult<void> => {
 export const setProfileInfo = (accountInfo: IAccount): ThunkResult<void> => {
   return async (dispatch) => {
     return new AppService().UpdateUser(accountInfo).then((data) => {
-      if (data) {
-        if (data.ErrorCode === 0) {
-          dispatch(getProfileInfo());
-          message.success({
-            content: TranslateText(DONE),
-            key: "updatable",
-            duration: 1,
-          });
-        }
+      if (data && data.ErrorCode === 0) {
+        dispatch(getProfileInfo());
+        message.success({
+          content: TranslateText(DONE),
+          key: "updatable",
+          duration: 1,
+        });
       }
     });
   };

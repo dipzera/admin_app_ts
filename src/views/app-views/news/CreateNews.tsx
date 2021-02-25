@@ -1,20 +1,20 @@
+import React, { useEffect, useState } from "react";
 import { Col, Form, message, Row, Select, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
-import React, { useEffect, useState } from "react";
 import Flex from "../../../components/shared-components/Flex";
 import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
 import TextEditor from "../applications/single-app-page/TextEditor";
-import { AppService } from "../../../api";
+import { AppService } from "../../../api/app";
 import { UploadChangeParam } from "antd/lib/upload";
 import TranslateText from "../../../utils/translate";
 
 interface ICreateNews {
   getNews: (AppType: number) => void;
   visible: boolean;
-  close: any;
+  close: () => void;
   AppType: number;
 }
 const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
@@ -101,7 +101,7 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
             className="avatar-uploader"
             listType="picture-card"
             customRequest={Utils.dummyRequest}
-            beforeUpload={(info) => Utils.beforeUpload(info)}
+            beforeUpload={Utils.beforeUploadArticle}
           >
             {photo ? (
               <img src={photo} alt="News" style={{ width: "100%" }} />

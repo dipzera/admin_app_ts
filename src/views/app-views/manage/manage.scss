@@ -1,0 +1,13 @@
+.cloud-img:hover {
+  transform: scale(1.05);
+}
+.cloud-img {
+  transition: transform .3s;
+}
+
+@media screen and (max-width: 542px) {
+  .cloud {
+    justify-content: center !important;
+  }
+}
+

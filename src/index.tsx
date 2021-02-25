@@ -14,23 +14,23 @@ import { SUBDIR_PATH } from "./configs/AppConfig";
 unregister();
 
 const render = (Component: any) => {
-    return ReactDOM.render(
-        <div className="App">
-            <Provider store={store}>
-                <BrowserRouter basename={SUBDIR_PATH}>
-                    <Component />
-                </BrowserRouter>
-            </Provider>
-        </div>,
-        document.getElementById("root")
-    );
+  return ReactDOM.render(
+    <div className="App">
+      <Provider store={store}>
+        <BrowserRouter basename={SUBDIR_PATH}>
+          <Component />
+        </BrowserRouter>
+      </Provider>
+    </div>,
+    document.getElementById("root")
+  );
 };
 
 render(App);
 
 if (module.hot) {
-    module.hot.accept("./App", () => {
-        const NextApp = require("./App").default;
-        render(NextApp);
-    });
+  module.hot.accept("./App", () => {
+    const NextApp = require("./App").default;
+    render(NextApp);
+  });
 }

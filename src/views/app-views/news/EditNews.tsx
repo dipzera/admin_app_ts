@@ -7,8 +7,8 @@ import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
 import TextEditor from "../applications/single-app-page/TextEditor";
-import { AppService } from "../../../api";
-import { INewsList } from "../../../api/types.response";
+import { AppService } from "../../../api/app";
+import { INewsList } from "../../../api/app/types";
 import { UploadChangeParam } from "antd/lib/upload";
 import TranslateText from "../../../utils/translate";
 interface IEditNews {
@@ -31,7 +31,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
     }
   }, [news]);
 
-  const onUploadAvatar = (info: UploadChangeParam) => {
+  const onUploadAvatar = (info: any) => {
     if (info.file.status === "uploading") {
       message.loading({
         content: TranslateText(UPLOADING),
@@ -63,9 +63,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
         .then(async (data) => {
           setLoading(false);
           close();
-          if (data) {
-            if (data.ErrorCode === 0) getNews(news.ProductType ?? 0);
-          }
+          if (data && data.ErrorCode === 0) getNews(news.ProductType ?? 0);
         });
     }, 1000);
   };
@@ -76,6 +74,8 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
       <div className="ant-upload-text">Upload</div>
     </div>
   );
+
+  var isSquare: any;
   return (
     <Modal
       visible={visible}
@@ -102,7 +102,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
             className="avatar-uploader"
             listType="picture-card"
             customRequest={Utils.dummyRequest}
-            beforeUpload={(info) => Utils.beforeUpload(info)}
+            beforeUpload={Utils.beforeUploadArticle}
           >
             {Photo ? (
               <img src={Photo} alt="News" style={{ width: "100%" }} />

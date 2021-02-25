@@ -5,13 +5,12 @@ import { connect } from "react-redux";
 import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import { DONE } from "../../../constants/Messages";
-import { AuthService } from "../../../api";
+import { AuthService } from "../../../api/auth";
 import { IState } from "../../../redux/reducers";
 import { IAuth } from "../../../redux/reducers/Auth";
 import { ITheme } from "../../../redux/reducers/Theme";
 import TranslateText from "../../../utils/translate";
 import { FormInstance } from "antd/lib/form";
-import { IChangePasswordRequest } from "../../../api/types.request";
 export class ChangePassword extends Component {
   private changePasswordFormRef = React.createRef<FormInstance>();
   state = {
@@ -22,22 +21,20 @@ export class ChangePassword extends Component {
     currentPassword,
     newPassword,
   }: {
-    currentPassword: IChangePasswordRequest["OldPassword"];
-    newPassword: IChangePasswordRequest["NewPassword"];
+    currentPassword: string;
+    newPassword: string;
   }) => {
     this.setState({ loading: true });
     setTimeout(() => {
       this.setState({ loading: false });
       new AuthService()
-        .ChangePassword({
-          NewPassword: Utils.encryptInput(newPassword, API_PUBLIC_KEY),
-          OldPassword: Utils.encryptInput(currentPassword, API_PUBLIC_KEY),
-        })
+        .ChangePassword(
+          Utils.encryptInput(newPassword, API_PUBLIC_KEY),
+          Utils.encryptInput(currentPassword, API_PUBLIC_KEY)
+        )
         .then((data) => {
-          if (data) {
-            const { ErrorCode } = data;
-            if (ErrorCode === 0) message.success(TranslateText(DONE), 1.5);
-          }
+          if (data && data.ErrorCode === 0)
+            message.success(TranslateText(DONE), 1.5);
         });
     }, 1500);
     this.onReset();

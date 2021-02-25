@@ -1,44 +1,70 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Menu, Dropdown, Empty, Tooltip } from "antd";
+import { Menu, Dropdown, Tooltip, Empty } from "antd";
 import IntlMessage from "../../../components/util-components/IntlMessage";
-import { AppNavGrid } from "./AppNavGrid";
-import { useSelector } from "react-redux";
+import AppNavGrid from "./AppNavGrid";
 import Loading from "../../../components/shared-components/Loading";
-import { IState } from "../../../redux/reducers";
-import { IMarketAppList } from "../../../api/types.response";
-import { AppService } from "../../../api";
+import { IMarketAppList } from "../../../api/app/types";
+import { AppService } from "../../../api/app";
+import Scrollbars from "react-custom-scrollbars";
 const AppStoreNav = () => {
-  const loading = useSelector((state: IState) => state["auth"].loading);
+  const [loading, setLoading] = useState<boolean>(true);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
-  const renderApps = async () =>
-    await new AppService().GetMarketAppList().then((data) => {
-      if (data && data.ErrorCode === 0) {
-        setApps(data.MarketAppList);
-      }
-    });
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+  useEffect(() => {
+    if (menuIsOpen) {
+      new AppService().GetMarketAppList().then((data) => {
+        if (data && data.ErrorCode === 0) {
+          setLoading(false);
+          setApps(data.MarketAppList);
+        }
+      });
+    }
+  }, [menuIsOpen]);
   const menu = (
     <Menu
       style={{
-        width: "330px",
+        maxWidth: "350px",
+        minWidth: loading ? "350px" : "auto",
+        maxHeight: "500px",
         minHeight: loading ? "300px" : "auto",
+        overflow: "auto",
       }}
     >
       {loading ? (
         <Loading cover="content" align="center" />
-      ) : (
+      ) : apps.length > 0 ? (
         <AppNavGrid apps={apps ?? []} />
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       )}
-      {apps!.length > 0 || <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
     </Menu>
   );
 
   return (
-    <Dropdown overlay={menu} trigger={["click"]} placement={"bottomRight"}>
-      <Menu mode={"horizontal"} onClick={() => renderApps()}>
+    <Dropdown
+      overlay={menu}
+      trigger={["click"]}
+      placement={"bottomRight"}
+      onVisibleChange={(visible) => {
+        if (visible) {
+          setMenuIsOpen(true);
+        } else {
+          setTimeout(() => {
+            setMenuIsOpen(false);
+            setLoading(true);
+            setApps([]);
+          }, 200);
+        }
+      }}
+    >
+      <Menu mode={"horizontal"}>
         <Menu.Item>
-          <Tooltip title={<IntlMessage id={"header.applications"} />}>
+          <Tooltip
+            title={<IntlMessage id={"header.applications"} />}
+            placement="bottom"
+          >
             <AppstoreOutlined className={"nav-icon"} />
           </Tooltip>
         </Menu.Item>

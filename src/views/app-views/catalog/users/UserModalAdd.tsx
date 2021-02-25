@@ -2,11 +2,21 @@ import { Row, Col, Input, Modal, Form, message, Select, Empty } from "antd";
 import React, { useEffect, useState } from "react";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { ROW_GUTTER } from "../../../../constants/ThemeConstant";
-import { AppService, AuthService } from "../../../../api";
+import { AuthService } from "../../../../api/auth";
+import { AppService } from "../../../../api/app";
 import { DONE } from "../../../../constants/Messages";
 import TranslateText from "../../../../utils/translate";
 
-export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
+interface IUserModalAdd {
+  onCancel: () => void;
+  visible: boolean;
+  getUsersInfo: () => Promise<void>;
+}
+export const UserModalAdd = ({
+  onCancel,
+  visible,
+  getUsersInfo,
+}: IUserModalAdd) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState<any>([]);
@@ -33,15 +43,13 @@ export const UserModalAdd = ({ onCancel, visible, getUsersInfo }: any) => {
     new AuthService()
       .RegisterUser({ ...values, UiLanguage: 0 })
       .then((data) => {
-        if (data) {
-          const { ErrorCode, ErrorMessage } = data;
-          if (ErrorCode === 0) {
+        if (data && data.ErrorCode === 0) {
+          getUsersInfo().then(() =>
             message.success({
               content: TranslateText(DONE),
               key: "updatable",
-            });
-            getUsersInfo();
-          }
+            })
+          );
         }
       });
   };

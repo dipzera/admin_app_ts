@@ -5,9 +5,9 @@ import throttle from "lodash/throttle";
 import thunk from "redux-thunk";
 
 declare global {
-    interface Window {
-        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-    }
+  interface Window {
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+  }
 }
 
 // function configureStore(preLoadedState: any) {
@@ -23,19 +23,19 @@ declare global {
 
 let store: any;
 const configureStore = (preLoadedState: any) => {
-    store = createStore(
-        reducers,
-        preLoadedState,
-        compose(applyMiddleware(thunk))
-    );
-    if (process.env.NODE_ENV !== "production") {
-        if (module.hot) {
-            module.hot.accept("../reducers", () => {
-                store.replaceReducer(reducers);
-            });
-        }
+  store = createStore(
+    reducers,
+    preLoadedState,
+    compose(applyMiddleware(thunk))
+  );
+  if (process.env.NODE_ENV !== "production") {
+    if (module.hot) {
+      module.hot.accept("../reducers", () => {
+        store.replaceReducer(reducers);
+      });
     }
-    return store;
+  }
+  return store;
 };
 
 store = configureStore(loadState());

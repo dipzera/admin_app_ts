@@ -5,8 +5,8 @@ import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../../../redux/reducers";
-import { ILocale, IMarketAppList } from "../../../../api/types.response";
-import { AppService } from "../../../../api";
+import { ILocale, IMarketAppList } from "../../../../api/app/types";
+import { AppService } from "../../../../api/app";
 
 export interface ITextArea {
   title: string;
@@ -35,6 +35,7 @@ const TermsOfUse = ({
 }) => {
   const [edit, setEdit] = useState<boolean>(false);
   const [terms, setTerms] = useState<Partial<ILocale>>({});
+  const [loading, setLoading] = useState<boolean>(false);
   const locale: "en" | "ro" | "ru" =
     useSelector((state: IState) => state["theme"].locale) ?? "en";
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const TermsOfUse = ({
       Status,
       Photo,
     } = app as IMarketAppList;
+    setLoading(true);
     return new AppService()
       .UpdateMarketApp({
         ID,
@@ -66,6 +68,7 @@ const TermsOfUse = ({
         TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
       })
       .then((data) => {
+        setLoading(false);
         if (data && data.ErrorCode === 0) {
           getApp();
           setEdit(false);
@@ -103,7 +106,12 @@ const TermsOfUse = ({
           <Button type="ghost" className="mr-2" onClick={() => setEdit(false)}>
             Discard
           </Button>
-          <Button type="primary" className="mt-3" onClick={onFinish}>
+          <Button
+            type="primary"
+            className="mt-3"
+            onClick={onFinish}
+            loading={loading}
+          >
             Save
           </Button>
         </>

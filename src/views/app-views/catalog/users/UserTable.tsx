@@ -1,16 +1,13 @@
-import * as React from "react";
+import React from "react";
 import { ColumnsType } from "antd/lib/table";
-import {
-  IChangeUserStatusResponse,
-  IUsers,
-} from "../../../../api/types.response";
+import { IUsers } from "../../../../api/app/types";
 import AvatarStatus from "../../../../components/shared-components/AvatarStatus";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { Menu, Modal, Tag } from "antd";
 import EllipsisDropdown from "../../../../components/shared-components/EllipsisDropdown";
-import TranslateText from "../../../../utils/translate";
+import WithStringTranslate from "../../../../utils/translate";
 import Flex from "../../../../components/shared-components/Flex";
 import {
   EyeOutlined,
@@ -19,17 +16,15 @@ import {
   EditOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { status } from "./UserList";
+import { status } from "./";
+import { ApiResponse } from "../../../../api/types";
 
 const UserTable = (
   sendActivationCode: (ID: number) => void,
   showUserProfile: (userInfo: IUsers) => void,
   showEditModal: (userInfo: IUsers) => void,
   getUsersInfo: () => void,
-  handleUserStatus: (
-    userId: number,
-    status: number
-  ) => Promise<IChangeUserStatusResponse>
+  handleUserStatus: (userId: number, status: number) => Promise<ApiResponse>
 ) => {
   let dropdownMenu = (row: IUsers) => (
     <Menu>
@@ -38,12 +33,12 @@ const UserTable = (
           onClick={() =>
             Modal.confirm({
               title:
-                TranslateText("user.sendCodeModal.title") +
+                WithStringTranslate("user.sendCodeModal.title") +
                 " " +
                 row.FirstName +
                 "?",
-              onOk: () => {
-                sendActivationCode(row.ID);
+              onOk: async () => {
+                await sendActivationCode(row.ID);
               },
               onCancel: () => {},
             })
@@ -77,11 +72,10 @@ const UserTable = (
         <Menu.Item
           onClick={async () => {
             Modal.confirm({
-              title: TranslateText("user.activate.title"),
+              title: WithStringTranslate("user.activate.title"),
               onOk: async () => {
-                await handleUserStatus(row.ID, status.active).then(() => {
-                  getUsersInfo();
-                });
+                await handleUserStatus(row.ID, status.active);
+                await getUsersInfo();
               },
             });
           }}
@@ -97,11 +91,10 @@ const UserTable = (
         <Menu.Item
           onClick={async () => {
             Modal.confirm({
-              title: TranslateText("user.disable.title"),
+              title: WithStringTranslate("user.disable.title"),
               onOk: async () => {
-                await handleUserStatus(row.ID, status.disabled).then(() => {
-                  getUsersInfo();
-                });
+                await handleUserStatus(row.ID, status.disabled);
+                await getUsersInfo();
               },
             });
           }}
@@ -116,6 +109,7 @@ const UserTable = (
       ) : null}
     </Menu>
   );
+
   let tableColumns: ColumnsType<IUsers> = [
     {
       title: <IntlMessage id="user.Title" />,
@@ -130,6 +124,11 @@ const UserTable = (
           />
         </div>
       ),
+      sorter: (a, b) => {
+        if (a.FirstName! < b.FirstName!) return -1;
+        if (a.FirstName! > b.FirstName!) return 1;
+        return 0;
+      },
     },
     {
       title: <IntlMessage id="company.Title" />,

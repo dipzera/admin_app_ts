@@ -1,7 +1,9 @@
-import React from 'react';
+import Empty from "antd/es/empty";
+import React from "react";
 
 const AuditAll = () => {
-  return (<div>All audit component works!</div>)
-}
+  return <Empty />;
+};
 
 export default AuditAll;
+

@@ -1,5 +1,6 @@
-import { Button, Form, message, Modal, Tabs } from "antd";
 import React, { useEffect, useState } from "react";
+import { Route } from "react-router-dom";
+import { Button, Form, message, Modal, Tabs } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
 import Avatar from "antd/lib/avatar/avatar";
@@ -18,21 +19,21 @@ import { RouteComponentProps } from "react-router-dom";
 import {
   ILocale,
   IMarketAppList,
-  IPackages,
-} from "../../../../api/types.response";
+  IAppPackage,
+} from "../../../../api/app/types";
 import { UploadChangeParam } from "antd/lib/upload";
-import { AppService } from "../../../../api";
+import { AppService } from "../../../../api/app";
 import Loading from "../../../../components/shared-components/Loading";
 
 interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
 
 const SingleAppPage = ({ match }: ISingleAppPage) => {
+  const instance = new AppService();
   const { appID } = match.params;
-  const { confirm } = Modal;
   const [app, setApp] = useState<Partial<IMarketAppList>>();
   const [loading, setLoading] = useState<boolean>(true);
   const getApp = async () =>
-    await new AppService().GetMarketAppList().then((data) => {
+    await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
         const currentApp = data.MarketAppList.find((app) => app.ID === +appID);
@@ -42,31 +43,24 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       }
     });
   useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      getApp().then((app) => {
-        try {
-          setShortDesc(
-            JSON.parse(window.atob(app!.ShortDescription!.toString()))
-          );
-        } catch {
-          setShortDesc({ en: "", ru: "", ro: "" });
-        }
-        try {
-          setLongDesc(
-            JSON.parse(window.atob(app!.LongDescription!.toString()))
-          );
-        } catch {
-          setLongDesc({ en: "", ru: "", ro: "" });
-        }
-      });
-    }
-    return () => {
-      mounted = false;
-    };
+    getApp().then((app) => {
+      try {
+        setShortDesc(
+          JSON.parse(window.atob(app!.ShortDescription!.toString()))
+        );
+      } catch {
+        setShortDesc({ en: "", ru: "", ro: "" });
+      }
+      try {
+        setLongDesc(JSON.parse(window.atob(app!.LongDescription!.toString())));
+      } catch {
+        setLongDesc({ en: "", ru: "", ro: "" });
+      }
+    });
+    return () => instance._source.cancel();
   }, []);
   const [edit, setEdit] = useState<boolean>(false);
-  const [selectedPackage, setSelectedPackage] = useState<Partial<IPackages>>(
+  const [selectedPackage, setSelectedPackage] = useState<Partial<IAppPackage>>(
     {}
   );
   const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
@@ -75,7 +69,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const [addPackageModalVisible, setAddPackageModalVisible] = useState<boolean>(
     false
   );
-  const showEditPackageModal = (selected: IPackages) => {
+  const showEditPackageModal = (selected: IAppPackage) => {
     setSelectedPackage({
       ...selected,
     });
@@ -93,16 +87,14 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   };
 
   const deletePackage = (ID: number) => {
-    confirm({
+    Modal.confirm({
       title: DELETE_PACKAGE_MSG(ID),
       onOk: async () => {
-        return await new AppService()
-          .DeleteMarketAppPackage(ID)
-          .then((data) => {
-            if (data && data.ErrorCode === 0) {
-              getApp();
-            }
-          });
+        return instance.DeleteMarketAppPackage(ID).then((data) => {
+          if (data && data.ErrorCode === 0) {
+            getApp();
+          }
+        });
       },
     });
   };
@@ -137,7 +129,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           TermsOfUse,
           LongDescription,
         } = app as IMarketAppList;
-        return new AppService()
+        return instance
           .UpdateMarketApp({
             ID: +appID,
             LongDescription,
@@ -164,7 +156,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         duration: 1.5,
       })
       .then(async () => {
-        return await new AppService()
+        return await instance
           .UpdateMarketApp({
             ID: +appID,
             TermsOfUse: app!.TermsOfUse ?? "",
@@ -188,14 +180,14 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   };
 
   if (!app) {
-    return <div>No app found</div>;
+    return <Loading cover="content" />;
   }
   if (loading) {
-    return <Loading />;
+    return <Loading cover="content" />;
   }
 
   return (
-    <>
+    <Route>
       <AddPackageForm
         getApp={getApp}
         packages={app.Packages ?? []}
@@ -275,6 +267,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             <Tabs.TabPane tab={TranslateText("applications.Packages")} key="2">
               <Packages
                 packages={app.Packages ?? []}
+                getMarketApps={getApp}
                 showEditPackageModal={showEditPackageModal}
                 deletePackage={deletePackage}
                 showAddPackageModal={showAddPackageModal}
@@ -289,7 +282,7 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           </Tabs>
         </div>
       </Form>
-    </>
+    </Route>
   );
 };
 export default SingleAppPage;

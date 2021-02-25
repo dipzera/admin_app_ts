@@ -1,6 +1,6 @@
+import * as React from "react";
 import { Form, Input, Select } from "antd";
 import { lang } from "../../../../../assets/data/language.data.json";
-import * as React from "react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TextEditor from "../TextEditor";
@@ -8,7 +8,7 @@ import Flex from "../../../../../components/shared-components/Flex";
 import { IState } from "../../../../../redux/reducers";
 import TranslateText from "../../../../../utils/translate";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
-import { ILocale } from "../../../../../api/types.response";
+import { ILocale } from "../../../../../api/app/types";
 import { ITextArea } from "../TermsOfUse";
 const rules = {
   name: [

@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import {
   UserOutlined,
   LockOutlined,
-  CreditCardOutlined,
-  BellOutlined,
   FireOutlined,
   ApartmentOutlined,
 } from "@ant-design/icons";
@@ -18,8 +16,6 @@ import {
 import InnerAppLayout from "../../../layouts/inner-app-layout";
 import EditProfile from "./EditProfile";
 import ChangePassword from "./ChangePassword";
-import Billing from "./Billing";
-import Notification from "./Notification";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import Security from "./Security";
 import EditCompany from "./EditCompany";

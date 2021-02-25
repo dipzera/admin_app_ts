@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   Col,
   Form,
@@ -14,14 +14,20 @@ import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import moment from "moment";
 import { IState } from "../../../redux/reducers";
 import TranslateText from "../../../utils/translate";
-import { IPackages } from "../../../api/types.response";
-import { AppService } from "../../../api";
+import { IAppPackage } from "../../../api/app/types";
+import { AppService } from "../../../api/app";
+
 interface IAddPackageForm {
   appID: number;
   visible: boolean;
   close: () => void;
-  packages: IPackages[];
+  packages: IAppPackage[];
   getApp: () => void;
+}
+
+export interface IAppPackageValues extends IAppPackage {
+  ValidDate?: any;
+  Range?: any;
 }
 const AddPackageForm = ({
   appID,
@@ -39,7 +45,8 @@ const AddPackageForm = ({
   }, [visible, form]);
 
   const loading = useSelector((state: IState) => state["auth"].loading);
-  const onFinish = async (values: IPackages) => {
+
+  const onFinish = async (values: IAppPackageValues) => {
     const Status = values.Status ? 1 : 0;
     const ValidFrom = moment(values.ValidDate![0]["_d"]).format(
       "[/Date(]xZZ[))/]"
@@ -48,7 +55,7 @@ const AddPackageForm = ({
       "[/Date(]xZZ[))/]"
     );
     delete values.ValidDate;
-    return await new AppService()
+    await new AppService()
       .CreateMarketAppPackage({
         AppPackage: {
           ...values,
@@ -60,7 +67,7 @@ const AddPackageForm = ({
       })
       .then((data) => {
         if (data && data.ErrorCode === 0) {
-          getApp();
+          window.location.reload();
         }
       });
   };

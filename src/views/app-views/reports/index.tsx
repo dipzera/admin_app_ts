@@ -1,7 +1,9 @@
-import React from 'react';
+import { Empty } from "antd";
+import React from "react";
 
 const Reports = () => {
-  return (<div>Reports component works!</div>)
-}
+  return <Empty />;
+};
 
 export default Reports;
+

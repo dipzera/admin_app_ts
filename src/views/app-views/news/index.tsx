@@ -3,13 +3,13 @@ import { EditOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import moment from "moment";
 import * as React from "react";
 import Flex from "../../../components/shared-components/Flex";
-import { AppService } from "../../../api";
+import { AppService } from "../../../api/app";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import CreateNews from "./CreateNews";
 import EditNews from "./EditNews";
 import Loading from "../../../components/shared-components/Loading";
-import { IMarketAppList, INewsList } from "../../../api/types.response";
+import { IMarketAppList, INewsList } from "../../../api/app/types";
 interface IArticleItem {
   newsData: INewsList;
   setSelected: Dispatch<SetStateAction<Partial<INewsList>>>;
@@ -18,7 +18,7 @@ interface IArticleItem {
 const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
   return (
     <Card style={{ padding: 30 }}>
-      <Flex justifyContent="between" alignItems="center" className="mt-3">
+      <Flex justifyContent="between" alignItems="start" className="mt-3">
         <div style={{ maxWidth: 500 }}>
           <Flex flexDirection="column">
             <div
@@ -35,16 +35,6 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
           </Flex>
           <div style={{ position: "absolute", bottom: 15 }}>
             <Flex alignItems="center">
-              <span>IntelectSoft</span>
-              <span
-                style={{
-                  fontSize: 20,
-                  color: "black",
-                  margin: "0 5px 0",
-                }}
-              >
-                &nbsp;&bull;&nbsp;
-              </span>
               <span style={{ color: "black" }}>
                 {newsData.CreateDate &&
                   moment
@@ -59,7 +49,9 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
             <img
               src={newsData.Photo}
               alt="Article"
-              style={{ maxWidth: "100%" }}
+              style={{
+                maxWidth: "100%",
+              }}
             />
           )}
         </div>
@@ -79,6 +71,7 @@ const ArticleItem = ({ newsData, setSelected, setEdit }: IArticleItem) => {
   );
 };
 const News = () => {
+  const instance = new AppService();
   const [news, setNews] = useState<INewsList[]>([]);
   const [isCreateVisible, setCreateVisible] = useState<boolean>(false);
   const [edit, setEdit] = useState<boolean>(false);
@@ -87,32 +80,21 @@ const News = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
   const getApps = async () =>
-    await new AppService().GetMarketAppList().then((data) => {
-      if (data && data.ErrorCode === 0) {
-        setApps(data.MarketAppList);
-      }
+    await instance.GetMarketAppList().then((data) => {
+      if (data && data.ErrorCode === 0) setApps(data.MarketAppList);
     });
   const getNews = async (ProductType = 0) => {
-    return new AppService()
-      .GetNews(ProductType)
-      .then((data) => {
-        setLoading(false);
-        if (data) {
-          if (data.ErrorCode === 0) {
-            setNews(data.NewsList);
-          }
-        }
-      })
-      .then(() => {
-        getApps();
-      });
+    return instance.GetNews(ProductType).then(async (data) => {
+      setLoading(false);
+      if (data && data.ErrorCode === 0) {
+        setNews(data.NewsList);
+        await getApps();
+      }
+    });
   };
   useEffect(() => {
-    let mounted = true;
-    if (mounted) getNews();
-    return () => {
-      mounted = false;
-    };
+    getNews();
+    return () => instance._source.cancel();
   }, []);
   const onSelect = (AppType: number) => {
     setAppType(AppType);

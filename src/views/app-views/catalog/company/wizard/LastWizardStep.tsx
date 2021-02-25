@@ -1,9 +1,12 @@
-import { message } from "antd";
+import { Button, message, Result } from "antd";
 import React, { useEffect, useState } from "react";
-import { AppService, AuthService } from "../../../../../api";
+import { AuthService } from "../../../../../api/auth";
+import { AppService } from "../../../../../api/app";
 import Flex from "../../../../../components/shared-components/Flex";
 import Loading from "../../../../../components/shared-components/Loading";
 import { IWizard, WizardContext } from "./WizardContext";
+import { Link } from "react-router-dom";
+import { APP_PREFIX_PATH } from "../../../../../configs/AppConfig";
 
 const LastWizardStep = () => {
   const context = React.useContext<Partial<IWizard>>(WizardContext);
@@ -75,23 +78,24 @@ const LastWizardStep = () => {
       }
     });
   }, []);
+
   return (
     <>
       {loading ? (
         <Loading cover="content" />
       ) : (
-        <Flex justifyContent="center" alignItems="center">
-          <div style={{ textAlign: "center" }}>
-            <div className="mb-6">
-              <img
-                width="150"
-                src={`${process.env.PUBLIC_URL}/img/check.svg`}
-              />
-            </div>
-            <h3>Registration Succeeded</h3>
-            <p>The user has been successfully registered</p>
-          </div>
-        </Flex>
+        <Result
+          title="Registration Succeeded"
+          subTitle="The user has been successfully registered"
+          status="success"
+          extra={
+            <Button type="primary">
+              <Link to={`${APP_PREFIX_PATH}/catalog/companies`}>
+                Go to companies
+              </Link>
+            </Button>
+          }
+        />
       )}
     </>
   );
