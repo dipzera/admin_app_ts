@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Route } from "react-router-dom";
 import { Button, Form, message, Modal, Tabs } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
@@ -24,21 +24,23 @@ import {
 import { UploadChangeParam } from "antd/lib/upload";
 import { AppService } from "../../../../api/app";
 import Loading from "../../../../components/shared-components/Loading";
+import { appReducer, appState } from "./appReducer";
+import { AppContext } from "./AppContext";
 
 interface ISingleAppPage extends RouteComponentProps<{ appID: string }> {}
 
 const SingleAppPage = ({ match }: ISingleAppPage) => {
   const instance = new AppService();
   const { appID } = match.params;
-  const [app, setApp] = useState<Partial<IMarketAppList>>();
   const [loading, setLoading] = useState<boolean>(true);
+  const [state, dispatch] = useReducer(appReducer, appState);
   const getApp = async () =>
     await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
         const currentApp = data.MarketAppList.find((app) => app.ID === +appID);
         document.title = `${currentApp!.Name} | ${APP_NAME}`;
-        setApp(currentApp);
+        dispatch({ type: "SET_APP", payload: currentApp });
         return currentApp;
       }
     });
@@ -48,43 +50,13 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
         setShortDesc(
           JSON.parse(window.atob(app!.ShortDescription!.toString()))
         );
-      } catch {
-        setShortDesc({ en: "", ru: "", ro: "" });
-      }
+      } catch {}
       try {
         setLongDesc(JSON.parse(window.atob(app!.LongDescription!.toString())));
-      } catch {
-        setLongDesc({ en: "", ru: "", ro: "" });
-      }
+      } catch {}
     });
     return () => instance._source.cancel();
   }, []);
-  const [edit, setEdit] = useState<boolean>(false);
-  const [selectedPackage, setSelectedPackage] = useState<Partial<IAppPackage>>(
-    {}
-  );
-  const [editPackageModalVisible, setEditPackageModalVisbile] = useState<
-    boolean
-  >(false);
-  const [addPackageModalVisible, setAddPackageModalVisible] = useState<boolean>(
-    false
-  );
-  const showEditPackageModal = (selected: IAppPackage) => {
-    setSelectedPackage({
-      ...selected,
-    });
-    setEditPackageModalVisbile(true);
-  };
-  const closeEditPackageModal = () => {
-    setEditPackageModalVisbile(false);
-  };
-
-  const showAddPackageModal = () => {
-    setAddPackageModalVisible(true);
-  };
-  const closeAddPackageModal = () => {
-    setAddPackageModalVisible(false);
-  };
 
   const deletePackage = (ID: number) => {
     Modal.confirm({
@@ -98,50 +70,40 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       },
     });
   };
-  const [uploadLoading, setUploadLoading] = useState(false);
   const [form] = Form.useForm();
-  const [uploadedImg, setImage] = useState<string>();
   const [shortDesc, setShortDesc] = useState<Partial<ILocale>>({});
   const [longDesc, setLongDesc] = useState<Partial<ILocale>>({});
   useEffect(() => {
-    if (edit) {
-      form.setFieldsValue(app);
+    if (state.isEdit) {
+      form.setFieldsValue(state.selectedApp);
     }
-  }, [edit, setEdit]);
+  }, [state.isEdit]);
 
   useEffect(() => {
-    if (app) {
-      setImage(app!.Photo);
-      document.title = `${APP_NAME} - ${app.Name}`;
+    if (state.selectedApp) {
+      dispatch({ type: "SET_IMAGE", payload: state.selectedApp.Photo });
+      document.title = `${APP_NAME} - ${state.selectedApp.Name}`;
     }
   }, [appID]);
 
   const handleUploadChange = (info: UploadChangeParam) => {
     if (info.file.status === "uploading") {
-      setUploadLoading(true);
+      dispatch({ type: "SHOW_LOADING" });
       return;
     }
     if (info.file.status === "done") {
       Utils.getBase64(info.file.originFileObj, (Photo: string) => {
-        const {
-          Name,
-          ShortDescription,
-          TermsOfUse,
-          LongDescription,
-        } = app as IMarketAppList;
         return instance
           .UpdateMarketApp({
+            ...state.selectedApp,
             ID: +appID,
-            LongDescription,
-            ShortDescription,
-            TermsOfUse,
-            Name,
             Photo,
           })
           .then((data) => {
+            dispatch({ type: "HIDE_LOADING" });
             if (data && data.ErrorCode === 0) {
               getApp();
-              setImage(Photo);
+              dispatch({ type: "SET_IMAGE" });
             }
           });
       });
@@ -158,9 +120,8 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       .then(async () => {
         return await instance
           .UpdateMarketApp({
+            ...state.selectedApp,
             ID: +appID,
-            TermsOfUse: app!.TermsOfUse ?? "",
-            Status: app!.Status,
             Name: values.Name,
             ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
               "base64"
@@ -168,18 +129,17 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
               "base64"
             ),
-            Photo: uploadedImg ? uploadedImg : app!.Photo ?? "",
           })
           .then((data) => {
             if (data && data.ErrorCode === 0) {
               getApp();
-              setEdit(false);
+              dispatch({ type: "TOGGLE_EDIT" });
             }
           });
       });
   };
 
-  if (!app) {
+  if (!state.selectedApp) {
     return <Loading cover="content" />;
   }
   if (loading) {
@@ -187,20 +147,19 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   }
 
   return (
-    <Route>
-      <AddPackageForm
-        getApp={getApp}
-        packages={app.Packages ?? []}
-        appID={+appID}
-        close={closeAddPackageModal}
-        visible={addPackageModalVisible}
-      />
-      <EditPackageForm
-        getApp={getApp}
-        close={closeEditPackageModal}
-        packages={selectedPackage}
-        visible={editPackageModalVisible}
-      />
+    <AppContext.Provider
+      value={{
+        state,
+        dispatch,
+        getApp,
+        shortDesc,
+        longDesc,
+        setShortDesc,
+        setLongDesc,
+      }}
+    >
+      <AddPackageForm />
+      <EditPackageForm />
       <Form
         form={form}
         layout="vertical"
@@ -219,17 +178,20 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
               <Flex alignItems="center">
                 <div className="mr-3">
                   <Avatar
-                    src={app.Photo}
+                    src={state.selectedApp.Photo}
                     icon={<ExperimentOutlined />}
                     shape={"square"}
                     size={64}
                   />
                 </div>
-                <h2 className="mb-1">{app.Name}</h2>
+                <h2 className="mb-1">{state.selectedApp.Name}</h2>
               </Flex>
-              {edit && (
+              {state.isEdit && (
                 <div className="mb-3">
-                  <Button className="mr-2" onClick={() => setEdit(false)}>
+                  <Button
+                    className="mr-2"
+                    onClick={() => dispatch({ type: "TOGGLE_EDIT" })}
+                  >
                     <IntlMessage id="applications.Discard" />
                   </Button>
                   <Button type="primary" htmlType="submit">
@@ -246,43 +208,24 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
           <Tabs
             defaultActiveKey="1"
             style={{ marginTop: 30 }}
-            onChange={() => setEdit(false)}
+            onChange={() => dispatch({ type: "HIDE_EDIT" })}
           >
             <Tabs.TabPane tab={TranslateText("applications.General")} key="1">
-              <General
-                app={app}
-                status={app.Status}
-                setLongDesc={setLongDesc}
-                edit={edit}
-                setShortDesc={setShortDesc}
-                shortDesc={shortDesc}
-                setEdit={setEdit}
-                uploadedImg={uploadedImg}
-                uploadLoading={uploadLoading}
-                handleUploadChange={handleUploadChange}
-                longDesc={longDesc}
-                getApp={getApp}
-              />
+              <General handleUploadChange={handleUploadChange} />
             </Tabs.TabPane>
             <Tabs.TabPane tab={TranslateText("applications.Packages")} key="2">
-              <Packages
-                packages={app.Packages ?? []}
-                getMarketApps={getApp}
-                showEditPackageModal={showEditPackageModal}
-                deletePackage={deletePackage}
-                showAddPackageModal={showAddPackageModal}
-              />
+              <Packages deletePackage={deletePackage} />
             </Tabs.TabPane>
             <Tabs.TabPane
               tab={TranslateText("applications.TermsOfUse")}
               key="3"
             >
-              <TermsOfUse app={app ?? ""} getApp={getApp} />
+              <TermsOfUse />
             </Tabs.TabPane>
           </Tabs>
         </div>
       </Form>
-    </Route>
+    </AppContext.Provider>
   );
 };
 export default SingleAppPage;

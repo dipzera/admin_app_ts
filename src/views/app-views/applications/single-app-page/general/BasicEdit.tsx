@@ -10,6 +10,7 @@ import TranslateText from "../../../../../utils/translate";
 import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import { ILocale } from "../../../../../api/app/types";
 import { ITextArea } from "../TermsOfUse";
+import { AppContext } from "../AppContext";
 const rules = {
   name: [
     {
@@ -30,17 +31,7 @@ const rules = {
     },
   ],
 };
-const BasicEdit = ({
-  longDesc,
-  setLongDesc,
-  setShortDesc,
-  shortDesc,
-}: {
-  longDesc: Partial<ILocale>;
-  setLongDesc: Dispatch<SetStateAction<Partial<ILocale>>>;
-  setShortDesc: Dispatch<SetStateAction<Partial<ILocale>>>;
-  shortDesc: Partial<ILocale>;
-}) => {
+const BasicEdit = () => {
   const fields: ITextArea[] = [
     {
       title: "English",
@@ -55,6 +46,9 @@ const BasicEdit = ({
       locale: "ru",
     },
   ];
+  const { shortDesc, setShortDesc, longDesc, setLongDesc } = React.useContext(
+    AppContext
+  );
   const globalLanguage = useSelector((state: IState) => state["theme"].locale);
   const [shortDescLang, setShortDescLang] = useState(globalLanguage);
   const [longDescLang, setLongDescLang] = useState(globalLanguage);

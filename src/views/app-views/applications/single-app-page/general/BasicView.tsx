@@ -1,26 +1,20 @@
+import React, { useContext, useEffect } from "react";
 import { Form } from "antd";
-import React from "react";
 import { useSelector } from "react-redux";
 import { ILocale, IMarketAppList } from "../../../../../api/app/types";
 import { IState } from "../../../../../redux/reducers";
 import TranslateText from "../../../../../utils/translate";
+import { AppContext } from "../AppContext";
 const BasicValuesStyles = {
   paddingLeft: "10px",
 };
-const BasicView = ({
-  app,
-  shortDesc,
-  longDesc,
-}: {
-  app: IMarketAppList;
-  shortDesc: ILocale;
-  longDesc: ILocale;
-}) => {
+const BasicView = () => {
+  const { state, longDesc, shortDesc } = useContext(AppContext);
   const locale = useSelector((state: IState) => state["theme"].locale) ?? "en";
   return (
     <>
       <Form.Item label={TranslateText("applications.AppName")}>
-        <div style={BasicValuesStyles}>{app.Name}</div>
+        <div style={BasicValuesStyles}>{state.selectedApp.Name}</div>
       </Form.Item>
       <Form.Item label={TranslateText("applications.ShortDescription")}>
         <div style={BasicValuesStyles}>{shortDesc[locale]}</div>

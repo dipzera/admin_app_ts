@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Col,
@@ -16,35 +16,22 @@ import { IState } from "../../../redux/reducers";
 import TranslateText from "../../../utils/translate";
 import { IAppPackage } from "../../../api/app/types";
 import { AppService } from "../../../api/app";
-
-interface IAddPackageForm {
-  appID: number;
-  visible: boolean;
-  close: () => void;
-  packages: IAppPackage[];
-  getApp: () => void;
-}
+import { AppContext } from "./single-app-page/AppContext";
 
 export interface IAppPackageValues extends IAppPackage {
   ValidDate?: any;
   Range?: any;
 }
-const AddPackageForm = ({
-  appID,
-  visible,
-  close,
-  packages,
-  getApp,
-}: IAddPackageForm) => {
+const AddPackageForm = () => {
   const [form] = Form.useForm();
+  const { state, dispatch } = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
 
   /*  Destroy initialValues of form after Modal is closed */
   useEffect(() => {
-    if (!visible) return;
+    if (!state.isAddPackageVisible) return;
     form.resetFields();
-  }, [visible, form]);
-
-  const loading = useSelector((state: IState) => state["auth"].loading);
+  }, [state.isAddPackageVisible, form]);
 
   const onFinish = async (values: IAppPackageValues) => {
     const Status = values.Status ? 1 : 0;
@@ -63,7 +50,7 @@ const AddPackageForm = ({
           ValidTo,
           Status,
         },
-        MarketAppID: appID,
+        MarketAppID: +state.selectedApp.ID,
       })
       .then((data) => {
         if (data && data.ErrorCode === 0) {
@@ -76,7 +63,7 @@ const AddPackageForm = ({
     form
       .validateFields()
       .then((values: any) => {
-        close();
+        dispatch({ type: "HIDE_ADD_MODAL" });
         onFinish(values);
       })
       .catch((info) => {
@@ -87,8 +74,8 @@ const AddPackageForm = ({
     <Modal
       destroyOnClose
       title={TranslateText("applications.Packages.Add")}
-      visible={visible}
-      onCancel={close}
+      visible={state.isAddPackageVisible}
+      onCancel={() => dispatch({ type: "HIDE_ADD_MODAL" })}
       confirmLoading={loading}
       onOk={onOk}
     >
@@ -97,7 +84,7 @@ const AddPackageForm = ({
         name="basicInformation"
         layout="vertical"
         initialValues={{
-          SortIndex: packages.length + 1,
+          SortIndex: state.selectedApp.Packages.length + 1,
         }}
       >
         <Row gutter={ROW_GUTTER}>
