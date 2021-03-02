@@ -172,9 +172,6 @@ const UserTable = (
           )}
         </Tag>
       ),
-      sorter: {
-        compare: (a: IUsers, b: IUsers) => a.Status - b.Status,
-      },
     },
     {
       dataIndex: "actions",

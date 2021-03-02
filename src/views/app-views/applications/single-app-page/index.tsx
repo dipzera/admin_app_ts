@@ -34,6 +34,9 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   const { appID } = match.params;
   const [loading, setLoading] = useState<boolean>(true);
   const [state, dispatch] = useReducer(appReducer, appState);
+  const [form] = Form.useForm();
+  const [shortDesc, setShortDesc] = useState<Partial<ILocale>>({});
+  const [longDesc, setLongDesc] = useState<Partial<ILocale>>({});
   const getApp = async () =>
     await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
@@ -47,6 +50,8 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
   useEffect(() => {
     getApp().then((app) => {
       try {
+        // short/long desc is a base64 string,
+        // we parse it to js object
         setShortDesc(
           JSON.parse(window.atob(app!.ShortDescription!.toString()))
         );
@@ -70,9 +75,6 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       },
     });
   };
-  const [form] = Form.useForm();
-  const [shortDesc, setShortDesc] = useState<Partial<ILocale>>({});
-  const [longDesc, setLongDesc] = useState<Partial<ILocale>>({});
   useEffect(() => {
     if (state.isEdit) {
       form.setFieldsValue(state.selectedApp);
@@ -123,6 +125,8 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             ...state.selectedApp,
             ID: +appID,
             Name: values.Name,
+            // shortDesc is an object { en: "", ro: ""},
+            // we parse it to bas64
             ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
               "base64"
             ),
