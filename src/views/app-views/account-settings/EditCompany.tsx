@@ -49,67 +49,63 @@ class CompanyForm extends Component {
     this.getCompanyInfo();
   }
 
-  render() {
-    const onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
-      this.setState({ [e.target.name]: e.target.value });
-    };
-    const CompanyData = this.state.Company;
-    const onFinish = async (values: ICompanyData) => {
-      const key = "updatable";
-      message.loading({
-        content: TranslateText(UPDATING),
-        key,
-      });
-      setTimeout(async () => {
-        this.updateCompany(values);
-      }, 1000);
-    };
+  onChangeMask = (e: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
 
-    const onFinishFailed = (errorInfo: any) => {
-      console.log("Failed:", errorInfo);
-    };
+  onFinish = async (values: ICompanyData) => {
+    const key = "updatable";
+    message.loading({
+      content: TranslateText(UPDATING),
+      key,
+    });
+    setTimeout(async () => {
+      this.updateCompany(values);
+    }, 1000);
+  };
 
-    const onUploadAavater = (info: UploadChangeParam) => {
-      const key = "updatable";
-      if (info.file.status === "uploading") {
-        message.loading({
-          content: TranslateText(UPLOADING),
-          key,
-        });
-        return;
-      }
-      if (info.file.status === "done") {
-        Utils.getBase64(info.file.originFileObj, async (imageUrl: string) => {
-          await this.updateCompany({
-            Logo: imageUrl,
-          }).then(() => {
-            this.setState({
-              Company: { ...this.state.Company, Logo: imageUrl },
-            });
-          });
-        });
-      }
-    };
-
-    const onRemoveAvater = async () => {
-      if (!this.state.Company.Logo) {
-        return;
-      }
-      const key = "updatable";
+  onUploadAvatar = (info: UploadChangeParam) => {
+    const key = "updatable";
+    if (info.file.status === "uploading") {
       message.loading({
         content: TranslateText(UPLOADING),
         key,
       });
-      await this.updateCompany({ Logo: "" }).then(() => {
-        message.success({
-          content: TranslateText(DONE),
-          key,
-          duration: 1,
+      return;
+    }
+    if (info.file.status === "done") {
+      Utils.getBase64(info.file.originFileObj, async (imageUrl: string) => {
+        await this.updateCompany({
+          Logo: imageUrl,
+        }).then(() => {
+          this.setState({
+            Company: { ...this.state.Company, Logo: imageUrl },
+          });
         });
-        this.setState({ Company: { ...this.state.Company, Logo: "" } });
       });
-    };
+    }
+  };
 
+  onRemoveAvatar = async () => {
+    if (!this.state.Company.Logo) {
+      return;
+    }
+    const key = "updatable";
+    message.loading({
+      content: TranslateText(UPLOADING),
+      key,
+    });
+    await this.updateCompany({ Logo: "" }).then(() => {
+      message.success({
+        content: TranslateText(DONE),
+        key,
+        duration: 1,
+      });
+      this.setState({ Company: { ...this.state.Company, Logo: "" } });
+    });
+  };
+
+  render() {
     if (this.state.loading) return <Loading align="center" />;
     return (
       <>
@@ -126,7 +122,7 @@ class CompanyForm extends Component {
           <div className="ml-md-3 mt-md-0 mt-3">
             <Upload
               customRequest={Utils.dummyRequest}
-              onChange={onUploadAavater}
+              onChange={this.onUploadAvatar}
               showUploadList={false}
               beforeUpload={(info) => Utils.beforeUpload(info)}
             >
@@ -134,7 +130,7 @@ class CompanyForm extends Component {
                 <IntlMessage id={"account.EditProfile.ChangeAvatar"} />
               </Button>
             </Upload>
-            <Button className="ml-2" onClick={onRemoveAvater}>
+            <Button className="ml-2" onClick={this.onRemoveAvatar}>
               <IntlMessage id={"account.EditProfile.Remove"} />
             </Button>
           </div>
@@ -145,8 +141,7 @@ class CompanyForm extends Component {
             name="basicInformation"
             layout="vertical"
             initialValues={this.state}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            onFinish={this.onFinish}
           >
             <Row>
               <Col xs={24} sm={24} md={24} lg={16}>
@@ -286,7 +281,7 @@ class CompanyForm extends Component {
                     >
                       <MaskedInput
                         mask="+(111) 111 111 11"
-                        onChange={onChangeMask}
+                        onChange={this.onChangeMask}
                       />
                     </Form.Item>
                   </Col>
