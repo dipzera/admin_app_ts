@@ -80,7 +80,8 @@ const GridItem = ({
         </Link>
         <p className="text-muted">By IntelectSoft</p>
         <div style={{ minHeight: "70px" }}>
-          {shortDescription ? shortDescription[locale] : null}
+          {Utils.decodeBase64Locale(MarketAppList.ShortDescription)[locale] ??
+            ""}
         </div>
       </div>
       <div className="text-right">

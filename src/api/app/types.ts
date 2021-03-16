@@ -76,7 +76,7 @@ export interface IMarketAppList {
   Packages?: IAppPackage[];
   Photo: string;
   Status?: number;
-  TermsOfUse: ILocale | string;
+  TermsOfUse: ILocale | string | undefined;
 }
 
 export interface ILocale {

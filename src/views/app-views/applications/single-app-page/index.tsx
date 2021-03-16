@@ -52,12 +52,10 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
       try {
         // short/long desc is a base64 string,
         // we parse it to js object
-        setShortDesc(
-          JSON.parse(window.atob(app!.ShortDescription!.toString()))
-        );
+        setShortDesc(Utils.decodeBase64Locale(app?.ShortDescription));
       } catch {}
       try {
-        setLongDesc(JSON.parse(window.atob(app!.LongDescription!.toString())));
+        setLongDesc(Utils.decodeBase64Locale(app?.LongDescription));
       } catch {}
     });
     return () => instance._source.cancel();
@@ -127,12 +125,8 @@ const SingleAppPage = ({ match }: ISingleAppPage) => {
             Name: values.Name,
             // shortDesc is an object { en: "", ro: ""},
             // we parse it to bas64
-            ShortDescription: Buffer.from(JSON.stringify(shortDesc)).toString(
-              "base64"
-            ),
-            LongDescription: Buffer.from(JSON.stringify(longDesc)).toString(
-              "base64"
-            ),
+            ShortDescription: Utils.encodeBase64Locale(shortDesc),
+            LongDescription: Utils.encodeBase64Locale(longDesc),
           })
           .then((data) => {
             if (data && data.ErrorCode === 0) {

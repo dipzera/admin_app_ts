@@ -102,6 +102,7 @@ const BasicEdit = () => {
             <div key={locale}>
               {/* <h6>{title}</h6> */}
               <Input.TextArea
+                maxLength={80}
                 rows={4}
                 name={locale}
                 value={shortDesc[locale] ?? "en"}

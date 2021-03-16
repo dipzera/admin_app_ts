@@ -8,6 +8,7 @@ import { IState } from "../../../../redux/reducers";
 import { ILocale, IMarketAppList } from "../../../../api/app/types";
 import { AppService } from "../../../../api/app";
 import { AppContext } from "./AppContext";
+import Utils from "../../../../utils";
 
 export interface ITextArea {
   title: string;
@@ -36,9 +37,7 @@ const TermsOfUse = () => {
     useSelector((state: IState) => state["theme"].locale) ?? "en";
   useEffect(() => {
     try {
-      setTerms(
-        JSON.parse(window.atob(state.selectedApp!.TermsOfUse!.toString()))
-      );
+      setTerms(Utils.decodeBase64Locale(state.selectedApp.TermsOfUse));
     } catch {
       setTerms({ en: "", ru: "", ro: "" });
     }
@@ -62,7 +61,7 @@ const TermsOfUse = () => {
         ShortDescription,
         Status,
         Photo,
-        TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
+        TermsOfUse: Utils.encodeBase64Locale(terms),
       })
       .then((data) => {
         setLoading(false);
