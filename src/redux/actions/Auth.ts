@@ -69,33 +69,43 @@ export const authorizeUser = (
   email: string,
   password: string
 ): ThunkResult<void> => async (dispatch) => {
-  return new AuthService().Login(email, password).then((data) => {
-    dispatch(hideLoading());
-    /* Handle errors here */
-    if (data) {
-      const { ErrorCode, ErrorMessage, Token } = data;
-      if (ErrorCode === 0) {
-        dispatch(authenticated(Token ?? ""));
-        dispatch(getProfileInfo());
-        if (SUBDIR_PATH === "/testadminportal")
-          dispatch(onHeaderNavColorChange("#DE4436"));
+  return new AuthService()
+    .Login(email, password)
+    .then((data) => {
+      dispatch(hideLoading());
+      /* Handle errors here */
+      if (data) {
+        const { ErrorCode, ErrorMessage, Token } = data;
+        if (ErrorCode === 0) {
+          dispatch(authenticated(Token ?? ""));
+          dispatch(getProfileInfo());
+          if (SUBDIR_PATH === "/testadminportal")
+            dispatch(onHeaderNavColorChange("#DE4436"));
+
+          return data;
+        } else if (ErrorCode === 102) {
+          dispatch(hideLoading());
+          dispatch(showAuthMessage(ErrorMessage ?? "Error"));
+          return data;
+        } else if (ErrorCode === 108) {
+          dispatch(hideLoading());
+          Modal.confirm({
+            title: TranslateText("auth.ConfirmRegistration.Title"),
+            content: TranslateText("auth.ConfirmRegistration.Content"),
+            onOk: () => {
+              dispatch(sendActivationCode());
+            },
+          });
+          return data;
+        } else {
+          dispatch(hideLoading());
+          dispatch(showAuthMessage(ErrorMessage ?? "Error"));
+          return data;
+        }
       }
-      if (ErrorCode === 102) {
-        dispatch(hideLoading());
-        dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-      } else if (ErrorCode === 108) {
-        dispatch(hideLoading());
-        Modal.confirm({
-          title: TranslateText("auth.ConfirmRegistration.Title"),
-          content: TranslateText("auth.ConfirmRegistration.Content"),
-          onOk: () => {
-            dispatch(sendActivationCode());
-          },
-        });
-      } else {
-        dispatch(hideLoading());
-        dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-      }
-    }
-  });
+    })
+    .then((data) => {
+      dispatch(hideLoading());
+      return data;
+    });
 };

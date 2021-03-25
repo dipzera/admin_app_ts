@@ -18,6 +18,7 @@ import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { IState } from "../../../redux/reducers";
+import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 const LoginForm = ({
   authorizeUser,
   showForgetPassword,
@@ -35,15 +36,18 @@ const LoginForm = ({
   const history = useHistory();
   const onLogin = ({ email, password }: { [key: string]: string }) => {
     showLoading();
-    setTimeout(() => {
-      authorizeUser(email, Utils.encryptInput(password, API_PUBLIC_KEY));
+    setTimeout(async () => {
+      const response = await authorizeUser(
+        email,
+        await Utils.encryptInput(password, API_PUBLIC_KEY)
+      );
+      if (response.ErrorCode === 0) {
+        history.push(APP_PREFIX_PATH);
+      }
     }, 1000);
   };
 
   useEffect(() => {
-    if (token !== null) {
-      history.push(redirect);
-    }
     if (showMessage) {
       setTimeout(() => {
         hideAuthMessage();
