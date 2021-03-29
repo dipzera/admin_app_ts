@@ -6,6 +6,7 @@ import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
 import TranslateText from "../../utils/translate";
 import { DONE } from "../../constants/Messages";
+import { AuthService } from "../../api/auth";
 
 export const updateSettings = (payload: { [key: string]: any }) => ({
   type: UPDATE_SETTINGS,
@@ -18,7 +19,7 @@ export const clearSettings = () => ({
 
 export const getProfileInfo = (): ThunkResult<void> => {
   return async (dispatch) => {
-    return new AppService().GetProfileInfo().then((data: any) => {
+    return new AuthService().GetProfileInfo().then((data: any) => {
       if (data) {
         const { ErrorCode, ErrroMessage, User } = data;
         if (ErrorCode === 0) {

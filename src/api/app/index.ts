@@ -75,11 +75,6 @@ export class AppService extends HttpService {
       info: (await publicIp.v4()) || "",
     });
 
-  public GetProfileInfo = async () =>
-    this.instance.get<ApiDecorator<ApiResponse, "User", IUser>>(
-      "/GetProfileInfo"
-    );
-
   public GetCompanyInfo = async () =>
     this.instance.get<ApiDecorator<ApiResponse, "Company", ICompanyData>>(
       "/GetCompanyInfo"
