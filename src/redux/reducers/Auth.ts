@@ -6,6 +6,9 @@ import {
   SIGNOUT,
   HIDE_LOADING,
 } from "../constants/Auth";
+import Cookies from "js-cookie";
+import { DOMAIN } from "../../configs/AppConfig";
+import { EXPIRE_DAYS } from "../../constants/ApiConstant";
 export interface IAuth {
   loading?: boolean;
   message?: string;
@@ -49,6 +52,12 @@ const auth = (state = initState, action: any) => {
         showMessage: false,
       };
     case SIGNOUT:
+      Cookies.remove("Token", {
+        expires: EXPIRE_DAYS,
+        domain: DOMAIN,
+        path: "/",
+      });
+      window.location.reload();
       return {
         ...state,
         token: null,

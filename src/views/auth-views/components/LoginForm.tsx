@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { Button, Form, Input, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import {
@@ -54,10 +53,6 @@ const LoginForm = ({
       }, 3000);
     }
   }, [token, showMessage]);
-
-  useEffect(() => {
-    hideLoading();
-  }, []);
 
   return (
     <>
@@ -133,17 +128,6 @@ const LoginForm = ({
       </Form>
     </>
   );
-};
-
-LoginForm.propTypes = {
-  otherSignIn: PropTypes.bool,
-  showForgetPassword: PropTypes.bool,
-  extra: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-};
-
-LoginForm.defaultProps = {
-  otherSignIn: true,
-  showForgetPassword: false,
 };
 
 const mapStateToProps = ({ auth }: IState) => {

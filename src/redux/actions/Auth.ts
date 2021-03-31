@@ -12,8 +12,10 @@ import { DONE } from "../../constants/Messages";
 import { AuthService } from "../../api/auth";
 import { ThunkResult } from "../reducers";
 import TranslateText from "../../utils/translate";
-import { SUBDIR_PATH } from "../../configs/AppConfig";
+import { DOMAIN, SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
+import { EXPIRE_DAYS } from "../../constants/ApiConstant";
+import Cookies from "js-cookie";
 
 type Actions =
   | { type: typeof AUTHENTICATED; token: string }
@@ -77,8 +79,12 @@ export const authorizeUser = (
       if (data) {
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
-          dispatch(authenticated(Token ?? ""));
-          dispatch(getProfileInfo());
+          Cookies.set("Token", Token, {
+            expires: EXPIRE_DAYS,
+            domain: DOMAIN,
+            path: "/",
+          });
+
           if (SUBDIR_PATH === "/testadminportal")
             dispatch(onHeaderNavColorChange("#DE4436"));
 

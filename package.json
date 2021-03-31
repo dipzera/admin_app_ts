@@ -1,10 +1,10 @@
 {
   "name": "admin-portal-app",
   "version": "1.1.0",
-  "homepage": "/testadminportal",
+  "homepage": "/adminportal",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3000 HOST=localhost.com react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -14,6 +14,7 @@
     "@babel/runtime": "^7.7.4",
     "@tinymce/tinymce-react": "^3.8.1",
     "@types/jest": "^26.0.14",
+    "@types/js-cookie": "^2.2.6",
     "@types/lodash": "^4.14.161",
     "@types/node": "^14.11.2",
     "@types/react": "^16.9.49",
@@ -45,6 +46,7 @@
     "google-map-react": "^1.1.7",
     "history": "^5.0.0",
     "immutability-helper": "^3.0.1",
+    "js-cookie": "^2.2.1",
     "jsencrypt": "^3.0.0-rc.1",
     "lodash": "^4.17.20",
     "muuri": "^0.9.3",

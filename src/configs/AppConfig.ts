@@ -3,6 +3,7 @@ import { env } from "./EnvironmentConfig";
 
 export const APP_NAME = "Admin Portal App";
 export const API_APP_URL = env!.API_APP_URL;
+export const DOMAIN = env!.DOMAIN;
 export const CLIENT_URL = env!.CLIENT_URL;
 export const API_AUTH_URL = env!.API_AUTH_URL;
 export const SUBDIR_PATH = env!.SUBDIR_PATH;
