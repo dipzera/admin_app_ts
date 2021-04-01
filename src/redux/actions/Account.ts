@@ -1,6 +1,6 @@
 import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
-import { onLocaleChange } from "./Theme";
+import { onHeaderNavColorChange, onLocaleChange } from "./Theme";
 import { AppService } from "../../api/app";
 import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
@@ -24,6 +24,9 @@ export const getProfileInfo = (): ThunkResult<void> => {
         const { ErrorCode, ErrroMessage, User } = data;
         if (ErrorCode === 0) {
           dispatch(updateSettings(data.User));
+          if (window.location.origin.includes("test"))
+            dispatch(onHeaderNavColorChange("#DE4436"));
+
           if (User.UiLanguage === 0) {
             dispatch(onLocaleChange("ro"));
           } else if (User.UiLanguage === 1) {

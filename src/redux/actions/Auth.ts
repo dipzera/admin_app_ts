@@ -85,9 +85,6 @@ export const authorizeUser = (
             path: "/",
           });
 
-          if (SUBDIR_PATH === "/testadminportal")
-            dispatch(onHeaderNavColorChange("#DE4436"));
-
           return data;
         } else if (ErrorCode === 102) {
           dispatch(hideLoading());
