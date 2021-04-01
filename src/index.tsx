@@ -6,7 +6,6 @@ import { unregister } from "./serviceWorker";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { SUBDIR_PATH } from "./configs/AppConfig";
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -17,7 +16,7 @@ const render = (Component: any) => {
   return ReactDOM.render(
     <div className="App">
       <Provider store={store}>
-        <BrowserRouter basename={SUBDIR_PATH}>
+        <BrowserRouter>
           <Component />
         </BrowserRouter>
       </Provider>

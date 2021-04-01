@@ -1,7 +1,6 @@
 {
   "name": "admin-portal-app",
   "version": "1.1.0",
-  "homepage": "/adminportal",
   "private": true,
   "scripts": {
     "start": "PORT=3000 HOST=localhost.com react-scripts start",
