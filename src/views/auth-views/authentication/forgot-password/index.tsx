@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Form, Input, Button, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import IntlMessage from "../../../../components/util-components/IntlMessage";
 import { PASSWORD_SENT } from "../../../../constants/Messages";
@@ -98,9 +98,9 @@ const ForgotPassword = () => {
                           )}
                         </Button>
                       </Form.Item>
-                      <NavLink to={"auth/login"}>
+                      <Link to={"/auth"}>
                         <IntlMessage id={"auth.GoBack"} />
-                      </NavLink>
+                      </Link>
                     </Form>
                   </Col>
                 </Row>
