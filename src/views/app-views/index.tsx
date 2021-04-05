@@ -92,6 +92,10 @@ const AppViews = ({ getProfileInfo }: any) => {
           path={`${APP_PREFIX_PATH}/manage`}
           component={lazy(() => import(`./manage`))}
         />
+        <Route
+          path={`${APP_PREFIX_PATH}/templates`}
+          component={lazy(() => import(`./templates`))}
+        />
         <Redirect
           from={`${APP_PREFIX_PATH}`}
           to={`${APP_PREFIX_PATH}/dashboard`}
