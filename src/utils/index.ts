@@ -281,6 +281,23 @@ class Utils {
       return window.btoa(encodeURIComponent(JSON.stringify(obj)));
     } catch {}
   }
+
+  static encodeBase64(obj: any) {
+    try {
+      return window.btoa(encodeURIComponent(JSON.stringify(obj)));
+    } catch {
+      return "";
+    }
+  }
+
+  static decodeBase64(obj: any) {
+    try {
+      const str = obj.toString();
+      return JSON.parse(decodeURIComponent(window.atob(str)));
+    } catch {
+      return {};
+    }
+  }
 }
 
 export default Utils;
