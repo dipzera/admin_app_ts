@@ -1,13 +1,18 @@
 import { ApiDecorator, ApiResponse } from "../types";
-export type Templates = {
-  APIKey: string;
+export type TemplatesType = {
+  APIKey?: string;
+  BodyJson: string;
   Body: string;
-  ID: number;
+  ID?: number;
   Name: string;
   State: number;
-  Subject: string;
+  Subject?: string;
 };
-export type GetTemplates = ApiDecorator<ApiResponse, "Templates", Templates>;
+export type GetTemplates = ApiDecorator<
+  ApiResponse,
+  "Templates",
+  TemplatesType[]
+>;
 
 export type MailAttachments = {
   File: number[];
@@ -25,7 +30,7 @@ export type Mail = {
   To: string[];
 };
 export type SendMail = {
-  APIKey: string;
+  Token: string;
   Action: string;
   Category: string;
   Mail: Mail;

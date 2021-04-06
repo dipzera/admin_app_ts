@@ -1,19 +1,30 @@
+import { AxiosRequestConfig } from "axios";
 import HttpService from "../";
 import { API_MAIL_URL } from "../../configs/AppConfig";
 import { TokenResponse } from "../types";
-import { GetTemplates, SendMail, Templates } from "./types";
+import { GetTemplates, SendMail, TemplatesType } from "./types";
 
 export class MailService extends HttpService {
-  constructor() {
+  public constructor() {
     super(API_MAIL_URL);
+    this.interceptRequest();
   }
 
-  public GetTemplates = async (APIKey: string) =>
-    this.instance.get<GetTemplates>("/GetTemplates", { params: { APIKey } });
+  private interceptRequest = () => {
+    this.instance.interceptors.request.use((config: AxiosRequestConfig) => {
+      return {
+        ...config,
+        auth: { username: "1", password: "1" },
+      };
+    });
+  };
 
-  public UpdateTemplate = async (data: Templates) =>
+  public GetTemplates = async () =>
+    this.instance.get<GetTemplates>("/GetTemplatesByToken");
+
+  public UpdateTemplate = async (data: TemplatesType) =>
     this.instance.post<TokenResponse>("/UpdateTemplate", data);
 
   public SendMail = async (data: SendMail) =>
-    this.instance.post<TokenResponse>("/SendMail", data);
+    this.instance.post<TokenResponse>("/SendMailByToken", data);
 }

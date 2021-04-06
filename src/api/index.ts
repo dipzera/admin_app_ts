@@ -1,11 +1,20 @@
 import { message } from "antd";
-import axios, { AxiosInstance, AxiosResponse, CancelTokenSource } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  CancelTokenSource,
+} from "axios";
 import { API_APP_URL, API_AUTH_URL, DOMAIN } from "../configs/AppConfig";
 import { AUTHENTICATED, HIDE_LOADING, SIGNOUT } from "../redux/constants/Auth";
 import store from "../redux/store";
 import TranslateText from "../utils/translate";
 import { ApiDecorator, ApiResponse } from "./types";
 import Cookies from "js-cookie";
+
+export enum EnErrorCode {
+  NO_ERROR = 0,
+}
 
 declare module "axios" {
   interface AxiosResponse<T> extends Promise<T> {}
@@ -40,22 +49,19 @@ class HttpService {
       path: "/",
     });
   };
+  private _handleRequest = (config: AxiosRequestConfig) => {
+    console.log(config);
+    return {
+      ...config,
+      data: { ...config.data, Token: this._token },
+      params: { ...config.params, Token: this._token },
+      cancelToken: this._source.token,
+    };
+  };
   public _initializeRequestInterceptor = () => {
     this.instance.interceptors.request.use(
-      (config) => {
-        console.log(config);
-        /*
-         * To avoid passing the Token as a param everytime we wanna make a request,
-         * pass it here by default
-         */
-        return {
-          ...config,
-          data: { ...config.data, Token: this._token },
-          params: { ...config.params, Token: this._token },
-          cancelToken: this._source.token,
-        };
-      },
-      (error) => Promise.reject(error)
+      this._handleRequest,
+      this._handleRequestError
     );
   };
 
@@ -64,6 +70,8 @@ class HttpService {
       `${API_AUTH_URL}/RefreshToken`
     );
 
+  // FIXME: Move the RefreshToken inside the AuthService
+  // and handle the expire token scenario there
   private _handleResponse = async (response: AxiosResponse) => {
     console.log(response);
     if (response.data.ErrorCode === 118) {
@@ -128,5 +136,7 @@ class HttpService {
     }
     store.dispatch({ type: HIDE_LOADING });
   };
+
+  private _handleRequestError = (error: any) => Promise.reject(error);
 }
 export default HttpService;

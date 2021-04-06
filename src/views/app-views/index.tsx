@@ -7,9 +7,6 @@ import SingleAppPage from "./applications/single-app-page";
 import { getProfileInfo } from "../../redux/actions/Account";
 
 const AppViews = ({ getProfileInfo }: any) => {
-  useEffect(() => {
-    getProfileInfo();
-  }, []);
   return (
     <Suspense fallback={<Loading cover="content" />}>
       <Switch>
