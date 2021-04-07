@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as htmlToImage from "html-to-image";
 import { Button, Spin } from "antd";
 import { useRef, useState, useEffect } from "react";
 import EmailEditor from "react-email-editor";
@@ -79,9 +78,6 @@ const Builder = (props: RouteComponentProps) => {
       });
     }
   };
-  useEffect(() => {
-    dispatch(toggleCollapsedNav(true));
-  }, []);
   return (
     <Spin spinning={loading}>
       <h1 className="mb-3">{query.get("id") && template?.Name}</h1>
@@ -92,7 +88,11 @@ const Builder = (props: RouteComponentProps) => {
         saveTemplate={saveTemplate}
       />
       <div className="editor">
-        <EmailEditor ref={emailEditorRef} onLoad={onLoad} minHeight={800} />
+        <EmailEditor
+          ref={emailEditorRef}
+          onLoad={onLoad}
+          style={{ minHeight: "75vh" }}
+        />
       </div>
       <div className="mt-4">
         <Button
