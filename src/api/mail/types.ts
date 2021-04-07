@@ -3,6 +3,7 @@ export type TemplatesType = {
   APIKey?: string;
   BodyJson: string;
   Body: string;
+  ImageTemplate: string;
   ID?: number;
   Name: string;
   State: number;

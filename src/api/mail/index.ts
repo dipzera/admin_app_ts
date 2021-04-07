@@ -7,16 +7,14 @@ import { GetTemplates, SendMail, TemplatesType } from "./types";
 export class MailService extends HttpService {
   public constructor() {
     super(API_MAIL_URL);
-    this.interceptRequest();
+    this.instance.interceptors.request.use(this._interceptRequest);
   }
 
-  private interceptRequest = () => {
-    this.instance.interceptors.request.use((config: AxiosRequestConfig) => {
-      return {
-        ...config,
-        auth: { username: "1", password: "1" },
-      };
-    });
+  private _interceptRequest = (config: AxiosRequestConfig) => {
+    return {
+      ...config,
+      auth: { username: "1", password: "1" },
+    };
   };
 
   public GetTemplates = async () =>
