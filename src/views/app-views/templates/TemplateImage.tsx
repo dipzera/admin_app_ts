@@ -3,15 +3,13 @@ import { Avatar } from "antd";
 import { ExperimentOutlined } from "@ant-design/icons";
 interface TemplateImageProps {
   image: string;
+  setPreview: React.SetStateAction<React.Dispatch<boolean>>;
 }
-const TemplateImage = ({ image }: TemplateImageProps) => {
+const TemplateImage = ({ image, setPreview }: TemplateImageProps) => {
   return (
     <div
       onMouseOver={() => {
         /* show magnifier */
-      }}
-      onClick={() => {
-        /* show preview modal */
       }}
     >
       <Avatar

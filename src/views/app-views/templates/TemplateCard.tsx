@@ -34,9 +34,9 @@ const TemplateCard = (props: TemplatesType) => {
         visible={preview}
         close={() => setPreview(false)}
       />
-      <Card hoverable onClick={() => setPreview(true)}>
+      <Card hoverable>
         <div className="text-center">
-          <TemplateImage image={ImageTemplate} />
+          <TemplateImage image={ImageTemplate} setPreview={setPreview} />
           <div className="mt-3">
             <Dropdown
               overlay={() => <TemplateDropdownMenu {...props} />}

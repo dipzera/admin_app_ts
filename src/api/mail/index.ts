@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import HttpService from "../";
 import { API_MAIL_URL } from "../../configs/AppConfig";
-import { TokenResponse } from "../types";
+import { ApiResponse, TokenResponse } from "../types";
 import { GetTemplates, SendMail, TemplatesType } from "./types";
 
 export class MailService extends HttpService {
@@ -25,4 +25,7 @@ export class MailService extends HttpService {
 
   public SendMail = async (data: SendMail) =>
     this.instance.post<TokenResponse>("/SendMailByToken", data);
+
+  public DeleteTemplate = async (ID: number) =>
+    this.instance.get<ApiResponse>(`/DeleteTemplate`, { params: { ID } });
 }
