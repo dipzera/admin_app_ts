@@ -36,13 +36,10 @@ const LoginForm = ({
   const onLogin = ({ email, password }: { [key: string]: string }) => {
     showLoading();
     setTimeout(async () => {
-      const response = await authorizeUser(
+      await authorizeUser(
         email,
-        await Utils.encryptInput(password, API_PUBLIC_KEY)
-      );
-      if (response.ErrorCode === 0) {
-        history.push(APP_PREFIX_PATH);
-      }
+        Utils.encryptInput(password, API_PUBLIC_KEY)
+      ).then(() => hideLoading());
     }, 1000);
   };
 
@@ -53,6 +50,10 @@ const LoginForm = ({
       }, 3000);
     }
   }, [token, showMessage]);
+
+  useEffect(() => {
+    hideLoading();
+  }, []);
 
   return (
     <>

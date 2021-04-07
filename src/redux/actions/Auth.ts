@@ -12,7 +12,7 @@ import { DONE } from "../../constants/Messages";
 import { AuthService } from "../../api/auth";
 import { ThunkResult } from "../reducers";
 import TranslateText from "../../utils/translate";
-import { DOMAIN, SUBDIR_PATH } from "../../configs/AppConfig";
+import { APP_PREFIX_PATH, DOMAIN, SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
 import { EXPIRE_DAYS } from "../../constants/ApiConstant";
 import Cookies from "js-cookie";
@@ -71,7 +71,7 @@ export const authorizeUser = (
   email: string,
   password: string
 ): ThunkResult<void> => async (dispatch) => {
-  return new AuthService()
+  return await new AuthService()
     .Login(email, password)
     .then((data) => {
       dispatch(hideLoading());
@@ -84,12 +84,12 @@ export const authorizeUser = (
             domain: DOMAIN,
             path: "/",
           });
-
-          return data;
+          dispatch(getProfileInfo());
+          window.history.pushState(null, "", APP_PREFIX_PATH);
+          window.location.reload();
         } else if (ErrorCode === 102) {
           dispatch(hideLoading());
           dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-          return data;
         } else if (ErrorCode === 108) {
           dispatch(hideLoading());
           Modal.confirm({
@@ -99,16 +99,11 @@ export const authorizeUser = (
               dispatch(sendActivationCode());
             },
           });
-          return data;
         } else {
           dispatch(hideLoading());
           dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-          return data;
         }
       }
     })
-    .then((data) => {
-      dispatch(hideLoading());
-      return data;
-    });
+    .catch(() => dispatch(hideLoading()));
 };
