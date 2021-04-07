@@ -17,8 +17,9 @@ const TemplateImage = ({ image }: TemplateImageProps) => {
       <Avatar
         icon={<ExperimentOutlined />}
         shape="square"
-        size={200}
         src={image}
+        size={200}
+        style={{ maxWidth: "100%" }}
       />
     </div>
   );
