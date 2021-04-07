@@ -21,11 +21,10 @@ const BuilderModal = ({
       onCancel={() => close()}
       visible={visible}
       title="Save template"
-      confirmLoading={loading}
       onOk={async () => {
         form.validateFields().then(async ({ Name }) => {
-          await saveTemplate(Name);
           close();
+          saveTemplate(Name);
         });
       }}
     >
@@ -33,6 +32,12 @@ const BuilderModal = ({
         <Form.Item
           name="Name"
           initialValue={`Template ${moment().format("LTS")}`}
+          rules={[
+            {
+              required: true,
+              message: "Template must have a name!",
+            },
+          ]}
         >
           <Input />
         </Form.Item>
