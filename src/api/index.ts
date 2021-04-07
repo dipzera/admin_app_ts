@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 
 export enum EnErrorCode {
   NO_ERROR = 0,
+  EXPIRE_TOKEN = 118,
 }
 
 declare module "axios" {
@@ -65,50 +66,46 @@ class HttpService {
     );
   };
 
-  private _RefreshToken = async () =>
-    this.instance.get<ApiDecorator<ApiResponse, "Token", string>>(
-      `${API_AUTH_URL}/RefreshToken`
-    );
-
-  // FIXME: Move the RefreshToken inside the AuthService
-  // and handle the expire token scenario there
   private _handleResponse = async (response: AxiosResponse) => {
     console.log(response);
-    if (response.data.ErrorCode === 118) {
-      return await this._RefreshToken().then(async (data) => {
-        if (data && data.ErrorCode === 0) {
-          const { Token } = data;
-          this.setToken(Token);
-          // If the last request was a GET, we pass the Token as param
-          if (response.config.method === "get") {
-            response.config.params = {
-              ...response.config.params,
-              Token,
-            };
-            return await this.instance.request(response.config);
-          }
+    if (response.data.ErrorCode === EnErrorCode.EXPIRE_TOKEN) {
+      return await axios
+        .get(`${API_AUTH_URL}/RefreshToken`, { params: { Token: this._token } })
+        .then(async ({ data }) => {
+          console.warn(`Refresh token was called: `, data);
+          if (data && data.ErrorCode === EnErrorCode.NO_ERROR) {
+            const { Token } = data;
+            this.setToken(Token);
+            // If the last request was a GET, we pass the Token as param
+            if (response.config.method === "get") {
+              response.config.params = {
+                ...response.config.params,
+                Token,
+              };
+              return await this.instance.request(response.config);
+            }
 
-          // If the last request was a POST, we pass the Token inside body
-          if (response.config.method === "post") {
-            response.config.data = {
-              ...JSON.parse(response.config.data),
-              Token,
-            };
-            return await this.instance.request(response.config);
+            // If the last request was a POST, we pass the Token inside body
+            if (response.config.method === "post") {
+              response.config.data = {
+                ...JSON.parse(response.config.data),
+                Token,
+              };
+              return await this.instance.request(response.config);
+            }
+          } else {
+            // In case RefreshToken fails, we log out the user
+            message
+              .loading({
+                content: TranslateText("message.ExpireTime"),
+                key: "updatable",
+                duration: 1.5,
+              })
+              .then(() => {
+                store.dispatch({ type: SIGNOUT });
+              });
           }
-        } else {
-          // In case RefreshToken fails, we log out the user
-          message
-            .loading({
-              content: TranslateText("message.ExpireTime"),
-              key: "updatable",
-              duration: 1.5,
-            })
-            .then(() => {
-              store.dispatch({ type: SIGNOUT });
-            });
-        }
-      });
+        });
     } else if (
       // Handle the rest of errors here
       response.data.ErrorCode !== 0 &&
