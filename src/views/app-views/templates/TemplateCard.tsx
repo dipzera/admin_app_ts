@@ -1,32 +1,30 @@
 import * as React from "react";
 import { useState } from "react";
-import { DownOutlined } from "@ant-design/icons";
-import { Avatar, Card, Dropdown, Menu } from "antd";
+import { Card, Dropdown, Menu, message } from "antd";
 import { TemplatesType } from "../../../api/mail/types";
 import TemplateImage from "./TemplateImage";
-import Tag from "antd/es/tag";
 import TemplateDropdownMenu from "./TemplateDropdown";
 import TemplatePreviewModal from "./TemplatePreviewModal";
-const menuItems = [
-  {
-    key: "0",
-    title: "Edit",
-  },
-  {
-    key: "1",
-    title: "Delete",
-  },
-];
-const TemplateCard = (props: TemplatesType) => {
-  const { Name, ImageTemplate, State } = props;
+import BuilderModal from "./builder/BuilderModal";
+import { MailService } from "../../../api/mail";
+import { EnErrorCode } from "../../../api";
+import { RouteComponentProps } from "react-router-dom";
+interface ITemplateCard extends TemplatesType, RouteComponentProps {
+  setTemplates: React.Dispatch<React.SetStateAction<TemplatesType[]>>;
+}
+const TemplateCard = (props: ITemplateCard) => {
+  const { Name, ImageTemplate, State, setTemplates, ID } = props;
   const [preview, setPreview] = useState<boolean>(false);
-  const menu = (
-    <Menu>
-      {menuItems.map((item) => (
-        <Menu.Item key={item.key}>{item.title}</Menu.Item>
-      ))}
-    </Menu>
-  );
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const updateTemplate = async (Name: string) => {
+    return await new MailService()
+      .UpdateTemplate({ ...props, Name })
+      .then((data) => {
+        if (data && data.ErrorCode === EnErrorCode.NO_ERROR) {
+          message.success("Template renamed!");
+        }
+      });
+  };
   return (
     <>
       <TemplatePreviewModal
@@ -34,18 +32,35 @@ const TemplateCard = (props: TemplatesType) => {
         visible={preview}
         close={() => setPreview(false)}
       />
+      <BuilderModal
+        visible={modalVisible}
+        close={() => setModalVisible(false)}
+        saveTemplate={updateTemplate}
+        Name={Name}
+      />
       <Card hoverable>
         <div className="text-center">
           <TemplateImage image={ImageTemplate} setPreview={setPreview} />
-          <div className="mt-3">
-            <Dropdown
-              overlay={() => <TemplateDropdownMenu {...props} />}
+          <div className="mt-3" id="components-dropdown-demo-dropdown-button">
+            <Dropdown.Button
+              overlay={() => (
+                <TemplateDropdownMenu
+                  {...props}
+                  setTemplates={setTemplates}
+                  setModalVisible={setModalVisible}
+                />
+              )}
               placement="bottomCenter"
+              onClick={() =>
+                props.history.push(props.match.url + `/builder?id=${ID}`)
+              }
+              size="small"
+              style={{ overflow: "hidden" }}
             >
-              <a onClick={(e) => e.preventDefault()}>
-                {Name.length > 0 ? Name : "Untitled"} <DownOutlined />
-              </a>
-            </Dropdown>
+              <span style={{ maxWidth: "150px", overflow: "hidden" }}>
+                {Name.length > 0 ? Name : "Untitled"}
+              </span>
+            </Dropdown.Button>
           </div>
         </div>
       </Card>
