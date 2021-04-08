@@ -1,9 +1,8 @@
 import * as React from "react";
 import { Button, Spin } from "antd";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import EmailEditor from "react-email-editor";
 import { useDispatch } from "react-redux";
-import { toggleCollapsedNav } from "../../../../redux/actions/Theme";
 import { MailService } from "../../../../api/mail";
 import Utils from "../../../../utils";
 import BuilderModal from "./BuilderModal";
@@ -83,7 +82,6 @@ const Builder = (props: RouteComponentProps) => {
       <h1 className="mb-3">{query.get("id") && template?.Name}</h1>
       <BuilderModal
         visible={modalVisible}
-        loading={loading}
         close={() => setModalVisible(false)}
         saveTemplate={saveTemplate}
       />
