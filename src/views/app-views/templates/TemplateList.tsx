@@ -47,9 +47,9 @@ const TemplateList = (props: RouteComponentProps) => {
     <Row gutter={50} className="mt-4">
       {templates
         .sort((a, b) => b.ID! - a.ID!)
-        .map((temp) => (
-          <Col xs={24} md={8} lg={6} xxl={4}>
-            <TemplateCard {...temp} />
+        .map((temp, idx) => (
+          <Col xs={24} md={8} lg={6} xxl={4} key={idx}>
+            <TemplateCard {...temp} setTemplates={setTemplates} {...props} />
           </Col>
         ))}
     </Row>
