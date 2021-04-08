@@ -26,11 +26,13 @@ const TemplatePreviewModal = (props: ITemplatePreview) => {
         </Link>,
       ]}
     >
-      <img
-        src={ImageTemplate}
-        alt="Template preview"
-        style={{ maxWidth: "100%" }}
-      />
+      {ImageTemplate && (
+        <img
+          src={ImageTemplate}
+          alt="Template preview"
+          style={{ maxWidth: "100%" }}
+        />
+      )}
     </Modal>
   );
 };
