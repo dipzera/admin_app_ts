@@ -17,6 +17,7 @@ import { ITheme } from "../redux/reducers/Theme";
 import { IAuth } from "../redux/reducers/Auth";
 import { IState } from "../redux/reducers";
 import Cookies from "js-cookie";
+import { TOKEN } from "../constants/ApiConstant";
 interface IViews extends ITheme, IAuth, RouteComponentProps {}
 function RouteInterceptor({
   component: Component,
@@ -59,7 +60,7 @@ const Views = (props: IViews) => {
           </Route>
           <RouteInterceptor
             path={APP_PREFIX_PATH}
-            isAuthenticated={Cookies.get("Token")}
+            isAuthenticated={Cookies.get(TOKEN)}
             component={AppLayout}
           />
         </Switch>
