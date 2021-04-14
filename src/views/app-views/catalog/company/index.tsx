@@ -182,7 +182,11 @@ export class CompanyList extends Component {
       <Menu.Item
         onClick={async () => {
           const token = await this.getManagedToken(row.ID ?? 0);
-          if (token) window.open(`${CLIENT_URL}/auth/admin/${token}`, "_blank");
+          if (token)
+            window.open(
+              `${CLIENT_URL}/auth/admin?token=${token}&company_id=${row.ID}`,
+              "_blank"
+            );
         }}
       >
         <Flex alignItems="center">

@@ -13,6 +13,7 @@ import IntlMessage from "../../../../../components/util-components/IntlMessage";
 import TranslateText from "../../../../../utils/translate";
 import { AppService } from "../../../../../api/app";
 import { DONE } from "../../../../../constants/Messages";
+import { AppContext } from "../AppContext";
 const imageUploadProps: any = {
   name: "file",
   multiple: false,
@@ -20,21 +21,9 @@ const imageUploadProps: any = {
   showUploadList: false,
 };
 
-const General = ({
-  app,
-  edit,
-  setEdit,
-  uploadedImg,
-  uploadLoading,
-  handleUploadChange,
-  setLongDesc,
-  status,
-  shortDesc,
-  setShortDesc,
-  longDesc,
-  getApp,
-}: any) => {
+const General = ({ handleUploadChange }: any) => {
   const [loading, setLoading] = useState(false);
+  const { state, dispatch, getApp } = React.useContext(AppContext);
   return (
     <>
       <Row gutter={16}>
@@ -48,23 +37,14 @@ const General = ({
                 <Button
                   type="primary"
                   onClick={() => {
-                    setEdit(!edit);
+                    dispatch({ type: "TOGGLE_EDIT" });
                   }}
                   className="mb-2"
                   icon={<EditOutlined />}
                 />
               </Tooltip>
             </Flex>
-            {edit ? (
-              <BasicEdit
-                setShortDesc={setShortDesc}
-                shortDesc={shortDesc}
-                setLongDesc={setLongDesc}
-                longDesc={longDesc}
-              />
-            ) : (
-              <BasicView app={app} shortDesc={shortDesc} longDesc={longDesc} />
-            )}
+            {state.isEdit ? <BasicEdit /> : <BasicView />}
           </Card>
         </Col>
         <Col xs={24} sm={24} md={7}>
@@ -75,11 +55,11 @@ const General = ({
               beforeUpload={(info) => Utils.beforeUpload(info)}
               onChange={(e) => handleUploadChange(e)}
             >
-              {uploadedImg ? (
-                <img src={uploadedImg} alt="avatar" className="img-fluid" />
+              {state.image ? (
+                <img src={state.image} alt="avatar" className="img-fluid" />
               ) : (
                 <div>
-                  {uploadLoading ? (
+                  {state.uploadLoading ? (
                     <div>
                       <LoadingOutlined className="font-size-xxl text-primary" />
                       <div className="mt-3">
@@ -102,13 +82,13 @@ const General = ({
             <Select
               className="w-100"
               placeholder="Status"
-              defaultValue={status}
+              defaultValue={state.selectedApp.Status}
               loading={loading}
               disabled={loading}
               onChange={async (value) => {
                 setLoading(true);
                 return await new AppService()
-                  .ChangeMarketAppStatus(app.ID, value)
+                  .ChangeMarketAppStatus(state.selectedApp.ID, value)
                   .then((data) => {
                     setLoading(false);
                     if (data && data.ErrorCode === 0) {

@@ -20,49 +20,45 @@ interface IEditProfile {
   account: IAccount;
 }
 class EditProfile extends Component<IEditProfile> {
-  render() {
-    let { account, setProfileInfo } = this.props;
+  onFinish = (values: IAccount) => {
+    const key = "updatable";
+    message.loading({
+      content: TranslateText("message.Updating"),
+      key,
+    });
+    setTimeout(async () => {
+      this.props.setProfileInfo({
+        ...this.props.account,
+        ...values,
+      });
+    }, 1000);
+  };
 
-    const onFinish = (values: IAccount) => {
-      const key = "updatable";
+  onUploadAvatar = (info: UploadChangeParam) => {
+    const key = "updatable";
+    if (info.file.status === "uploading") {
       message.loading({
-        content: TranslateText("message.Updating"),
+        content: TranslateText(UPLOADING),
         key,
       });
-      setTimeout(async () => {
-        this.props.setProfileInfo({
-          ...account,
-          ...values,
+      return;
+    }
+    if (info.file.status === "done") {
+      Utils.getBase64(info.file.originFileObj, (imageUrl: string) => {
+        setProfileInfo({
+          ...this.props.account,
+          Photo: imageUrl,
         });
-      }, 1000);
-    };
-
-    const onUploadAavater = (info: UploadChangeParam) => {
-      const key = "updatable";
-      if (info.file.status === "uploading") {
-        message.loading({
-          content: TranslateText(UPLOADING),
-          key,
-        });
-        return;
-      }
-      if (info.file.status === "done") {
-        Utils.getBase64(info.file.originFileObj, (imageUrl: string) => {
-          setProfileInfo({
-            ...account,
-            Photo: imageUrl,
-          });
-        });
-      }
-    };
-
-    const onRemoveAvater = () => {
-      setProfileInfo({
-        ...account,
-        Photo: "",
       });
-    };
-
+    }
+  };
+  onRemoveAvatar = () => {
+    setProfileInfo({
+      ...this.props.account,
+      Photo: "",
+    });
+  };
+  render() {
     return (
       <>
         <Flex
@@ -70,11 +66,15 @@ class EditProfile extends Component<IEditProfile> {
           mobileFlex={false}
           className="text-center text-md-left"
         >
-          <Avatar size={90} src={account.Photo} icon={<UserOutlined />} />
+          <Avatar
+            size={90}
+            src={this.props.account.Photo}
+            icon={<UserOutlined />}
+          />
           <div className="ml-md-3 mt-md-0 mt-3">
             <Upload
               customRequest={Utils.dummyRequest}
-              onChange={onUploadAavater}
+              onChange={this.onUploadAvatar}
               showUploadList={false}
               beforeUpload={(info) => Utils.beforeUpload(info)}
             >
@@ -82,7 +82,7 @@ class EditProfile extends Component<IEditProfile> {
                 <IntlMessage id={"account.EditProfile.ChangeAvatar"} />
               </Button>
             </Upload>
-            <Button className="ml-2" onClick={onRemoveAvater}>
+            <Button className="ml-2" onClick={this.onRemoveAvatar}>
               <IntlMessage id={"account.EditProfile.Remove"} />
             </Button>
           </div>
@@ -91,8 +91,8 @@ class EditProfile extends Component<IEditProfile> {
           <Form
             name="basicInformation"
             layout="vertical"
-            initialValues={account}
-            onFinish={onFinish}
+            initialValues={this.props.account}
+            onFinish={this.onFinish}
           >
             <Row>
               <Col xs={24} sm={24} md={24} lg={16}>

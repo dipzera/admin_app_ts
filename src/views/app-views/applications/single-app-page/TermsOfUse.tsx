@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Flex from "../../../../components/shared-components/Flex";
 import TextEditor from "./TextEditor";
 import { EditOutlined } from "@ant-design/icons";
@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { IState } from "../../../../redux/reducers";
 import { ILocale, IMarketAppList } from "../../../../api/app/types";
 import { AppService } from "../../../../api/app";
+import { AppContext } from "./AppContext";
+import Utils from "../../../../utils";
 
 export interface ITextArea {
   title: string;
@@ -26,22 +28,16 @@ const textarea: ITextArea[] = [
     locale: "ru",
   },
 ];
-const TermsOfUse = ({
-  app,
-  getApp,
-}: {
-  app: Partial<IMarketAppList>;
-  getApp: () => void;
-}) => {
+const TermsOfUse = () => {
+  const { state, dispatch, getApp } = useContext(AppContext);
   const [edit, setEdit] = useState<boolean>(false);
   const [terms, setTerms] = useState<Partial<ILocale>>({});
   const [loading, setLoading] = useState<boolean>(false);
   const locale: "en" | "ro" | "ru" =
     useSelector((state: IState) => state["theme"].locale) ?? "en";
-  const dispatch = useDispatch();
   useEffect(() => {
     try {
-      setTerms(JSON.parse(window.atob(app!.TermsOfUse!.toString())));
+      setTerms(Utils.decodeBase64Locale(state.selectedApp.TermsOfUse));
     } catch {
       setTerms({ en: "", ru: "", ro: "" });
     }
@@ -55,7 +51,7 @@ const TermsOfUse = ({
       ShortDescription,
       Status,
       Photo,
-    } = app as IMarketAppList;
+    } = state.selectedApp as IMarketAppList;
     setLoading(true);
     return new AppService()
       .UpdateMarketApp({
@@ -65,7 +61,7 @@ const TermsOfUse = ({
         ShortDescription,
         Status,
         Photo,
-        TermsOfUse: Buffer.from(JSON.stringify(terms)).toString("base64"),
+        TermsOfUse: Utils.encodeBase64Locale(terms),
       })
       .then((data) => {
         setLoading(false);

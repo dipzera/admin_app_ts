@@ -31,20 +31,6 @@ const GridItem = ({
   getApplications: () => void;
   setSpinLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const [shortDescription, setShortDescription] = useState<Partial<ILocale>>(
-    {}
-  );
-  const locale: "en" | "ro" | "ru" =
-    useSelector((state: IState) => state["theme"].locale) ?? "en";
-  useEffect(() => {
-    try {
-      setShortDescription(
-        JSON.parse(window.atob(MarketAppList.ShortDescription.toString()))
-      );
-    } catch {
-      setShortDescription({ en: "", ru: "", ro: "" });
-    }
-  }, []);
   return (
     <Card>
       <Flex className="mb-3 " justifyContent="between">
@@ -79,9 +65,6 @@ const GridItem = ({
           <h3 className="app-link mb-0 cursor-pointer">{MarketAppList.Name}</h3>
         </Link>
         <p className="text-muted">By IntelectSoft</p>
-        <div style={{ minHeight: "70px" }}>
-          {shortDescription ? shortDescription[locale] : null}
-        </div>
       </div>
       <div className="text-right">
         <ToggleAppButton

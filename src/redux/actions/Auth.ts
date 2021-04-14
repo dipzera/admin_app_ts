@@ -12,8 +12,10 @@ import { DONE } from "../../constants/Messages";
 import { AuthService } from "../../api/auth";
 import { ThunkResult } from "../reducers";
 import TranslateText from "../../utils/translate";
-import { SUBDIR_PATH } from "../../configs/AppConfig";
+import { APP_PREFIX_PATH, DOMAIN, SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
+import { EXPIRE_DAYS } from "../../constants/ApiConstant";
+import Cookies from "js-cookie";
 
 type Actions =
   | { type: typeof AUTHENTICATED; token: string }
@@ -69,33 +71,39 @@ export const authorizeUser = (
   email: string,
   password: string
 ): ThunkResult<void> => async (dispatch) => {
-  return new AuthService().Login(email, password).then((data) => {
-    dispatch(hideLoading());
-    /* Handle errors here */
-    if (data) {
-      const { ErrorCode, ErrorMessage, Token } = data;
-      if (ErrorCode === 0) {
-        dispatch(authenticated(Token ?? ""));
-        dispatch(getProfileInfo());
-        if (SUBDIR_PATH === "/testadminportal")
-          dispatch(onHeaderNavColorChange("#DE4436"));
+  return await new AuthService()
+    .Login(email, password)
+    .then((data) => {
+      dispatch(hideLoading());
+      /* Handle errors here */
+      if (data) {
+        const { ErrorCode, ErrorMessage, Token } = data;
+        if (ErrorCode === 0) {
+          Cookies.set("Token", Token, {
+            expires: EXPIRE_DAYS,
+            domain: DOMAIN,
+            path: "/",
+          });
+          dispatch(getProfileInfo());
+          window.history.pushState(null, "", APP_PREFIX_PATH);
+          window.location.reload();
+        } else if (ErrorCode === 102) {
+          dispatch(hideLoading());
+          dispatch(showAuthMessage(ErrorMessage ?? "Error"));
+        } else if (ErrorCode === 108) {
+          dispatch(hideLoading());
+          Modal.confirm({
+            title: TranslateText("auth.ConfirmRegistration.Title"),
+            content: TranslateText("auth.ConfirmRegistration.Content"),
+            onOk: () => {
+              dispatch(sendActivationCode());
+            },
+          });
+        } else {
+          dispatch(hideLoading());
+          dispatch(showAuthMessage(ErrorMessage ?? "Error"));
+        }
       }
-      if (ErrorCode === 102) {
-        dispatch(hideLoading());
-        dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-      } else if (ErrorCode === 108) {
-        dispatch(hideLoading());
-        Modal.confirm({
-          title: TranslateText("auth.ConfirmRegistration.Title"),
-          content: TranslateText("auth.ConfirmRegistration.Content"),
-          onOk: () => {
-            dispatch(sendActivationCode());
-          },
-        });
-      } else {
-        dispatch(hideLoading());
-        dispatch(showAuthMessage(ErrorMessage ?? "Error"));
-      }
-    }
-  });
+    })
+    .catch(() => dispatch(hideLoading()));
 };

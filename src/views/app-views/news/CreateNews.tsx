@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Col, Form, message, Row, Select, Upload } from "antd";
+import ReactQuill from "react-quill";
+import { Col, Form, message, Row, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import Modal from "antd/lib/modal/Modal";
 import Flex from "../../../components/shared-components/Flex";
 import { DONE, UPLOADING } from "../../../constants/Messages";
 import { ROW_GUTTER } from "../../../constants/ThemeConstant";
 import Utils from "../../../utils";
-import TextEditor from "../applications/single-app-page/TextEditor";
 import { AppService } from "../../../api/app";
 import { UploadChangeParam } from "antd/lib/upload";
 import TranslateText from "../../../utils/translate";
@@ -22,12 +22,8 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
   useEffect(() => {
     if (!visible) return;
     setPhoto("");
-    setHeader("");
-    setContent("");
   }, [visible, form]);
   const [photo, setPhoto] = useState<string>("");
-  const [header, setHeader] = useState<string>("");
-  const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const onUploadAvatar = (info: UploadChangeParam) => {
     if (info.file.status === "uploading") {
@@ -47,15 +43,15 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
       });
     }
   };
-  const onFinish = () => {
+  const onFinish = ({ Header, Content }: any) => {
     setLoading(true);
     setTimeout(async () => {
       return await new AppService()
         .UpdateNews({
           ID: 0,
           Photo: photo,
-          Content: content,
-          Header: header,
+          Content,
+          Header,
           ProductType: AppType,
         })
         .then(async (data) => {
@@ -82,8 +78,8 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
       destroyOnClose
       confirmLoading={loading}
       onOk={() => {
-        form.validateFields().then(() => {
-          onFinish();
+        form.validateFields().then((values) => {
+          onFinish(values);
         });
       }}
     >
@@ -114,19 +110,13 @@ const CreateNews = ({ getNews, visible, close, AppType }: ICreateNews) => {
       <Form form={form} name="createNews" layout="vertical">
         <Row gutter={ROW_GUTTER}>
           <Col xs={24} sm={24} md={24}>
-            <Form.Item label={"Header"}>
-              <TextEditor
-                apps={header}
-                handleEditorChange={(field: string) => setHeader(field)}
-              />
+            <Form.Item label={"Header"} name="Header">
+              <ReactQuill />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={24}>
-            <Form.Item label={"Content"}>
-              <TextEditor
-                apps={content}
-                handleEditorChange={(field: string) => setContent(field)}
-              />
+            <Form.Item label={"Content"} name="Content">
+              <ReactQuill />
             </Form.Item>
           </Col>
         </Row>

@@ -266,6 +266,38 @@ class Utils {
   static sortData(array: any, key: any) {
     return array.slice().sort((a: any, b: any) => a[key] - b[key]);
   }
+
+  static decodeBase64Locale(data: any) {
+    try {
+      const str = data.toString();
+      return JSON.parse(decodeURIComponent(window.atob(str)));
+    } catch {
+      return { en: "", ro: "", ru: "" };
+    }
+  }
+
+  static encodeBase64Locale(obj: any) {
+    try {
+      return window.btoa(encodeURIComponent(JSON.stringify(obj)));
+    } catch {}
+  }
+
+  static encodeBase64(obj: any) {
+    try {
+      return window.btoa(encodeURIComponent(JSON.stringify(obj)));
+    } catch {
+      return "";
+    }
+  }
+
+  static decodeBase64(obj: any) {
+    try {
+      const str = obj.toString();
+      return JSON.parse(decodeURIComponent(window.atob(str)));
+    } catch {
+      return {};
+    }
+  }
 }
 
 export default Utils;

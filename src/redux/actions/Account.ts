@@ -1,11 +1,12 @@
 import { CLEAR_SETTINGS, UPDATE_SETTINGS } from "../constants/Account";
 import { message } from "antd";
-import { onLocaleChange } from "./Theme";
+import { onHeaderNavColorChange, onLocaleChange } from "./Theme";
 import { AppService } from "../../api/app";
 import { ThunkResult } from "../reducers";
 import { IAccount } from "../reducers/Account";
 import TranslateText from "../../utils/translate";
 import { DONE } from "../../constants/Messages";
+import { AuthService } from "../../api/auth";
 
 export const updateSettings = (payload: { [key: string]: any }) => ({
   type: UPDATE_SETTINGS,
@@ -18,11 +19,14 @@ export const clearSettings = () => ({
 
 export const getProfileInfo = (): ThunkResult<void> => {
   return async (dispatch) => {
-    return new AppService().GetProfileInfo().then((data: any) => {
+    return await new AuthService().GetProfileInfo().then((data: any) => {
       if (data) {
-        const { ErrorCode, ErrroMessage, User } = data;
+        const { ErrorCode, User } = data;
         if (ErrorCode === 0) {
           dispatch(updateSettings(data.User));
+          if (window.location.origin.includes("test"))
+            dispatch(onHeaderNavColorChange("#DE4436"));
+
           if (User.UiLanguage === 0) {
             dispatch(onLocaleChange("ro"));
           } else if (User.UiLanguage === 1) {

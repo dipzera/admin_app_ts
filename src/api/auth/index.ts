@@ -1,6 +1,7 @@
 import HttpService from "../";
 import { API_AUTH_URL } from "../../configs/AppConfig";
 import { IAccount } from "../../redux/reducers/Account";
+import { IUser } from "../app/types";
 import { ApiDecorator, ApiResponse } from "../types";
 const publicIp = require("react-public-ip");
 export class AuthService extends HttpService {
@@ -16,6 +17,11 @@ export class AuthService extends HttpService {
         Password,
         info: (await publicIp.v4()) || ("" as string),
       }
+    );
+
+  public GetProfileInfo = async () =>
+    this.instance.get<ApiDecorator<ApiResponse, "User", IUser>>(
+      "/GetProfileInfo"
     );
 
   public SendActivationCode = async (UserID?: number) =>

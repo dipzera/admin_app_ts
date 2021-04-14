@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Col,
@@ -16,26 +16,17 @@ import TranslateText from "../../../utils/translate";
 import { IAppPackage } from "../../../api/app/types";
 import { AppService } from "../../../api/app";
 import { IAppPackageValues } from "./AddPackageForm";
-interface IEditPackageForm {
-  packages: Partial<IAppPackage>;
-  visible: boolean;
-  close: () => void;
-  getApp: () => void;
-}
-const EditPackageForm = ({
-  packages,
-  visible,
-  close,
-  getApp,
-}: IEditPackageForm) => {
+import { AppContext } from "./single-app-page/AppContext";
+const EditPackageForm = () => {
   const [form] = Form.useForm();
+  const { state, dispatch } = useContext(AppContext);
   useEffect(() => {
-    if (!visible) return;
+    if (!state.isEditPackageVisible) return;
 
+    console.log(state.isEditPackageVisible);
     form.resetFields();
-  }, [visible, form]);
+  }, [state.isEditPackageVisible, form]);
 
-  const dispatch = useDispatch();
   const onFinish = (values: IAppPackageValues) => {
     const Status = values.Status ? 1 : 0;
     const ValidFrom = moment(values.ValidDate[0]["_d"]).format(
@@ -47,7 +38,7 @@ const EditPackageForm = ({
     delete values.Range;
     delete values.ValidDate;
     const AppPackage = {
-      ...packages,
+      ...state.selectedPackage,
       ...values,
       Status,
       ValidFrom,
@@ -66,7 +57,7 @@ const EditPackageForm = ({
     form
       .validateFields()
       .then((values: any) => {
-        close();
+        dispatch({ type: "HIDE_EDIT_MODAL" });
         onFinish(values);
       })
       .catch((info) => {
@@ -77,8 +68,8 @@ const EditPackageForm = ({
     <Modal
       destroyOnClose
       title={TranslateText("applications.Packages.Edit")}
-      visible={visible}
-      onCancel={close}
+      visible={state.isEditPackageVisible}
+      onCancel={() => dispatch({ type: "HIDE_EDIT_MODAL" })}
       onOk={onOk}
     >
       <Form
@@ -86,8 +77,11 @@ const EditPackageForm = ({
         name="basicInformation"
         layout="vertical"
         initialValues={{
-          ...packages,
-          ValidDate: [moment(packages.ValidFrom), moment(packages.ValidTo)],
+          ...state.selectedPackage,
+          ValidDate: [
+            moment(state.selectedPackage && state.selectedPackage!.ValidFrom),
+            moment(state.selectedPackage && state.selectedPackage!.ValidTo),
+          ],
         }}
       >
         <Row gutter={ROW_GUTTER}>

@@ -13,3 +13,4 @@ export interface ApiResponse {
   ErrorCode?: number;
   ErrorMessage?: string;
 }
+export type TokenResponse = ApiDecorator<ApiResponse, "Token", string>;

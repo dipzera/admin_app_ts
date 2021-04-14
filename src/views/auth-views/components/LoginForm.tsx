@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import { Button, Form, Input, Alert } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import {
@@ -18,6 +17,7 @@ import Utils from "../../../utils";
 import { API_PUBLIC_KEY } from "../../../constants/ApiConstant";
 import IntlMessage from "../../../components/util-components/IntlMessage";
 import { IState } from "../../../redux/reducers";
+import { APP_PREFIX_PATH } from "../../../configs/AppConfig";
 const LoginForm = ({
   authorizeUser,
   showForgetPassword,
@@ -35,15 +35,15 @@ const LoginForm = ({
   const history = useHistory();
   const onLogin = ({ email, password }: { [key: string]: string }) => {
     showLoading();
-    setTimeout(() => {
-      authorizeUser(email, Utils.encryptInput(password, API_PUBLIC_KEY));
+    setTimeout(async () => {
+      await authorizeUser(
+        email,
+        Utils.encryptInput(password, API_PUBLIC_KEY)
+      ).then(() => hideLoading());
     }, 1000);
   };
 
   useEffect(() => {
-    if (token !== null) {
-      history.push(redirect);
-    }
     if (showMessage) {
       setTimeout(() => {
         hideAuthMessage();
@@ -129,17 +129,6 @@ const LoginForm = ({
       </Form>
     </>
   );
-};
-
-LoginForm.propTypes = {
-  otherSignIn: PropTypes.bool,
-  showForgetPassword: PropTypes.bool,
-  extra: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-};
-
-LoginForm.defaultProps = {
-  otherSignIn: true,
-  showForgetPassword: false,
 };
 
 const mapStateToProps = ({ auth }: IState) => {

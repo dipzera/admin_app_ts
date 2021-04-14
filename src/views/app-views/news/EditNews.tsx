@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactQuill from "react-quill";
 import { useEffect, useState } from "react";
 import { Col, Form, message, Modal, Row, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
@@ -20,14 +21,10 @@ interface IEditNews {
 const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
   const [form] = Form.useForm();
   const [Photo, setPhoto] = useState<string>("");
-  const [Header, setHeader] = useState<string>("");
-  const [Content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     if (news) {
       setPhoto(news.Photo ?? "");
-      setHeader(news.Header ?? "");
-      setContent(news.Content ?? "");
     }
   }, [news]);
 
@@ -50,7 +47,7 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
     }
   };
 
-  const onFinish = () => {
+  const onFinish = ({ Content, Header }: any) => {
     setLoading(true);
     setTimeout(async () => {
       return await new AppService()
@@ -83,8 +80,8 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
       destroyOnClose
       confirmLoading={loading}
       onOk={() => {
-        form.validateFields().then(() => {
-          onFinish();
+        form.validateFields().then((values) => {
+          onFinish(values);
         });
       }}
     >
@@ -115,19 +112,13 @@ const EditNews = ({ visible, close, news, getNews }: IEditNews) => {
       <Form form={form} name="createNews" layout="vertical">
         <Row gutter={ROW_GUTTER}>
           <Col xs={24} sm={24} md={24}>
-            <Form.Item label={"Header"}>
-              <TextEditor
-                apps={Header}
-                handleEditorChange={(field: string) => setHeader(field)}
-              />
+            <Form.Item label={"Header"} name="Header">
+              <ReactQuill />
             </Form.Item>
           </Col>
           <Col xs={24} sm={24} md={24}>
-            <Form.Item label={"Content"}>
-              <TextEditor
-                apps={Content}
-                handleEditorChange={(field: string) => setContent(field)}
-              />
+            <Form.Item label={"Content"} name="Content">
+              <ReactQuill />
             </Form.Item>
           </Col>
         </Row>

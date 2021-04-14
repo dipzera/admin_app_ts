@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Card, Col, Menu, Row, Tag, Tooltip } from "antd";
 import { CloseOutlined, CheckOutlined } from "@ant-design/icons";
 import Flex from "../../../../components/shared-components/Flex";
@@ -16,6 +16,7 @@ import { IMarketAppList, IAppPackage } from "../../../../api/app/types";
 import { MuuriComponent } from "muuri-react";
 import Utils from "../../../../utils";
 import { AppService } from "../../../../api/app";
+import { AppContext } from "./AppContext";
 
 const ItemHeader = ({ packages }: { packages: IAppPackage }) => (
   <>
@@ -61,40 +62,47 @@ const ItemFooter = ({ packages }: { packages: IAppPackage }) => (
 
 const ItemAction = ({
   packages,
-  showEditPackageModal,
   deletePackage,
 }: {
   packages: IAppPackage;
-  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
-}) => (
-  <EllipsisDropdown
-    menu={
-      <Menu>
-        <Menu.Item key={1} onClick={() => showEditPackageModal(packages)}>
-          <EditOutlined />
-          <span>
-            <IntlMessage id="applications.Packages.Edit" />
-          </span>
-        </Menu.Item>
-        <Menu.Divider />
-        <Menu.Item key={2} onClick={() => deletePackage(packages.ID)}>
-          <DeleteOutlined />
-          <span>
-            <IntlMessage id="applications.Packages.Delete" />
-          </span>
-        </Menu.Item>
-      </Menu>
-    }
-  />
-);
+}) => {
+  const { state, dispatch } = useContext(AppContext);
+  return (
+    <EllipsisDropdown
+      menu={
+        <Menu>
+          <Menu.Item
+            key={1}
+            onClick={() => {
+              dispatch({
+                type: "SHOW_EDIT_MODAL",
+                payload: packages,
+              });
+            }}
+          >
+            <EditOutlined />
+            <span>
+              <IntlMessage id="applications.Packages.Edit" />
+            </span>
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key={2} onClick={() => deletePackage(packages.ID)}>
+            <DeleteOutlined />
+            <span>
+              <IntlMessage id="applications.Packages.Delete" />
+            </span>
+          </Menu.Item>
+        </Menu>
+      }
+    />
+  );
+};
 const CardItem = ({
   packages,
-  showEditPackageModal,
   deletePackage,
 }: {
   packages: IAppPackage;
-  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
 }) => {
   return (
@@ -107,11 +115,7 @@ const CardItem = ({
     >
       <Flex alignItems="center" justifyContent="between">
         <ItemHeader packages={packages} />
-        <ItemAction
-          deletePackage={deletePackage}
-          packages={packages}
-          showEditPackageModal={showEditPackageModal}
-        />
+        <ItemAction deletePackage={deletePackage} packages={packages} />
       </Flex>
       <div className="mt-2">
         <ItemFooter packages={packages} />
@@ -121,20 +125,13 @@ const CardItem = ({
 };
 
 const Packages = ({
-  packages,
-  showEditPackageModal,
   deletePackage,
-  showAddPackageModal,
-  getMarketApps,
 }: {
-  packages: IAppPackage[];
-  showEditPackageModal: (packages: IAppPackage) => void;
   deletePackage: (ID: number) => void;
-  showAddPackageModal: () => void;
-  getMarketApps: () => Promise<IMarketAppList | undefined>;
 }) => {
+  const { state, dispatch } = useContext(AppContext);
   const [pckgs, setPckgs] = useState<any>(
-    Utils.sortData(packages, "SortIndex")
+    Utils.sortData(state.selectedApp.Packages, "SortIndex")
   );
   const [swappable, setSwappable] = useState<boolean>(false);
 
@@ -151,11 +148,7 @@ const Packages = ({
         key={elm.SortIndex}
         id={index + 1}
       >
-        <CardItem
-          packages={elm}
-          showEditPackageModal={showEditPackageModal}
-          deletePackage={deletePackage}
-        />
+        <CardItem packages={elm} deletePackage={deletePackage} />
       </Col>
     )
   );
@@ -191,7 +184,7 @@ const Packages = ({
           <Button
             type="primary"
             className="ml-3"
-            onClick={() => showAddPackageModal()}
+            onClick={() => dispatch({ type: "SHOW_ADD_MODAL" })}
           >
             <PlusOutlined />{" "}
             <span>
