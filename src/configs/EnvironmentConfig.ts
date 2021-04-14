@@ -10,7 +10,7 @@ const dev = {
 const test = {
   API_APP_URL: "https://api.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://api.edi.md/ISAuthService/json",
-  CLIENT_URL: "https://eservicii.md",
+  CLIENT_URL: "https://client.eservicii.md",
   API_MAIL_URL: "https://api.edi.md/ISMailService/json",
   DOMAIN: "eservicii.md",
   SUBDIR_PATH: "/adminportal",
