@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Tag, Avatar, Card, Empty, Button, Spin } from "antd";
+import { Row, Col, Tag, Avatar, Card, Empty, Button, Spin, Input } from "antd";
 import {
   ExperimentOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import Flex from "../../../components/shared-components/Flex";
 import { Link } from "react-router-dom";
@@ -17,6 +18,7 @@ import { AppService } from "../../../api/app";
 import "./applications.scss";
 import ToggleAppButton from "./ToggleAppButton";
 import Utils from "../../../utils";
+import TranslateText from "../../../utils/translate";
 
 export enum EnApp {
   ACTIVATED = 1,
@@ -83,12 +85,15 @@ const AppList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [spinLoading, setSpinLoading] = useState<boolean>(false);
   const [apps, setApps] = useState<IMarketAppList[]>([]);
+  const [appsToSearch, setAppsToSearch] = useState<IMarketAppList[]>([]);
   const getApplications = async () => {
     return await instance.GetMarketAppList().then((data) => {
       if (data && data.ErrorCode === 0) {
         setLoading(false);
         setSpinLoading(false);
-        setApps(Utils.sortData(data.MarketAppList, "ID"));
+        const evaluatedApps = Utils.sortData(data.MarketAppList, "ID");
+        setApps(evaluatedApps);
+        setAppsToSearch(evaluatedApps);
       }
     });
   };
@@ -105,6 +110,14 @@ const AppList = () => {
   }
   return (
     <Spin spinning={spinLoading}>
+      <Input
+        style={{ maxWidth: "300px" }}
+        prefix={<SearchOutlined />}
+        placeholder={TranslateText("app.Search")}
+        onChange={(e) => {
+          setApps(Utils.wildCardSearch(appsToSearch, e.target.value));
+        }}
+      />
       <div
         className={`my-4 
                     container-fluid`}
