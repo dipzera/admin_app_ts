@@ -5,6 +5,7 @@ export const APP_NAME = "Admin Portal App";
 export const API_APP_URL = env!.API_APP_URL;
 export const DOMAIN = env!.DOMAIN;
 export const CLIENT_URL = env!.CLIENT_URL;
+export const URL_ENV = env!.URL_ENV;
 export const API_AUTH_URL = env!.API_AUTH_URL;
 export const API_MAIL_URL = env!.API_MAIL_URL;
 export const SUBDIR_PATH = env!.SUBDIR_PATH;

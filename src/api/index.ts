@@ -11,6 +11,7 @@ import store from "../redux/store";
 import TranslateText from "../utils/translate";
 import { ApiDecorator, ApiResponse } from "./types";
 import Cookies from "js-cookie";
+import { TOKEN } from "../constants/ApiConstant";
 
 export enum EnErrorCode {
   NO_ERROR = 0,
@@ -30,7 +31,7 @@ class HttpService {
     this.instance = axios.create({
       baseURL,
     });
-    this._token = Cookies.get("Token");
+    this._token = Cookies.get(TOKEN);
     this._source = axios.CancelToken.source();
     this._initializeResponseInterceptor();
     this._initializeRequestInterceptor();
@@ -44,7 +45,7 @@ class HttpService {
   };
   private setToken = (Token: string) => {
     this._token = Token;
-    Cookies.set("Token", Token, {
+    Cookies.set(TOKEN, Token, {
       expires: 1,
       domain: DOMAIN,
       path: "/",

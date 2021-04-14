@@ -1,4 +1,5 @@
 const dev = {
+  APP_ENV: "dev",
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
   CLIENT_URL: "http://localhost.com:3001",
@@ -8,6 +9,7 @@ const dev = {
 };
 
 const test = {
+  APP_ENV: "test",
   API_APP_URL: "https://api.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://api.edi.md/ISAuthService/json",
   CLIENT_URL: "https://client.eservicii.md",
@@ -17,6 +19,7 @@ const test = {
 };
 
 const prod = {
+  APP_ENV: "prod",
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
   CLIENT_URL: "https://test.eservicii.md",
