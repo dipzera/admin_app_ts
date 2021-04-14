@@ -330,106 +330,112 @@ export class CompanyList extends Component {
       },
     ];
     return (
-      <Card>
-        <Flex className="mb-1" mobileFlex={false} justifyContent="between">
-          <div className="mr-md-3 mb-3">
-            <Input
-              placeholder={Translate("app.Search")}
-              prefix={<SearchOutlined />}
-              onChange={(e) => this.onSearch(e)}
-            />
-          </div>
-          <div>
-            <Flex>
-              {this.state.selectedRows.length > 0 && (
-                <>
+      <>
+        <h3>
+          {TranslateText("sidenav.catalog.companies")} -{" "}
+          {this.state.companies && this.state.companies.length}
+        </h3>
+        <Card>
+          <Flex className="mb-1" mobileFlex={false} justifyContent="between">
+            <div className="mr-md-3 mb-3">
+              <Input
+                placeholder={Translate("app.Search")}
+                prefix={<SearchOutlined />}
+                onChange={(e) => this.onSearch(e)}
+              />
+            </div>
+            <div>
+              <Flex>
+                {this.state.selectedRows.length > 0 && (
+                  <>
+                    <Button
+                      type="primary"
+                      className="mr-3"
+                      onClick={() =>
+                        this.toggleStatusRow(
+                          this.state.selectedRows,
+                          status.active
+                        )
+                      }
+                    >
+                      {this.state.selectedRows.length > 1
+                        ? `${TranslateText("user.activate")} (${
+                            this.state.selectedRows.length
+                          })`
+                        : `${TranslateText("user.activate")}`}
+                    </Button>
+                    <Button
+                      type="ghost"
+                      className="mr-3"
+                      onClick={() =>
+                        this.toggleStatusRow(
+                          this.state.selectedRows,
+                          status.disabled
+                        )
+                      }
+                    >
+                      {this.state.selectedRows.length > 1
+                        ? `${TranslateText("user.disable")} (${
+                            this.state.selectedRows.length
+                          })`
+                        : `${TranslateText("user.disable")}`}
+                    </Button>
+                  </>
+                )}
+                <Link to={`${APP_PREFIX_PATH}/wizard`}>
                   <Button
                     type="primary"
-                    className="mr-3"
-                    onClick={() =>
-                      this.toggleStatusRow(
-                        this.state.selectedRows,
-                        status.active
-                      )
-                    }
+                    icon={<PlusCircleOutlined />}
+                    block
+                    // onClick={() => this.showNewUserModal()}
                   >
-                    {this.state.selectedRows.length > 1
-                      ? `${TranslateText("user.activate")} (${
-                          this.state.selectedRows.length
-                        })`
-                      : `${TranslateText("user.activate")}`}
+                    {" "}
+                    <IntlMessage id="company.Register" />
                   </Button>
-                  <Button
-                    type="ghost"
-                    className="mr-3"
-                    onClick={() =>
-                      this.toggleStatusRow(
-                        this.state.selectedRows,
-                        status.disabled
-                      )
-                    }
-                  >
-                    {this.state.selectedRows.length > 1
-                      ? `${TranslateText("user.disable")} (${
-                          this.state.selectedRows.length
-                        })`
-                      : `${TranslateText("user.disable")}`}
-                  </Button>
-                </>
-              )}
-              <Link to={`${APP_PREFIX_PATH}/wizard`}>
-                <Button
-                  type="primary"
-                  icon={<PlusCircleOutlined />}
-                  block
-                  // onClick={() => this.showNewUserModal()}
-                >
-                  {" "}
-                  <IntlMessage id="company.Register" />
-                </Button>
-              </Link>
-            </Flex>
+                </Link>
+              </Flex>
+            </div>
+          </Flex>
+          <div className="table-responsive">
+            <Table
+              loading={this.state.loading}
+              columns={tableColumns}
+              dataSource={companies}
+              rowKey="ID"
+              style={{ position: "relative" }}
+              rowSelection={{
+                selectedRowKeys: this.state.selectedKeys,
+                type: "checkbox",
+                preserveSelectedRowKeys: false,
+                ...this.rowSelection,
+              }}
+              pagination={{
+                total: this.state.companies.length,
+                pageSize: this.state.pageSize,
+                showSizeChanger: true,
+                onShowSizeChange: (current, size) => {
+                  this.setState({ pageSize: size });
+                },
+              }}
+            />
           </div>
-        </Flex>
-        <div className="table-responsive">
-          <Table
-            loading={this.state.loading}
-            columns={tableColumns}
-            dataSource={companies}
-            rowKey="ID"
-            style={{ position: "relative" }}
-            rowSelection={{
-              selectedRowKeys: this.state.selectedKeys,
-              type: "checkbox",
-              preserveSelectedRowKeys: false,
-              ...this.rowSelection,
-            }}
-            pagination={{
-              total: this.state.companies.length,
-              pageSize: this.state.pageSize,
-              showSizeChanger: true,
-              onShowSizeChange: (current, size) => {
-                this.setState({ pageSize: size });
-              },
+          <UserView
+            data={selectedUser}
+            visible={userProfileVisible}
+            close={() => {
+              this.closeUserViewProfile();
             }}
           />
-        </div>
-        <UserView
-          data={selectedUser}
-          visible={userProfileVisible}
-          close={() => {
-            this.closeUserViewProfile();
-          }}
-        />
-        <CompanyModalEdit
-          getCompanyList={this.getCompanyList}
-          data={selectedUser}
-          visible={this.state.editModalVisible}
-          onCancel={() => {
-            this.closeEditModal();
-          }}
-        />
-      </Card>
+          <CompanyModalEdit
+            getCompanyList={this.getCompanyList}
+            data={selectedUser}
+            visible={this.state.editModalVisible}
+            onCancel={() => {
+              this.closeEditModal();
+            }}
+          />
+        </Card>
+      </>
     );
   }
 }

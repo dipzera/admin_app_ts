@@ -58,7 +58,7 @@ const TemplateCard = (props: ITemplateCard) => {
               style={{ overflow: "hidden" }}
             >
               <span style={{ maxWidth: "150px", overflow: "hidden" }}>
-                {Name.length > 0 ? Name : "Untitled"}
+                {Name && Name.length > 0 ? Name : "Untitled"}
               </span>
             </Dropdown.Button>
           </div>

@@ -61,7 +61,7 @@ const dashBoardNavTree = [
         path: "/app/catalog/companies",
         title: "sidenav.catalog.companies",
         icon: ApartmentOutlined,
-        breadcrumb: true,
+        breadcrumb: false,
         submenu: [],
       },
       {
@@ -69,7 +69,7 @@ const dashBoardNavTree = [
         path: "/app/catalog/users",
         title: "sidenav.catalog.users",
         icon: UserOutlined,
-        breadcrumb: true,
+        breadcrumb: false,
         submenu: [],
       },
       //{

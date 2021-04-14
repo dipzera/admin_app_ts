@@ -174,118 +174,124 @@ export class UserList extends Component<StoreProps> {
     };
 
     return (
-      <Card>
-        <Flex className="mb-1" mobileFlex={false} justifyContent="between">
-          <div className="mr-md-3 mb-3">
-            <Input
-              placeholder={TranslateText("app.Search")}
-              prefix={<SearchOutlined />}
-              onChange={(e) => onSearch(e)}
+      <>
+        <h3>
+          {TranslateText("sidenav.catalog.users")} -{" "}
+          {this.state.users && this.state.users.length}
+        </h3>
+        <Card>
+          <Flex className="mb-1" mobileFlex={false} justifyContent="between">
+            <div className="mr-md-3 mb-3">
+              <Input
+                placeholder={TranslateText("app.Search")}
+                prefix={<SearchOutlined />}
+                onChange={(e) => onSearch(e)}
+              />
+            </div>
+            <div>
+              <Flex>
+                {this.state.selectedRows.length > 0 && (
+                  <>
+                    <Button
+                      type="primary"
+                      className="mr-3"
+                      onClick={() =>
+                        this.toggleStatusRow(
+                          this.state.selectedRows,
+                          status.active
+                        )
+                      }
+                    >
+                      {this.state.selectedRows.length > 1
+                        ? `${TranslateText("user.activate")} (${
+                            this.state.selectedRows.length
+                          })`
+                        : `${TranslateText("user.activate")}`}
+                    </Button>
+                    <Button
+                      type="ghost"
+                      className="mr-3"
+                      onClick={() =>
+                        this.toggleStatusRow(
+                          this.state.selectedRows,
+                          status.disabled
+                        )
+                      }
+                    >
+                      {this.state.selectedRows.length > 1
+                        ? `${TranslateText("user.disable")} (${
+                            this.state.selectedRows.length
+                          })`
+                        : `${TranslateText("user.disable")}`}
+                    </Button>
+                  </>
+                )}
+                <Button
+                  onClick={this.showNewUserModal}
+                  type="primary"
+                  icon={<PlusCircleOutlined />}
+                  block
+                >
+                  {" "}
+                  <IntlMessage id="user.Invite" />
+                </Button>
+              </Flex>
+            </div>
+          </Flex>
+          <div className="table-responsive">
+            <Table
+              loading={this.state.loading}
+              pagination={{
+                total: this.state.users.length,
+                showSizeChanger: true,
+                pageSize: this.state.pageSize,
+                onShowSizeChange: (current, size) => {
+                  this.setState({ pageSize: size });
+                },
+              }}
+              columns={UserTable(
+                this.props.sendActivationCode,
+                this.showUserProfile,
+                this.showEditModal,
+                this.getUsersInfo,
+                this.handleUserStatus
+              )}
+              dataSource={this.state.users}
+              rowKey="ID"
+              style={{ position: "relative" }}
+              rowSelection={{
+                onChange: (key, rows) => {
+                  this.setState({ selectedKeys: key });
+                  this.setState({ selectedRows: rows });
+                },
+                selectedRowKeys: this.state.selectedKeys,
+                type: "checkbox",
+                preserveSelectedRowKeys: false,
+              }}
             />
           </div>
-          <div>
-            <Flex>
-              {this.state.selectedRows.length > 0 && (
-                <>
-                  <Button
-                    type="primary"
-                    className="mr-3"
-                    onClick={() =>
-                      this.toggleStatusRow(
-                        this.state.selectedRows,
-                        status.active
-                      )
-                    }
-                  >
-                    {this.state.selectedRows.length > 1
-                      ? `${TranslateText("user.activate")} (${
-                          this.state.selectedRows.length
-                        })`
-                      : `${TranslateText("user.activate")}`}
-                  </Button>
-                  <Button
-                    type="ghost"
-                    className="mr-3"
-                    onClick={() =>
-                      this.toggleStatusRow(
-                        this.state.selectedRows,
-                        status.disabled
-                      )
-                    }
-                  >
-                    {this.state.selectedRows.length > 1
-                      ? `${TranslateText("user.disable")} (${
-                          this.state.selectedRows.length
-                        })`
-                      : `${TranslateText("user.disable")}`}
-                  </Button>
-                </>
-              )}
-              <Button
-                onClick={this.showNewUserModal}
-                type="primary"
-                icon={<PlusCircleOutlined />}
-                block
-              >
-                {" "}
-                <IntlMessage id="user.Invite" />
-              </Button>
-            </Flex>
-          </div>
-        </Flex>
-        <div className="table-responsive">
-          <Table
-            loading={this.state.loading}
-            pagination={{
-              total: this.state.users.length,
-              showSizeChanger: true,
-              pageSize: this.state.pageSize,
-              onShowSizeChange: (current, size) => {
-                this.setState({ pageSize: size });
-              },
-            }}
-            columns={UserTable(
-              this.props.sendActivationCode,
-              this.showUserProfile,
-              this.showEditModal,
-              this.getUsersInfo,
-              this.handleUserStatus
-            )}
-            dataSource={this.state.users}
-            rowKey="ID"
-            style={{ position: "relative" }}
-            rowSelection={{
-              onChange: (key, rows) => {
-                this.setState({ selectedKeys: key });
-                this.setState({ selectedRows: rows });
-              },
-              selectedRowKeys: this.state.selectedKeys,
-              type: "checkbox",
-              preserveSelectedRowKeys: false,
+          <UserView
+            data={selectedUser}
+            visible={userProfileVisible}
+            close={() => {
+              this.closeUserViewProfile();
             }}
           />
-        </div>
-        <UserView
-          data={selectedUser}
-          visible={userProfileVisible}
-          close={() => {
-            this.closeUserViewProfile();
-          }}
-        />
-        <UserModalAdd
-          onCancel={this.closeNewUserModal}
-          visible={this.state.newUserModalVisible}
-          getUsersInfo={this.getUsersInfo}
-        />
-        <UserModalEdit
-          getUsersInfo={this.getUsersInfo}
-          data={selectedUser}
-          visible={this.state.editModalVisible}
-          onCancel={() => {
-            this.closeEditModal();
-          }}
-        />
-      </Card>
+          <UserModalAdd
+            onCancel={this.closeNewUserModal}
+            visible={this.state.newUserModalVisible}
+            getUsersInfo={this.getUsersInfo}
+          />
+          <UserModalEdit
+            getUsersInfo={this.getUsersInfo}
+            data={selectedUser}
+            visible={this.state.editModalVisible}
+            onCancel={() => {
+              this.closeEditModal();
+            }}
+          />
+        </Card>
+      </>
     );
   }
 }

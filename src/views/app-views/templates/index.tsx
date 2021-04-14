@@ -20,6 +20,7 @@ const Templates = (props: RouteComponentProps) => {
       {templateInstances.map(({ link, component: Component }) => (
         <Route
           path={props.match.url + "/" + link}
+          key={link}
           render={(props) => <Component {...props} />}
         />
       ))}
