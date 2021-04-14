@@ -14,7 +14,7 @@ import { ThunkResult } from "../reducers";
 import TranslateText from "../../utils/translate";
 import { APP_PREFIX_PATH, DOMAIN, SUBDIR_PATH } from "../../configs/AppConfig";
 import { onHeaderNavColorChange } from "./Theme";
-import { EXPIRE_DAYS } from "../../constants/ApiConstant";
+import { EXPIRE_DAYS, TOKEN } from "../../constants/ApiConstant";
 import Cookies from "js-cookie";
 
 type Actions =
@@ -79,7 +79,7 @@ export const authorizeUser = (
       if (data) {
         const { ErrorCode, ErrorMessage, Token } = data;
         if (ErrorCode === 0) {
-          Cookies.set("Token", Token, {
+          Cookies.set(TOKEN, Token, {
             expires: EXPIRE_DAYS,
             domain: DOMAIN,
             path: "/",

@@ -8,7 +8,7 @@ import {
 } from "../constants/Auth";
 import Cookies from "js-cookie";
 import { DOMAIN } from "../../configs/AppConfig";
-import { EXPIRE_DAYS } from "../../constants/ApiConstant";
+import { EXPIRE_DAYS, TOKEN } from "../../constants/ApiConstant";
 export interface IAuth {
   loading?: boolean;
   message?: string;
@@ -52,7 +52,7 @@ const auth = (state = initState, action: any) => {
         showMessage: false,
       };
     case SIGNOUT:
-      Cookies.remove("Token", {
+      Cookies.remove(TOKEN, {
         expires: EXPIRE_DAYS,
         domain: DOMAIN,
         path: "/",

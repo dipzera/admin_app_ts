@@ -8,7 +8,7 @@ const dev = {
   SUBDIR_PATH: "/adminportal",
 };
 
-const prod = {
+const test = {
   APP_ENV: "prod",
   API_APP_URL: "https://api.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://api.edi.md/ISAuthService/json",
@@ -18,7 +18,7 @@ const prod = {
   SUBDIR_PATH: "/adminportal",
 };
 
-const test = {
+const prod = {
   APP_ENV: "test",
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
