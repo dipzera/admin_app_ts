@@ -8,8 +8,8 @@ const dev = {
   SUBDIR_PATH: "/adminportal",
 };
 
-const test = {
-  APP_ENV: "test",
+const prod = {
+  APP_ENV: "prod",
   API_APP_URL: "https://api.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://api.edi.md/ISAuthService/json",
   CLIENT_URL: "https://client.eservicii.md",
@@ -18,8 +18,8 @@ const test = {
   SUBDIR_PATH: "/adminportal",
 };
 
-const prod = {
-  APP_ENV: "prod",
+const test = {
+  APP_ENV: "test",
   API_APP_URL: "https://dev.edi.md/ISAdminWebAppService/json",
   API_AUTH_URL: "https://dev.edi.md/ISAuthService/json",
   CLIENT_URL: "https://test.eservicii.md",
